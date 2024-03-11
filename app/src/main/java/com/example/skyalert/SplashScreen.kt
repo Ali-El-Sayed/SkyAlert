@@ -1,29 +1,31 @@
 package com.example.skyalert
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import com.example.skyalert.databinding.ActivityMainBinding
-import com.example.skyalert.network.NetworkDataSourceImpl
-import kotlinx.coroutines.launch
+import com.example.skyalert.databinding.ActivitySplashBinding
 
 class SplashScreen : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivitySplashBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
 
-        lifecycleScope.launch {
-            val res = NetworkDataSourceImpl.getForecast(27.2516, 33.8182)
-            Log.d("MainActivity", "onCreate: ${res.city.name}")
-            Log.d("MainActivity", "onCreate: ${res.list[0].weather[0].description}")
+        binding.tvAppName.setOnClickListener {
+            startActivity(Intent(this@SplashScreen, HomeScreen::class.java))
+            finish()
         }
+
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            startActivity(Intent(this@SplashScreen, HomeScreen::class.java))
+//            finish()
+//        }, 3000)
+
     }
 
 }
