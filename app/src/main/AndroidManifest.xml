@@ -12,20 +12,22 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SkyAlert"
         tools:targetApi="31">
         <activity
-            android:name=".HomeScreen"
-            android:exported="false" />
-        <activity
-            android:name=".SplashScreen"
-            android:exported="true"
-            android:theme="@style/Theme.SkyAlert.SplashScreen">
+            android:name=".home.HomeScreenActivity"
+            android:theme="@style/Theme.SkyAlert"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".SplashScreen"
+            android:exported="true"
+            android:theme="@style/Theme.SkyAlert.SplashScreen">
+
         </activity>
     </application>
 
