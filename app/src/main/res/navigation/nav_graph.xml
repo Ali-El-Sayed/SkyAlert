@@ -6,7 +6,7 @@
     app:startDestination="@id/weatherFragment">
     <fragment
         android:id="@+id/weatherFragment"
-        android:name="com.example.skyalert.home.weatherScreen.WeatherFragment"
+        android:name="com.example.skyalert.home.weatherScreen.view.WeatherFragment"
         android:label="@string/current_weather"
         tools:layout="@layout/fragment_weather" />
 </navigation>
