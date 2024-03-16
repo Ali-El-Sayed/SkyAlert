@@ -62,6 +62,8 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.4.0")
     // Google Play Services
     implementation("com.google.android.gms:play-services-location:21.2.0")
+    // swipe refresh layout
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -16,7 +16,6 @@ class WeatherScreenViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel
 
     fun getCurrentWeather(lat: Double, lon: Double) {
         _currentWeather.value = CurrentWeatherState.Loading
-
         viewModelScope.launch(Dispatchers.IO) {
             _weatherRepo.getCurrentWeather(lat, lon).collect {
                 _currentWeather.value = it

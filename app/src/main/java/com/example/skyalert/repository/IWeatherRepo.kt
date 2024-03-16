@@ -12,7 +12,7 @@ interface IWeatherRepo {
         lat: Double,
         lon: Double,
         mode: String = MODE.JSON.value,
-        units: String = UNITS.STANDARD.value,
+        units: String = UNITS.METRIC.value,
         lang: String = LANG.ENGLISH.value
     ): Flow<CurrentWeatherState>
 

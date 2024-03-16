@@ -1,6 +1,7 @@
 package com.example.skyalert.home.weatherScreen.view
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -25,6 +26,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
+import com.example.example.CurrentWeather
 import com.example.skyalert.DataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
 import com.example.skyalert.home.weatherScreen.viewModel.WeatherScreenViewModel
@@ -47,6 +50,7 @@ class WeatherFragment : Fragment() {
     private var latitude: Double = 0.0
     private var address: String = ""
     private val TAG = "WeatherFragment"
+    private val DELAY_IN_LOCATION_REQUEST = 20000L
     private lateinit var viewModel: WeatherScreenViewModel
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(p0: LocationResult) {
@@ -65,9 +69,7 @@ class WeatherFragment : Fragment() {
         }
     }
     private val fusedLocationProviderClient by lazy {
-        LocationServices.getFusedLocationProviderClient(
-            requireActivity()
-        )
+        LocationServices.getFusedLocationProviderClient(requireActivity())
     }
     private val permissions = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
@@ -83,19 +85,18 @@ class WeatherFragment : Fragment() {
 
         if (checkPermission()) {
             if (!isLocationEnabled()) enableLocationService()
+            else getFreshLocation(locationCallback)
         } else requestLocationPermission(permissions)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding = FragmentWeatherBinding.inflate(layoutInflater)
+        binding = FragmentWeatherBinding.inflate(inflater, container, false)
         val navController = findNavController()
         binding.toolbar.setupWithNavController(
             navController, AppBarConfiguration(navController.graph)
         )
-        binding
-
         lifecycleScope.launch {
             viewModel.currentWeather.collect {
                 when (it) {
@@ -106,15 +107,13 @@ class WeatherFragment : Fragment() {
                     is CurrentWeatherState.Success -> {
                         binding.currentWeatherProgressBar.visibility = View.GONE
                         val currentWeather = it.currentWeather
+                        updateUI(currentWeather)
                         Log.d(TAG, "Current Weather: $currentWeather")
-                        Toast.makeText(
-                            requireActivity(),
-                            "Current Weather: ${currentWeather.name}",
-                            Toast.LENGTH_LONG
-                        ).show()
+
                     }
 
                     is CurrentWeatherState.Error -> {
+                        binding.currentWeatherProgressBar.visibility = View.GONE
                         Toast.makeText(requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG)
                             .show()
                     }
@@ -125,10 +124,32 @@ class WeatherFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+    }
+
+    private fun updateUI(currentWeather: CurrentWeather) {
+        binding.cityNameTextView.text = currentWeather.name
+        binding.weatherTempTextView.text = "${currentWeather.main.temp.toInt()}"
+
+        val animator = ValueAnimator.ofInt(0, currentWeather.main.temp.toInt())
+        animator.duration = 1000
+        animator.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+            binding.weatherTempTextView.text = value.toString()
+        }
+        animator.start()
+
+        binding.weatherTempMeasurementsTextView.text = "°C"
+        binding.weatherDescriptionTextView.text = currentWeather.weather[0].description
+        binding.maxMinTempTextView.text =
+            "Max: ${currentWeather.main.tempMax.toInt()}°C Min: ${currentWeather.main.tempMin.toInt()}°C"
+
+
+        Glide.with(requireActivity()).load(
+            "https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}.png"
+        ).into(binding.weatherImageView)
     }
 
 
@@ -172,7 +193,7 @@ class WeatherFragment : Fragment() {
     private fun getFreshLocation(callback: LocationCallback) {
         Toast.makeText(requireActivity(), "Location is enabled", Toast.LENGTH_LONG).show()
         fusedLocationProviderClient.requestLocationUpdates(
-            LocationRequest.Builder(3000).apply {
+            LocationRequest.Builder(DELAY_IN_LOCATION_REQUEST).apply {
                 setPriority(Priority.PRIORITY_HIGH_ACCURACY)
             }.build(), callback, Looper.myLooper()
         )

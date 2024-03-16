@@ -2,10 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
     <color name="seed">#35ADCA</color>
+    <color name="text_onSurface_color">#EBEBEB</color>
+
+
+
     <color name="md_theme_light_primary">#00687C</color>
-    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_onPrimary">#0897D1</color>
     <color name="md_theme_light_primaryContainer">#B0ECFF</color>
     <color name="md_theme_light_onPrimaryContainer">#001F27</color>
     <color name="md_theme_light_secondary">#2858BF</color>
