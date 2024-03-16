@@ -13,7 +13,7 @@ data class Day(
     @SerializedName("wind") var wind: Wind = Wind(0.0, 0, 0.0),
     @SerializedName("visibility") var visibility: Int,
     @SerializedName("pop") var pop: Int,
-    @SerializedName("sys") var sys: Sys = Sys(""),
+    @SerializedName("sys") var sys: Sys = Sys("", "", 0, 0),
     @SerializedName("dt_txt") var dtTxt: String
 
 )
