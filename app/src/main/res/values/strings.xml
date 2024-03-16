@@ -6,4 +6,5 @@
     <string name="current_weather">Current Weather</string>
     <string name="dummytext">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Scelerisque eleifend donec pretium vulputate sapien. Quam vulputate dignissim suspendisse in est ante in nibh mauris. Condimentum mattis pellentesque id nibh tortor id aliquet lectus proin. Convallis convallis tellus id interdum velit. Dignissim suspendisse in est ante in nibh.</string>
     <string name="weather_icon">Weather Icon</string>
+    <string name="action_settings">Settigns</string>
 </resources>
