@@ -24,7 +24,6 @@ class SettingsFragment : Fragment() {
         binding.toolbar.setupWithNavController(
             findNavController(), AppBarConfiguration(findNavController().graph)
         )
-
         return binding.root
     }
 
@@ -34,7 +33,6 @@ class SettingsFragment : Fragment() {
             findNavController().navigateUp()
         }
     }
-
 
 
 }
