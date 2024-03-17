@@ -1,6 +1,5 @@
-package com.example.skyalert.DataSource.remote
+package com.example.skyalert.dataSource.remote
 
-import com.example.example.CurrentWeather
 import com.example.example.FiveDaysForecast
 import com.example.skyalert.network.LANG
 import com.example.skyalert.network.MODE
@@ -13,7 +12,7 @@ interface IWeatherRemoteDataSource {
         lat: Double,
         lon: Double,
         mode: String = MODE.JSON.value,
-        units: String = UNITS.STANDARD.value,
+        units: String = UNITS.METRIC.value,
         lang: String = LANG.ENGLISH.value
     ): Flow<CurrentWeatherState>
 

@@ -1,11 +1,10 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.SkyAlert" parent="Theme.Material3.DayNight.NoActionBar" />
+    <style name="Base.Theme.SkyAlert" parent="Theme.Material3.Light" />
 
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
 
-        <item name="android:textColor">@color/text_onSurface_color</item>
-
+        <item name="android:textColor">#3C3C3D</item>
 
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
@@ -38,9 +37,12 @@
 
     <style name="Theme.SkyAlert" parent="Base.Theme.SkyAlert" />
 
-    <style name="Theme.SkyAlert.SplashScreen" parent="Base.Theme.SkyAlert">
+    <style name="Theme.SkyAlert.SplashScreen" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
+
+
+
 </resources>

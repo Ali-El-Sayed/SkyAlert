@@ -21,7 +21,8 @@ class WeatherScreenViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel
                 _currentWeather.value = it
             }
         }
-
     }
+
+    fun getUnit() = _weatherRepo.getUnit()
 
 }

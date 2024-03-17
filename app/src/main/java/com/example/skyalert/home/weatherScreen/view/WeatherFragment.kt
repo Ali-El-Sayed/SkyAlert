@@ -21,23 +21,24 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.view.MenuHost
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.example.example.CurrentWeather
-import com.example.skyalert.DataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.R
 import com.example.skyalert.broadcastreceiver.LocationBroadcastReceiver
 import com.example.skyalert.broadcastreceiver.OnLocationChange
+import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
+import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
 import com.example.skyalert.home.weatherScreen.viewModel.WeatherScreenViewModel
 import com.example.skyalert.network.RetrofitClient
+import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.util.GPSUtils
@@ -58,7 +59,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private var latitude: Double = 0.0
     private var address: String = ""
     private val TAG = "WeatherFragment"
-    private val DELAY_IN_LOCATION_REQUEST = 20000L
+    private val DELAY_IN_LOCATION_REQUEST = 2000000L
     private lateinit var viewModel: WeatherScreenViewModel
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(p0: LocationResult) {
@@ -87,7 +88,9 @@ class WeatherFragment : Fragment(), OnLocationChange {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
-        val repo = WeatherRepo.getInstance(remoteDataSource)
+        val repo = WeatherRepo.getInstance(
+            remoteDataSource, SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+        )
         val factory = WeatherViewModelFactory(repo)
         viewModel = ViewModelProvider(this, factory)[WeatherScreenViewModel::class.java]
     }
@@ -96,42 +99,21 @@ class WeatherFragment : Fragment(), OnLocationChange {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
+        initUI()
+
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Set up the toolbar
-        val navController = findNavController()
-        binding.toolbar.setupWithNavController(
-            navController, AppBarConfiguration(navController.graph)
-        )
-        val menuHost:MenuHost = requireActivity()
-        menuHost.addMenuProvider(object:MenuProvider{
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.toolbar_weather_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when(menuItem.itemId){
-                    R.id.action_search -> {
-                        findNavController().navigate(R.id.action_weatherFragment_to_searchFragment)
-                    }
-                }
-                return true
-            }
-
-        })
-
 
         // Observe the current weather
         lifecycleScope.launch {
             viewModel.currentWeather.collect {
                 when (it) {
-                    is CurrentWeatherState.Loading -> {
-                        binding.currentWeatherProgressBar.visibility = View.VISIBLE
-                    }
+                    is CurrentWeatherState.Loading -> binding.currentWeatherProgressBar.visibility =
+                        View.VISIBLE
 
                     is CurrentWeatherState.Success -> {
                         binding.currentWeatherProgressBar.visibility = View.GONE
@@ -150,7 +132,28 @@ class WeatherFragment : Fragment(), OnLocationChange {
             }
         }
 
+    }
 
+    private fun initUI() {
+        // Set up the toolbar
+        (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
+
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.toolbar_weather_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_settings -> {
+                        findNavController().navigate(R.id.action_weatherFragment_to_settingsFragment)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -162,18 +165,15 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
 
         requireActivity().registerReceiver(
-            locationBroadcastReceiver,
-            intentFilter
+            locationBroadcastReceiver, intentFilter
         )
         // Get the current location
         getLocation()
 
         requireActivity().registerReceiver(
-            locationBroadcastReceiver,
-            IntentFilter("android.location.PROVIDERS_CHANGED")
+            locationBroadcastReceiver, IntentFilter("android.location.PROVIDERS_CHANGED")
         )
     }
-
 
     override fun onStop() {
         super.onStop()
@@ -189,6 +189,12 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private fun updateUI(currentWeather: CurrentWeather) {
         binding.cityNameTextView.text = currentWeather.name
         binding.weatherTempTextView.text = "${currentWeather.main.temp.toInt()}"
+        val tempMeasurements = when (viewModel.getUnit()) {
+            UNITS.METRIC -> getString(R.string.celsius_measure)
+            UNITS.IMPERIAL -> getString(R.string.fahrenheit_measure)
+            UNITS.STANDARD -> getString(R.string.kelvin_measure)
+        }
+
 
         val animator = ValueAnimator.ofInt(0, currentWeather.main.temp.toInt())
         animator.duration = 1000
@@ -198,10 +204,17 @@ class WeatherFragment : Fragment(), OnLocationChange {
         }
         animator.start()
 
-        binding.weatherTempMeasurementsTextView.text = "°C"
+        // 17°C
+        binding.weatherTempMeasurementsTextView.text = tempMeasurements
+        // Clear sky
         binding.weatherDescriptionTextView.text = currentWeather.weather[0].description
+        // Max: 30°C / Min: 20°C
         binding.maxMinTempTextView.text =
-            "Max: ${currentWeather.main.tempMax.toInt()}°C Min: ${currentWeather.main.tempMin.toInt()}°C"
+            "${getString(R.string.max)}${currentWeather.main.tempMax.toInt()}$tempMeasurements / ${
+                getString(
+                    R.string.min
+                )
+            }${currentWeather.main.tempMin.toInt()}$tempMeasurements"
 
 
         Glide.with(requireActivity()).load(
@@ -274,6 +287,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
             else getFreshLocation(locationCallback)
         } else requestLocationPermission(permissions)
     }
+
 
 }
 

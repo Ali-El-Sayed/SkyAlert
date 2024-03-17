@@ -1,4 +1,4 @@
-package com.example.skyalert.DataSource.remote
+package com.example.skyalert.dataSource.remote
 
 import com.example.example.FiveDaysForecast
 import com.example.skyalert.network.ApiService
