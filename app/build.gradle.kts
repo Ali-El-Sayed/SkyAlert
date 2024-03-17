@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+    // Settings
+    implementation(libs.androidx.preference)
     // Navigation Components
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
@@ -64,6 +66,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.2.0")
     // swipe refresh layout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    // Encrypted Shared Preferences
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
