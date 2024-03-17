@@ -21,9 +21,12 @@ class SettingsFragment : Fragment() {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolbar.setupWithNavController(
             findNavController(), AppBarConfiguration(findNavController().graph)
         )
+
+
         return binding.root
     }
 

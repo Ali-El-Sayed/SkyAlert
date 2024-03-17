@@ -19,6 +19,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -44,10 +46,12 @@ import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.util.GPSUtils
 import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -107,7 +111,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // Observe the current weather
         lifecycleScope.launch {
             viewModel.currentWeather.collect {
@@ -137,7 +140,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private fun initUI() {
         // Set up the toolbar
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
-
         requireActivity().addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.toolbar_weather_menu, menu)
@@ -181,11 +183,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-    }
-
     private fun updateUI(currentWeather: CurrentWeather) {
         binding.cityNameTextView.text = currentWeather.name
         binding.weatherTempTextView.text = "${currentWeather.main.temp.toInt()}"
@@ -210,11 +207,11 @@ class WeatherFragment : Fragment(), OnLocationChange {
         binding.weatherDescriptionTextView.text = currentWeather.weather[0].description
         // Max: 30°C / Min: 20°C
         binding.maxMinTempTextView.text =
-            "${getString(R.string.max)}${currentWeather.main.tempMax.toInt()}$tempMeasurements / ${
+            "${getString(R.string.max)} ${currentWeather.main.tempMax.toInt()}$tempMeasurements / ${
                 getString(
                     R.string.min
                 )
-            }${currentWeather.main.tempMin.toInt()}$tempMeasurements"
+            } ${currentWeather.main.tempMin.toInt()}$tempMeasurements"
 
 
         Glide.with(requireActivity()).load(
@@ -224,7 +221,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
 
     @RequiresApi(Build.VERSION_CODES.S)
-    private fun requestLocationPermission(permissions: Array<String>) {
+    private val requestLocationPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
             if (isGranted.containsValue(true)) {
                 if (!GPSUtils.isLocationEnabled(requireActivity())) enableLocationService()
@@ -232,8 +229,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
             } else {
                 Toast.makeText(requireActivity(), "Permission denied", Toast.LENGTH_LONG).show()
             }
-        }.launch(permissions)
-    }
+        }
 
 
     private fun enableLocationService() {
@@ -283,11 +279,45 @@ class WeatherFragment : Fragment(), OnLocationChange {
     @RequiresApi(Build.VERSION_CODES.S)
     private fun getLocation() {
         if (PermissionUtils.checkPermission(requireActivity())) {
-            if (!GPSUtils.isLocationEnabled(requireActivity())) enableLocationService()
+            if (!GPSUtils.isLocationEnabled(requireActivity())) requestGPSOn(getGPSOnRequest())
+//                enableLocationService()
             else getFreshLocation(locationCallback)
-        } else requestLocationPermission(permissions)
+        } else requestLocationPermission.launch(permissions)
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun getGPSOnRequest() =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+            if (GPSUtils.isLocationEnabled(requireActivity())) getFreshLocation(locationCallback)
+            else Toast.makeText(
+                requireActivity(),
+                "Please enable location service",
+                Toast.LENGTH_LONG
+            )
+                .show()
+        }
+
+    private fun requestGPSOn(request: ActivityResultLauncher<IntentSenderRequest>) {
+        val locationRequest = LocationRequest.Builder(DELAY_IN_LOCATION_REQUEST).apply {
+            setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+        }.build()
+
+        val settingRequest = LocationSettingsRequest.Builder().run {
+            addLocationRequest(locationRequest)
+            build()
+        }
+
+        val settingsClient = LocationServices.getSettingsClient(requireContext())
+        val task =
+            settingsClient.checkLocationSettings(settingRequest)         //【fire and receive result】
+
+        task.addOnFailureListener {                             //if GPS is not on currently
+            val intentSender = (it as ResolvableApiException).resolution.intentSender
+            val intentSenderRequest = IntentSenderRequest.Builder(intentSender).build()
+
+            request.launch(intentSenderRequest)
+        }
+    }
 
 }
 

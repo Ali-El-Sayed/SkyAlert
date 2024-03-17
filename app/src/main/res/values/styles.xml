@@ -29,6 +29,34 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="appBarTitle" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="titleTextColor">@color/text_onSurface_color</item>
+        <item name="fontFamily">@font/amaranth_regular</item>
+        <item name="titleCentered">true</item>
+        <item name="android:background">@drawable/background_glass</item>
+    </style>
 
+    <!--    Expanded Toolbar -->
+    <style name="expandedToolBar" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:background">@drawable/background_glass</item>
+        <item name="contentScrim">?attr/colorOnPrimary</item>
+        <item name="collapsedTitleTextAppearance">@font/amaranth_regular</item>
+        <item name="collapsedTitleTextColor">@color/text_onSurface_color</item>
+        <item name="expandedTitleTextAppearance">@font/amaranth_regular</item>
+        <item name="expandedTitleTextColor">@color/text_onSurface_color</item>
+    </style>
+
+    <!--    Overflow Menu Style -->
+    <style name="optionMenuStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="tint">@color/text_onSurface_color</item>
+    </style>
+
+    <style name="toolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextColor">@color/text_onSurface_color</item>
+        <item name="fontFamily">@font/amaranth_regular</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="titleCentered">true</item>
+        <item name="navigationIconTint">@color/text_onSurface_color</item>
+    </style>
 
 </resources>
