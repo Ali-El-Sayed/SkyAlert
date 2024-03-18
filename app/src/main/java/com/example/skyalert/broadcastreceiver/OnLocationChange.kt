@@ -1,5 +1,6 @@
 package com.example.skyalert.broadcastreceiver
 
 interface OnLocationChange {
-    fun onChange()
+    fun locationEnabled()
+    fun locationDisabled()
 }

@@ -25,6 +25,7 @@
     <string name="metric">Metric</string>
     <string name="imperial">Imperial</string>
     <string name="standard">Standard</string>
+    <string name="search">Search</string>
 
 
 </resources>
