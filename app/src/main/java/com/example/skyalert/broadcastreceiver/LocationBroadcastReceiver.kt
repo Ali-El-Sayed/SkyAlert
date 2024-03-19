@@ -10,11 +10,9 @@ import com.example.skyalert.util.GPSUtils
 class LocationBroadcastReceiver(private val onLocationChange: OnLocationChange) :
     BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == LocationManager.PROVIDERS_CHANGED_ACTION) {
-            if (GPSUtils.isGPSEnabled(context))
-                onLocationChange.locationEnabled()
-            else
-                onLocationChange.locationDisabled()
+        if (intent.action.equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
+            if (GPSUtils.isGPSEnabled(context)) onLocationChange.locationEnabled()
+            else onLocationChange.locationDisabled()
         }
     }
 }

@@ -26,6 +26,11 @@
     <string name="imperial">Imperial</string>
     <string name="standard">Standard</string>
     <string name="search">Search</string>
+    <string name="gps_is_disabled_do_you_want_to_enable_it">GPS is disabled. Do you want to enable it?</string>
+    <string name="enable_gps">Enable GPS</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="open_location_services">Open location services</string>
 
 
 </resources>
