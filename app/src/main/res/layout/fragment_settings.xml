@@ -7,16 +7,25 @@
     android:orientation="vertical"
     tools:context=".settings.view.SettingsFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
+        style="@style/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/settings_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            app:navigationIcon="@drawable/icon_back"
+            app:navigationIconTint="@color/white"
+            app:titleCentered="true"
+            app:titleTextAppearance="@style/appBarTitle"
             android:background="@drawable/background_glass"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:titleTextColor="@color/text_onSurface_color"
+            tools:title="@string/settings" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

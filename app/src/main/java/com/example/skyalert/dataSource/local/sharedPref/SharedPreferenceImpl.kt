@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.example.skyalert.network.UNITS
+import kotlin.math.log
 
 class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
     private val masterKeyAlias by lazy {
@@ -42,7 +43,7 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
 
     override fun getUnit(): UNITS {
         return sharedPreferences.getString(KEYS.UNIT, UNITS.METRIC.value)?.let {
-            Log.d("SharedPref", "getUnit: $it")
+           Log.d("SharedPreferenceImpl", "getUnit: $it")
             UNITS.valueOf(it.uppercase())
         } ?: UNITS.METRIC
     }

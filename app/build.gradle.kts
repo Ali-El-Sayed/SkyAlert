@@ -37,6 +37,12 @@ android {
         viewBinding = true
         dataBinding = true
     }
+
+    testOptions.unitTests {
+        // Always show the result of every unit test when running via command line, even if it passes.
+        isIncludeAndroidResources = true
+
+    }
 }
 
 dependencies {
@@ -71,6 +77,12 @@ dependencies {
 
 
     testImplementation(libs.junit)
+    // hamcrest
+    testImplementation("org.hamcrest:hamcrest-all:1.3")
+    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("org.robolectric:robolectric:4.6.1")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

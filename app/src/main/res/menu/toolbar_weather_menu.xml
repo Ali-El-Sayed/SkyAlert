@@ -2,7 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/settingsFragment"
         android:icon="@drawable/icon_settings"
-        android:title="@string/action_settings" />
+        android:iconTint="@color/text_onSurface_color"
+        app:showAsAction="ifRoom"
+        android:title="@string/settings" />
 </menu>

@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import com.example.skyalert.R
 import com.example.skyalert.databinding.FragmentSettingsBinding
 
 class SettingsFragment : Fragment() {
@@ -20,18 +19,21 @@ class SettingsFragment : Fragment() {
     ): View {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
-        (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
-        binding.toolbar.setupWithNavController(
-            findNavController(), AppBarConfiguration(findNavController().graph)
-        )
+        (activity as AppCompatActivity).setSupportActionBar(binding.settingsToolbar)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.title =
+            resources.getString(R.string.settings)
+        binding.settingsToolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
-        }
+//        binding.toolbar.setNavigationOnClickListener {
+//            findNavController().navigateUp()
+//        }
     }
 
 

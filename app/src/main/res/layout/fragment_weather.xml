@@ -1,148 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".home.weatherScreen.view.WeatherFragment">
+    android:layout_height="match_parent">
 
-
-    <ProgressBar
-        android:id="@+id/current_weather_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
-
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="240dp">
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsingToolbarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/background_glass"
-            app:collapsedTitleGravity="center_horizontal"
-            app:collapsedTitleTextAppearance="@font/amaranth_regular"
-            app:collapsedTitleTextColor="@color/text_onSurface_color"
-            app:expandedTitleTextAppearance="@font/amaranth_regular"
-            app:expandedTitleTextColor="@color/text_onSurface_color"
-            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-            app:titleCollapseMode="scale"
-            app:toolbarId="@id/toolbar"
-            tools:title="@string/app_name">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/city_weather_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/weather_image_view"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_gravity="end"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginEnd="70dp"
-                    android:contentDescription="@string/weather_icon"
-                    android:scaleType="centerCrop"
-                    app:layout_collapseMode="parallax"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/city_name_text_view"
-                    style="@style/appBarCityName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginBottom="150dp"
-                    app:layout_constraintBottom_toBottomOf="@id/city_weather_layout"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:text="Suez" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/weather_temp_text_view"
-                    style="@style/appBarTemp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="@id/city_name_text_view"
-                    app:layout_constraintEnd_toEndOf="@id/city_name_text_view"
-                    app:layout_constraintTop_toBottomOf="@id/city_name_text_view"
-                    tools:text="19" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/weather_temp_measurements_text_view"
-                    style="@style/appBarTempMeasurements"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    app:layout_constraintStart_toEndOf="@id/weather_temp_text_view"
-                    app:layout_constraintTop_toTopOf="@id/weather_temp_text_view"
-                    tools:text="°C" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/weather_description_text_view"
-                    style="@style/appBarDescription"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="@id/weather_image_view"
-                    app:layout_constraintStart_toStartOf="@id/weather_image_view"
-                    app:layout_constraintTop_toBottomOf="@id/weather_image_view"
-                    tools:text="broken clouds" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/max_min_temp_text_view"
-                    style="@style/appBarDescription"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    app:layout_constraintEnd_toEndOf="@id/weather_description_text_view"
-                    app:layout_constraintStart_toStartOf="@id/weather_description_text_view"
-                    app:layout_constraintTop_toBottomOf="@id/weather_description_text_view"
-                    tools:text="Max: 203°C Min: 182°C"
-                    />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                tools:menu="@menu/toolbar_weather_menu" />
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_anchor="@id/appBarLayout"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        tools:context=".home.weatherScreen.view.WeatherFragment">
+
+        <ProgressBar
+            android:id="@+id/current_weather_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_anchor="@id/dummy_text_view"
+            app:layout_anchorGravity="top|center"
+            tools:visibility="visible" />
 
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="30dp"
-            app:layout_constraintBottom_toTopOf="@+id/swipe_refresh_layout"
-            app:layout_constraintTop_toTopOf="@+id/swipe_refresh_layout">
+            android:layout_height="370dp"
+            android:background="@drawable/background_glass">
 
-            <TextView
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsingToolbarLayout"
+                style="@style/expandedToolBar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/dummytext"
-                android:textSize="24sp" />
+                app:layout_scrollEffect="compress"
+                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+                app:toolbarId="@id/toolbar">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.core.widget.NestedScrollView>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/city_weather_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="?attr/actionBarSize"
+                    app:layout_collapseMode="parallax">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/open_location_services_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/open_location_services"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/city_name_text_view"
+                        style="@style/appBarCityName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="45dp"
+                        android:maxLength="20"
+                        android:maxLines="2"
+                        android:paddingHorizontal="20dp"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Alexandria, Egypt" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/weather_temp_text_view"
+                        style="@style/appBarTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/city_name_text_view"
+                        tools:text="129"
+                        tools:textSize="90sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/weather_temp_measurements_text_view"
+                        style="@style/appBarTempMeasurements"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toEndOf="@id/weather_temp_text_view"
+                        app:layout_constraintTop_toTopOf="@id/weather_temp_text_view"
+                        tools:text="°C" />
+
+                    <ImageView
+                        android:id="@+id/weather_image_view"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:contentDescription="@string/weather_icon"
+                        android:scaleType="centerCrop"
+                        app:layout_collapseMode="parallax"
+                        app:layout_constraintBottom_toBottomOf="@id/weather_description_text_view"
+                        app:layout_constraintEnd_toStartOf="@id/weather_description_text_view"
+                        app:layout_constraintTop_toTopOf="@id/weather_description_text_view"
+                        tools:src="@drawable/icon_add" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/weather_description_text_view"
+                        style="@style/appBarDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="@id/weather_temp_text_view"
+                        app:layout_constraintStart_toStartOf="@id/weather_temp_text_view"
+                        app:layout_constraintTop_toBottomOf="@id/weather_temp_text_view"
+                        tools:text="Broken Clouds" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/high_low_temp_text_view"
+                        style="@style/highLowTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="@id/weather_description_text_view"
+                        app:layout_constraintStart_toStartOf="@id/weather_description_text_view"
+                        app:layout_constraintTop_toBottomOf="@id/weather_description_text_view"
+                        tools:text="H:252° L:138°" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/toolbar"
+                    style="@style/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="12dp"
+                    app:navigationIcon="@drawable/icon_menu"
+                    app:navigationIconTint="@color/white" />
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/weather_nested_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_anchor="@id/appBarLayout"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="30dp"
+                app:layout_constraintBottom_toTopOf="@+id/swipe_refresh_layout"
+                app:layout_constraintTop_toTopOf="@+id/swipe_refresh_layout">
+
+                <TextView
+                    android:id="@+id/dummy_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/dummytext"
+                    android:textSize="24sp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@drawable/background_glass"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header"
+        app:itemIconTint="@color/text_onSurface_color"
+        app:itemTextColor="@color/text_onSurface_color"
+        app:menu="@menu/toolbar_weather_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

@@ -6,11 +6,16 @@
     <string name="current_weather">Current Weather</string>
     <string name="dummytext">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Scelerisque eleifend donec pretium vulputate sapien. Quam vulputate dignissim suspendisse in est ante in nibh mauris. Condimentum mattis pellentesque id nibh tortor id aliquet lectus proin. Convallis convallis tellus id interdum velit. Dignissim suspendisse in est ante in nibh.</string>
     <string name="weather_icon">Weather Icon</string>
-    <string name="action_settings">Settigns</string>
     <string name="settings">Settings</string>
     <string name="units">Units</string>
-    <string name="min">Min:</string>
-    <string name="max">Max:</string>
+    <string name="min">Min</string>
+    <string name="max">Max</string>
+    <string name="Settings">Settings</string>
+    <string name="temperature">Temperature</string>
+    <string name="humidity">Humidity</string>
+    <string name="pressure">Pressure</string>
+    <string name="wind">Wind</string>
+    <string name="visibility">Visibility</string>
     <string name="celsius_measure">°C</string>
     <string name="fahrenheit_measure">°F</string>
     <string name="kelvin_measure">°K</string>
@@ -20,6 +25,12 @@
     <string name="metric">Metric</string>
     <string name="imperial">Imperial</string>
     <string name="standard">Standard</string>
+    <string name="search">Search</string>
+    <string name="gps_is_disabled_do_you_want_to_enable_it">GPS is disabled. Do you want to enable it?</string>
+    <string name="enable_gps">Enable GPS</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="open_location_services">Open location services</string>
 
 
 </resources>

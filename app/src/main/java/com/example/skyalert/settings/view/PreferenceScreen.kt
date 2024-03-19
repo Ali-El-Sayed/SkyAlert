@@ -43,7 +43,6 @@ class PreferenceScreen : PreferenceFragmentCompat() {
 
         findPreference<ListPreference>("unit")?.setOnPreferenceChangeListener { preference, newValue ->
             val unit = newValue as String
-            Toast.makeText(context, "Unit: $unit", Toast.LENGTH_SHORT).show()
             val unitSummary = when (unit.lowercase()) {
                 getString(R.string.metric).lowercase() -> getString(R.string.celsius_m_s)
                 getString(R.string.imperial).lowercase() -> getString(R.string.fahrenheit_mph)
@@ -51,6 +50,7 @@ class PreferenceScreen : PreferenceFragmentCompat() {
                 else -> getString(R.string.celsius_m_s)
             }
             viewModel.setUnit(UNITS.valueOf(unit.uppercase()))
+            Toast.makeText(context, "Unit: $unit", Toast.LENGTH_SHORT).show()
             preference.summary = "${getString(R.string.units)}: $unitSummary"
             true
         }
