@@ -1,4 +1,4 @@
-package com.example.skyalert.home.weatherScreen.view
+package com.example.skyalert.screens.home.weatherScreen.view
 
 import android.Manifest
 import android.animation.ValueAnimator
@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.example.CurrentWeather
 import com.example.skyalert.R
@@ -37,11 +38,13 @@ import com.example.skyalert.broadcastreceiver.OnLocationChange
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
-import com.example.skyalert.home.weatherScreen.viewModel.WeatherScreenViewModel
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.repository.WeatherRepo
+import com.example.skyalert.screens.home.weatherScreen.adapters.RvHourlyForecastAdapter
+import com.example.skyalert.screens.home.weatherScreen.viewModel.WeatherScreenViewModel
 import com.example.skyalert.util.GPSUtils
 import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory
@@ -87,6 +90,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 Log.d(TAG, "Latitude: $latitude")
                 Log.d(TAG, "Longitude: $longitude")
                 viewModel.getCurrentWeather(latitude, longitude)
+                viewModel.getHourlyWeather(latitude, longitude, 40)
 //                getLocationFromCoordinates(
 //                    requireActivity(), location.latitude, location.longitude
 //                )
@@ -135,6 +139,38 @@ class WeatherFragment : Fragment(), OnLocationChange {
                         Toast.makeText(requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG)
                             .show()
                     }
+                }
+            }
+        }
+        // Observe the hourly weather
+        lifecycleScope.launch {
+            viewModel.hourlyWeather.collect {
+                when (it) {
+                    is FiveDaysForecastState.Loading -> binding.currentWeatherProgressBar.visibility =
+                        View.VISIBLE
+
+                    is FiveDaysForecastState.Success -> {
+                        binding.currentWeatherProgressBar.visibility = View.GONE
+                        val adapter = RvHourlyForecastAdapter()
+                        adapter.submitList(it.data.list.subList(0, 8))
+                        binding.recyclerViewHourlyForecast.layoutManager = LinearLayoutManager(
+                            requireActivity(),
+                            LinearLayoutManager.HORIZONTAL,
+                            false
+                        )
+                        binding.recyclerViewHourlyForecast.adapter = adapter
+                        for (i in it.data.list) {
+                            Log.d(TAG, "Hourly Weather: ${i.dtTxt}")
+                        }
+                    }
+
+                    is FiveDaysForecastState.Error -> {
+                        binding.currentWeatherProgressBar.visibility = View.GONE
+                        Log.e(TAG, "Error: ${it.message}")
+                        Toast.makeText(requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG)
+                            .show()
+                    }
+
                 }
             }
         }
@@ -191,7 +227,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.isDrawerIndicatorEnabled = false
-        toggle.setHomeAsUpIndicator(R.drawable.icon_menu)
+        toggle.setHomeAsUpIndicator(R.drawable.ic_menu)
         toggle.syncState()
 
         NavigationUI.setupWithNavController(
@@ -348,7 +384,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
             )
             .setIcon(
                 ResourcesCompat.getDrawable(
-                    resources, R.drawable.icon_location,
+                    resources, R.drawable.ic_location,
                     requireActivity().theme
                 )
             ).setCancelable(false)

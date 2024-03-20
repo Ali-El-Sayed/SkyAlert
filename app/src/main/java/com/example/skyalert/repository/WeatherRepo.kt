@@ -6,28 +6,25 @@ import com.example.skyalert.network.LANG
 import com.example.skyalert.network.MODE
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.network.model.FiveDaysForecastState
 import kotlinx.coroutines.flow.Flow
 
 class WeatherRepo private constructor(
     private val weatherRemoteDatasource: IWeatherRemoteDataSource,
     private val _iSharedPreference: ISharedPreference
-) :
-    IWeatherRepo {
+) : IWeatherRepo {
 
 
     companion object {
         @Volatile
         private var INSTANCE: WeatherRepo? = null
         fun getInstance(
-            weatherRemoteDatasource: IWeatherRemoteDataSource,
-            iSharedPreference: ISharedPreference
-        ) =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: WeatherRepo(
-                    weatherRemoteDatasource,
-                    iSharedPreference
-                ).also { INSTANCE = it }
-            }
+            weatherRemoteDatasource: IWeatherRemoteDataSource, iSharedPreference: ISharedPreference
+        ) = INSTANCE ?: synchronized(this) {
+            INSTANCE ?: WeatherRepo(
+                weatherRemoteDatasource, iSharedPreference
+            ).also { INSTANCE = it }
+        }
     }
 
     override suspend fun getCurrentWeather(
@@ -35,11 +32,16 @@ class WeatherRepo private constructor(
     ): Flow<CurrentWeatherState> {
         val unit = _iSharedPreference.getUnit()
         return weatherRemoteDatasource.getCurrentWeather(
-            lat,
-            lon,
-            MODE.JSON.value,
-            unit.value,
-            LANG.ENGLISH.value
+            lat, lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+        )
+    }
+
+    override suspend fun getHourlyForecast(
+        lat: Double, lon: Double, cnt: Int
+    ): Flow<FiveDaysForecastState> {
+        val unit = _iSharedPreference.getUnit()
+        return weatherRemoteDatasource.getHourlyForecast(
+            lat, lon, cnt, MODE.JSON.value, unit.value, LANG.ENGLISH.value
         )
     }
 

@@ -9,14 +9,15 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".home.weatherScreen.view.WeatherFragment">
+        tools:context=".screens.home.weatherScreen.view.WeatherFragment">
 
         <ProgressBar
             android:id="@+id/current_weather_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:elevation="1dp"
             android:visibility="gone"
-            app:layout_anchor="@id/dummy_text_view"
+            app:layout_anchor="@id/recycler_view_hourly_forecast"
             app:layout_anchorGravity="top|center"
             tools:visibility="visible" />
 
@@ -98,7 +99,7 @@
                         app:layout_constraintBottom_toBottomOf="@id/weather_description_text_view"
                         app:layout_constraintEnd_toStartOf="@id/weather_description_text_view"
                         app:layout_constraintTop_toTopOf="@id/weather_description_text_view"
-                        tools:src="@drawable/icon_add" />
+                        tools:src="@drawable/ic_sunrise" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/weather_description_text_view"
@@ -132,7 +133,7 @@
                     android:layout_height="?attr/actionBarSize"
                     android:paddingStart="20dp"
                     android:paddingEnd="12dp"
-                    app:navigationIcon="@drawable/icon_menu"
+                    app:navigationIcon="@drawable/ic_menu"
                     app:navigationIconTint="@color/white" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -143,25 +144,52 @@
             android:id="@+id/weather_nested_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="12dp"
             app:layout_anchor="@id/appBarLayout"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="30dp"
-                app:layout_constraintBottom_toTopOf="@+id/swipe_refresh_layout"
-                app:layout_constraintTop_toTopOf="@+id/swipe_refresh_layout">
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:background="@drawable/hourly_forecast_recycler_view_bg"
+                android:orientation="vertical"
+                android:padding="12dp">
 
-                <TextView
-                    android:id="@+id/dummy_text_view"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginHorizontal="4dp"
+                        android:contentDescription="@string/hourly_forecast"
+                        android:src="@drawable/ic_clock" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/forecastCardText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hourly_forecast" />
+
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_hourly_forecast"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/dummytext"
-                    android:textSize="24sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginVertical="4dp"
+                    android:orientation="horizontal"
+                    android:padding="4dp"
+                    android:scrollbars="horizontal"
+                    tools:itemCount="8"
+                    tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/hourly_forecast_card" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.core.widget.NestedScrollView>
 
@@ -175,8 +203,8 @@
         android:background="@drawable/background_glass"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
-        app:itemIconTint="@color/text_onSurface_color"
-        app:itemTextColor="@color/text_onSurface_color"
+        app:itemIconTint="@color/text_onDarkSurface_color"
+        app:itemTextColor="@color/text_onDarkSurface_color"
         app:menu="@menu/toolbar_weather_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

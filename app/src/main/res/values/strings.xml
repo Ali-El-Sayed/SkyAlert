@@ -31,6 +31,9 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="open_location_services">Open location services</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="now">Now</string>
+    <string name="hourly_forecast">Hourly Forecast</string>
 
 
 </resources>

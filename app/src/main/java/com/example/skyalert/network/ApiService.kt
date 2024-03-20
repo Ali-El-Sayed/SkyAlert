@@ -1,7 +1,7 @@
 package com.example.skyalert.network
 
 import com.example.example.CurrentWeather
-import com.example.example.FiveDaysForecast
+import com.example.skyalert.model.FiveDaysForecast
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -22,6 +22,7 @@ interface ApiService {
     suspend fun getForecast(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
+        @Query("cnt") cnt: Int = 8,
         @Query("appid") apiKey: String,
         @Query("mode") mode: String = MODE.JSON.value,
         @Query("units") units: String = UNITS.STANDARD.value,
