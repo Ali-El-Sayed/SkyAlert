@@ -18,7 +18,10 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
-            android:name=".home.HomeScreenActivity"
+            android:name=".screens.parents.BaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".screens.home.HomeScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,18 +30,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SplashScreen"
+            android:name=".screens.splash.SplashScreen"
             android:exported="true"
-            android:theme="@style/Theme.SkyAlert.SplashScreen">
-
-        </activity>
+            android:theme="@style/Theme.SkyAlert.SplashScreen" />
 
         <receiver
-            android:name=".broadcastreceiver.LocationBroadcastReceiver"
+            android:name=".broadcastReceiver.LocationBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.location.MODE_CHANGED" />
                 <action android:name="android.location.PROVIDERS_CHANGED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

@@ -76,9 +76,9 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
 
 
-    testImplementation(libs.junit)
     // hamcrest
     testImplementation("org.hamcrest:hamcrest-all:1.3")
+    testImplementation(libs.junit)
     testImplementation("androidx.test.ext:junit-ktx:1.1.5")
     testImplementation("androidx.test:core-ktx:1.5.0")
     testImplementation("org.robolectric:robolectric:4.6.1")

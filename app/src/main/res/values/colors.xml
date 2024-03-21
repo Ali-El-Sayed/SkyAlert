@@ -2,12 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="text_onSurface_color">#EBEBEB</color>
+    <color name="text_onDarkSurface_color">#EBEBEB</color>
+    <color name="text_onLightSurface_color">#2E3132</color>
     <color name="main_color">#0897D1</color>
     <color name="dialog_background">#E1E3E4</color>
-
-    <color name="md_theme_light_onPrimary">#0897D1</color>
-
+    <color name="main_color_bg">#0897D1</color>
 
 
     <color name="md_theme_light_primary">#00687C</color>

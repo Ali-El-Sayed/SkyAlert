@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/settingsFragment"
-        android:icon="@drawable/icon_settings"
-        android:iconTint="@color/text_onSurface_color"
+        android:icon="@drawable/ic_settings"
+        android:iconTint="@color/text_onDarkSurface_color"
         app:showAsAction="ifRoom"
         android:title="@string/settings" />
 </menu>

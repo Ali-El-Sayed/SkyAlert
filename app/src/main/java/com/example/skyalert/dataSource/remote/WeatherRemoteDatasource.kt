@@ -1,8 +1,8 @@
 package com.example.skyalert.dataSource.remote
 
-import com.example.example.FiveDaysForecast
 import com.example.skyalert.network.ApiService
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.network.model.FiveDaysForecastState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -34,6 +34,7 @@ private constructor(
                     emit(CurrentWeatherState.Error("No data found"))
                 }
             }
+
             else -> {
                 emit(CurrentWeatherState.Error(response.message()))
             }
@@ -41,8 +42,33 @@ private constructor(
     }
 
     override suspend fun getForecast(
-        lat: Double, lon: Double, mode: String, units: String, lang: String
-    ): FiveDaysForecast {
-        return apiService.getForecast(lat, lon, apiKey, mode, units, lang)
+        lat: Double, lon: Double, cnt: Int, mode: String, units: String, lang: String
+    ): Flow<FiveDaysForecastState> {
+        return flow {
+            val response = apiService.getForecast(lat, lon, cnt, apiKey, mode, units, lang)
+            if (response.list.isNotEmpty()) {
+                emit(FiveDaysForecastState.Success(response))
+            } else {
+                emit(FiveDaysForecastState.Error("No data found"))
+            }
+        }
+    }
+
+    override fun getHourlyForecast(
+        lat: Double,
+        lon: Double,
+        cnt: Int,
+        mode: String,
+        units: String,
+        lang: String
+    ): Flow<FiveDaysForecastState> {
+        return flow {
+            val response = apiService.getForecast(lat, lon, cnt, apiKey, mode, units, lang)
+            if (response.list.isNotEmpty()) {
+                emit(FiveDaysForecastState.Success(response))
+            } else {
+                emit(FiveDaysForecastState.Error("No data found"))
+            }
+        }
     }
 }

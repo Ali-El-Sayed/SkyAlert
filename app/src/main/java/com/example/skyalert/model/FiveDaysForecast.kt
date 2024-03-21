@@ -1,8 +1,5 @@
-package com.example.example
+package com.example.skyalert.model
 
-import com.example.skyalert.model.City
-import com.example.skyalert.model.Coord
-import com.example.skyalert.model.Day
 import com.google.gson.annotations.SerializedName
 
 

@@ -1,4 +1,4 @@
-package com.example.skyalert.home.weatherScreen.view
+package com.example.skyalert.screens.home.weatherScreen.view
 
 import android.Manifest
 import android.animation.ValueAnimator
@@ -29,19 +29,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.example.CurrentWeather
 import com.example.skyalert.R
-import com.example.skyalert.broadcastreceiver.LocationBroadcastReceiver
-import com.example.skyalert.broadcastreceiver.OnLocationChange
+import com.example.skyalert.broadcastReceiver.LocationBroadcastReceiver
+import com.example.skyalert.broadcastReceiver.OnLocationChange
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
-import com.example.skyalert.home.weatherScreen.viewModel.WeatherScreenViewModel
+import com.example.skyalert.model.Day
+import com.example.skyalert.network.NetworkHelper
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.repository.WeatherRepo
+import com.example.skyalert.screens.home.weatherScreen.adapters.RvHourlyForecastAdapter
+import com.example.skyalert.screens.home.weatherScreen.viewModel.WeatherScreenViewModel
 import com.example.skyalert.util.GPSUtils
 import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory
@@ -87,6 +92,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 Log.d(TAG, "Latitude: $latitude")
                 Log.d(TAG, "Longitude: $longitude")
                 viewModel.getCurrentWeather(latitude, longitude)
+                viewModel.getHourlyWeather(latitude, longitude, 40)
 //                getLocationFromCoordinates(
 //                    requireActivity(), location.latitude, location.longitude
 //                )
@@ -138,6 +144,48 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 }
             }
         }
+        // Observe the hourly weather
+        lifecycleScope.launch {
+            viewModel.hourlyWeather.collect {
+                when (it) {
+                    is FiveDaysForecastState.Loading -> binding.currentWeatherProgressBar.visibility =
+                        View.VISIBLE
+
+                    is FiveDaysForecastState.Success -> {
+                        binding.currentWeatherProgressBar.visibility = View.GONE
+                        val adapter = RvHourlyForecastAdapter()
+                        val today = it.data.list[0]
+                        val daysList = mutableListOf<Day>()
+                        for (i in it.data.list.indices) {
+                            if (it.data.list[i].dtTxt == today.dtTxt) {
+                                daysList.add(it.data.list[i])
+                            } else {
+                                val newDay = it.data.list[i]
+                                newDay.sys.sunrise = it.data.city.sunrise
+                                daysList.add(newDay)
+                                break
+                            }
+                        }
+                        adapter.submitList(daysList)
+                        binding.recyclerViewHourlyForecast.layoutManager = LinearLayoutManager(
+                            requireActivity(), LinearLayoutManager.HORIZONTAL, false
+                        )
+                        binding.recyclerViewHourlyForecast.adapter = adapter
+                        for (i in it.data.list) {
+                            Log.d(TAG, "Hourly Weather: ${i.dtTxt}")
+                        }
+                    }
+
+                    is FiveDaysForecastState.Error -> {
+                        binding.currentWeatherProgressBar.visibility = View.GONE
+                        Log.e(TAG, "Error: ${it.message}")
+                        Toast.makeText(requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG)
+                            .show()
+                    }
+
+                }
+            }
+        }
     }
 
 
@@ -153,7 +201,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
         requireActivity().registerReceiver(
             locationBroadcastReceiver, intentFilter
         )
-        getFreshLocation(locationCallback)
     }
 
     override fun onStop() {
@@ -163,12 +210,21 @@ class WeatherFragment : Fragment(), OnLocationChange {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun initUI() {
-        binding.openLocationServicesButton.visibility =
-            if (GPSUtils.isGPSEnabled(requireActivity())) View.GONE else View.VISIBLE
+        /**
+         * Check if location is enabled and get the location if it is enabled
+         * If location is not enabled, show a dialog to enable location services
+         * */
+        if (GPSUtils.isGPSEnabled(requireActivity())) {
+            getFreshLocation(locationCallback)
+            binding.openLocationServicesButton.visibility = View.GONE
+        } else {
+            showEnableGPSDialog()
+            binding.openLocationServicesButton.visibility = View.VISIBLE
+        }
 
         binding.openLocationServicesButton.setOnClickListener { showEnableGPSDialog() }
-
     }
 
     private fun setupToolBar() {
@@ -191,7 +247,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.isDrawerIndicatorEnabled = false
-        toggle.setHomeAsUpIndicator(R.drawable.icon_menu)
+        toggle.setHomeAsUpIndicator(R.drawable.ic_menu)
         toggle.syncState()
 
         NavigationUI.setupWithNavController(
@@ -229,13 +285,11 @@ class WeatherFragment : Fragment(), OnLocationChange {
         val minTemp = currentWeather.main.tempMin.toInt()
         val maxString = resources.getString(R.string.max)
         val minString = resources.getString(R.string.min)
-        binding.highLowTempTextView.text =
-            "$maxString: $maxTemp° ○ $minString: $minTemp°"
+        binding.highLowTempTextView.text = "$maxString: $maxTemp° ○ $minString: $minTemp°"
 
 
-        Glide.with(requireActivity()).load(
-            "https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}.png"
-        ).into(binding.weatherImageView)
+        Glide.with(requireActivity()).load(NetworkHelper.getIconUrl(currentWeather.weather[0].icon))
+            .into(binding.weatherImageView)
     }
 
 
@@ -339,20 +393,15 @@ class WeatherFragment : Fragment(), OnLocationChange {
         val builder = MaterialAlertDialogBuilder(requireActivity())
 
         builder.setTitle(getString(R.string.enable_gps))
-            .setMessage(getString(R.string.gps_is_disabled_do_you_want_to_enable_it))
-            .setBackground(
+            .setMessage(getString(R.string.gps_is_disabled_do_you_want_to_enable_it)).setBackground(
                 ResourcesCompat.getDrawable(
-                    resources, R.drawable.dialog_background,
-                    requireActivity().theme
+                    resources, R.drawable.dialog_background, requireActivity().theme
                 )
-            )
-            .setIcon(
+            ).setIcon(
                 ResourcesCompat.getDrawable(
-                    resources, R.drawable.icon_location,
-                    requireActivity().theme
+                    resources, R.drawable.ic_location, requireActivity().theme
                 )
-            ).setCancelable(false)
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+            ).setCancelable(false).setPositiveButton(getString(R.string.yes)) { _, _ ->
 
                 val gpsOptionsIntent = Intent(
                     Settings.ACTION_LOCATION_SOURCE_SETTINGS

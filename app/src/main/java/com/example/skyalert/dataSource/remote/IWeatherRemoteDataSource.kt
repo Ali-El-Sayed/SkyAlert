@@ -1,10 +1,10 @@
 package com.example.skyalert.dataSource.remote
 
-import com.example.example.FiveDaysForecast
 import com.example.skyalert.network.LANG
 import com.example.skyalert.network.MODE
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.network.model.FiveDaysForecastState
 import kotlinx.coroutines.flow.Flow
 
 interface IWeatherRemoteDataSource {
@@ -19,8 +19,20 @@ interface IWeatherRemoteDataSource {
     suspend fun getForecast(
         lat: Double,
         lon: Double,
+        cnt: Int = 8,
         mode: String = MODE.JSON.value,
         units: String = UNITS.STANDARD.value,
         lang: String = LANG.ENGLISH.value
-    ): FiveDaysForecast
+    ): Flow<FiveDaysForecastState>
+
+    fun getHourlyForecast(
+        lat: Double,
+        lon: Double,
+        cnt: Int,
+        mode: String = MODE.JSON.value,
+        units: String = UNITS.STANDARD.value,
+        lang: String = LANG.ENGLISH.value
+    ): Flow<FiveDaysForecastState>
+
+
 }

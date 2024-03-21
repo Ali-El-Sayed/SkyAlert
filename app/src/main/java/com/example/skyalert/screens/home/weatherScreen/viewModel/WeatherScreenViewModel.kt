@@ -1,8 +1,9 @@
-package com.example.skyalert.home.weatherScreen.viewModel
+package com.example.skyalert.screens.home.weatherScreen.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.repository.IWeatherRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,10 @@ class WeatherScreenViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel
     private val _currentWeather = MutableStateFlow<CurrentWeatherState>(CurrentWeatherState.Loading)
     val currentWeather: StateFlow<CurrentWeatherState> = _currentWeather.asStateFlow()
 
+    private val _hourlyWeather =
+        MutableStateFlow<FiveDaysForecastState>(FiveDaysForecastState.Loading)
+    val hourlyWeather: StateFlow<FiveDaysForecastState> = _hourlyWeather.asStateFlow()
+
 
     fun getCurrentWeather(lat: Double, lon: Double) {
         _currentWeather.value = CurrentWeatherState.Loading
@@ -25,6 +30,18 @@ class WeatherScreenViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel
                         CurrentWeatherState.Error(e.message ?: "An error occurred")
                 }
                 .collect { _currentWeather.value = it }
+        }
+    }
+
+    fun getHourlyWeather(lat: Double, lon: Double, cnt: Int = 8) {
+        _hourlyWeather.value = FiveDaysForecastState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            _weatherRepo.getHourlyForecast(lat, lon, cnt)
+                .catch { e ->
+                    _hourlyWeather.value =
+                        FiveDaysForecastState.Error(e.message ?: "An error occurred")
+                }
+                .collect { _hourlyWeather.value = it }
         }
     }
 

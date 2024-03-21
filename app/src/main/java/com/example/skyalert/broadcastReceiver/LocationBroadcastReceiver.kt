@@ -1,4 +1,4 @@
-package com.example.skyalert.broadcastreceiver
+package com.example.skyalert.broadcastReceiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
