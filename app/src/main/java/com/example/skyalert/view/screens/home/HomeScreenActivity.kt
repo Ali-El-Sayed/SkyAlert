@@ -1,4 +1,4 @@
-package com.example.skyalert.screens.home
+package com.example.skyalert.view.screens.home
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

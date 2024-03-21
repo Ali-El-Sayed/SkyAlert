@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_splash_screen"
     android:fitsSystemWindows="true"
-    tools:context=".screens.splash.SplashScreen">
+    tools:context=".view.screens.splash.SplashScreen">
 
 
     <com.airbnb.lottie.LottieAnimationView

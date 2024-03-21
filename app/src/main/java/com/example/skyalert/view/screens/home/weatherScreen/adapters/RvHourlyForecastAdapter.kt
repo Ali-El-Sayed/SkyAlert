@@ -1,4 +1,4 @@
-package com.example.skyalert.screens.home.weatherScreen.adapters
+package com.example.skyalert.view.screens.home.weatherScreen.adapters
 
 import android.content.Context
 import android.view.LayoutInflater

@@ -8,8 +8,8 @@
     <string name="weather_icon">Weather Icon</string>
     <string name="settings">Settings</string>
     <string name="units">Units</string>
-    <string name="min">Min</string>
-    <string name="max">Max</string>
+    <string name="min">L</string>
+    <string name="max">H</string>
     <string name="Settings">Settings</string>
     <string name="temperature">Temperature</string>
     <string name="humidity">Humidity</string>
@@ -33,7 +33,9 @@
     <string name="open_location_services">Open location services</string>
     <string name="sunrise">Sunrise</string>
     <string name="now">Now</string>
-    <string name="hourly_forecast">Hourly Forecast</string>
+    <string name="hourly_forecast">HOURLY FORECAST</string>
+    <string name="five_days_forecast">5-DAYS FORECAST</string>
+    <string name="today">Today</string>
 
 
 </resources>

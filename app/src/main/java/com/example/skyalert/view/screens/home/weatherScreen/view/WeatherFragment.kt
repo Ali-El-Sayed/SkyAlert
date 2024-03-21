@@ -1,7 +1,6 @@
-package com.example.skyalert.screens.home.weatherScreen.view
+package com.example.skyalert.view.screens.home.weatherScreen.view
 
 import android.Manifest
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -45,12 +44,14 @@ import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.repository.WeatherRepo
-import com.example.skyalert.screens.home.weatherScreen.adapters.RvHourlyForecastAdapter
-import com.example.skyalert.screens.home.weatherScreen.viewModel.WeatherScreenViewModel
 import com.example.skyalert.util.GPSUtils
 import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.util.toCapitalizedWords
+import com.example.skyalert.view.animation.NumberAnimation
+import com.example.skyalert.view.screens.home.weatherScreen.adapters.RvFiveDaysForecastAdapter
+import com.example.skyalert.view.screens.home.weatherScreen.adapters.RvHourlyForecastAdapter
+import com.example.skyalert.view.screens.home.weatherScreen.viewModel.WeatherScreenViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -61,7 +62,9 @@ import com.google.android.gms.location.Priority
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.math.roundToInt
 
 
 class WeatherFragment : Fragment(), OnLocationChange {
@@ -131,7 +134,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
                     is CurrentWeatherState.Success -> {
                         binding.currentWeatherProgressBar.visibility = View.GONE
                         val currentWeather = it.currentWeather
-                        updateUI(currentWeather)
+                        updateToolbar(currentWeather)
                         Log.d(TAG, "Current Weather: $currentWeather")
                     }
 
@@ -153,27 +156,11 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
                     is FiveDaysForecastState.Success -> {
                         binding.currentWeatherProgressBar.visibility = View.GONE
-                        val adapter = RvHourlyForecastAdapter()
                         val today = it.data.list[0]
-                        val daysList = mutableListOf<Day>()
-                        for (i in it.data.list.indices) {
-                            if (it.data.list[i].dtTxt == today.dtTxt) {
-                                daysList.add(it.data.list[i])
-                            } else {
-                                val newDay = it.data.list[i]
-                                newDay.sys.sunrise = it.data.city.sunrise
-                                daysList.add(newDay)
-                                break
-                            }
-                        }
-                        adapter.submitList(daysList)
-                        binding.recyclerViewHourlyForecast.layoutManager = LinearLayoutManager(
-                            requireActivity(), LinearLayoutManager.HORIZONTAL, false
-                        )
-                        binding.recyclerViewHourlyForecast.adapter = adapter
-                        for (i in it.data.list) {
-                            Log.d(TAG, "Hourly Weather: ${i.dtTxt}")
-                        }
+                        // Set up the hourly forecast recycler view
+                        updateHourlyList(it, today)
+                        // Set up the five days forecast recycler view
+                        updateFiveDaysList(it, today)
                     }
 
                     is FiveDaysForecastState.Error -> {
@@ -186,6 +173,82 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 }
             }
         }
+    }
+
+    private fun updateFiveDaysList(
+        it: FiveDaysForecastState.Success, today: Day
+    ) {
+        val todayName = SimpleDateFormat("EEEE").format(today.dt.toLong() * 1000)
+        val fiveDaysForecast = it.data.list.filter { day ->
+            val dayName = SimpleDateFormat("EEEE").format(day.dt.toLong() * 1000)
+            dayName != todayName && day.dtTxt.contains("12:00:00")
+        }.toMutableList()
+        fiveDaysForecast.add(0, today)
+        val fiveDaysAdapter = RvFiveDaysForecastAdapter()
+        fiveDaysAdapter.submitList(fiveDaysForecast)
+        binding.recyclerViewFiveDaysForecast.layoutManager = LinearLayoutManager(
+            requireActivity(), LinearLayoutManager.VERTICAL, false
+        )
+        binding.recyclerViewFiveDaysForecast.adapter = fiveDaysAdapter
+    }
+
+    private fun updateHourlyList(
+        it: FiveDaysForecastState.Success, today: Day
+    ) {
+        val todayName = SimpleDateFormat("EEEE").format(today.dt.toLong() * 1000)
+        val adapter = RvHourlyForecastAdapter()
+        val daysList = mutableListOf<Day>()
+        for (i in it.data.list.indices) {
+            val day = it.data.list[i]
+            val dayName = SimpleDateFormat("EEEE").format(day.dt.toLong() * 1000)
+            if (dayName == todayName)
+                daysList.add(day)
+            else {
+                val newDay = it.data.list[i]
+                newDay.sys.sunrise = it.data.city.sunrise
+                daysList.add(newDay)
+                break
+            }
+        }
+        adapter.submitList(daysList)
+        binding.recyclerViewHourlyForecast.layoutManager = LinearLayoutManager(
+            requireActivity(), LinearLayoutManager.HORIZONTAL, false
+        )
+        binding.recyclerViewHourlyForecast.adapter = adapter
+    }
+
+    private fun updateToolbar(currentWeather: CurrentWeather) {
+        binding.cityNameTextView.text = currentWeather.name
+
+        binding.weatherTempTextView.text = "${currentWeather.main.temp.toInt()}"
+        val tempMeasurements = when (viewModel.getUnit()) {
+            UNITS.METRIC -> getString(R.string.celsius_measure)
+            UNITS.IMPERIAL -> getString(R.string.fahrenheit_measure)
+            UNITS.STANDARD -> getString(R.string.kelvin_measure)
+        }
+
+        // animate the temperature from 0 to current temperature
+        // 17°C
+        NumberAnimation.fromZeroToValueText(
+            currentWeather.main.feelsLike.roundToInt(),
+            binding.weatherTempTextView
+        )
+
+        binding.weatherTempMeasurementsTextView.text = tempMeasurements
+
+        // Clear
+        binding.weatherDescriptionTextView.text =
+            currentWeather.weather[0].description.toCapitalizedWords()
+
+        // H:18° L: 12°
+        val maxTemp = currentWeather.main.tempMax.roundToInt()
+        val minTemp = currentWeather.main.tempMin.roundToInt()
+        val maxString = resources.getString(R.string.max)
+        val minString = resources.getString(R.string.min)
+        binding.highLowTempTextView.text = "$maxString: $maxTemp° ○ $minString: $minTemp°"
+
+        Glide.with(requireActivity()).load(NetworkHelper.getIconUrl(currentWeather.weather[0].icon))
+            .into(binding.weatherImageView)
     }
 
 
@@ -256,42 +319,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
     }
 
-    private fun updateUI(currentWeather: CurrentWeather) {
-        binding.cityNameTextView.text = currentWeather.name
-
-        binding.weatherTempTextView.text = "${currentWeather.main.temp.toInt()}"
-        val tempMeasurements = when (viewModel.getUnit()) {
-            UNITS.METRIC -> getString(R.string.celsius_measure)
-            UNITS.IMPERIAL -> getString(R.string.fahrenheit_measure)
-            UNITS.STANDARD -> getString(R.string.kelvin_measure)
-        }
-
-        // 17°C
-        val animator = ValueAnimator.ofInt(0, currentWeather.main.temp.toInt())
-        animator.duration = 1000
-        animator.addUpdateListener { valueAnimator ->
-            val value = valueAnimator.animatedValue as Int
-            binding.weatherTempTextView.text = value.toString()
-        }
-        animator.start()
-        binding.weatherTempMeasurementsTextView.text = tempMeasurements
-
-        // Clear
-        binding.weatherDescriptionTextView.text =
-            currentWeather.weather[0].description.toCapitalizedWords()
-
-        // H:18°C L: 12°C
-        val maxTemp = currentWeather.main.tempMax.toInt()
-        val minTemp = currentWeather.main.tempMin.toInt()
-        val maxString = resources.getString(R.string.max)
-        val minString = resources.getString(R.string.min)
-        binding.highLowTempTextView.text = "$maxString: $maxTemp° ○ $minString: $minTemp°"
-
-
-        Glide.with(requireActivity()).load(NetworkHelper.getIconUrl(currentWeather.weather[0].icon))
-            .into(binding.weatherImageView)
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.S)
     private val requestLocationPermission =
@@ -303,7 +330,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 Toast.makeText(requireActivity(), "Permission denied", Toast.LENGTH_LONG).show()
             }
         }
-
 
     private fun enableLocationService() {
         Toast.makeText(requireActivity(), "Please enable location service", Toast.LENGTH_LONG)

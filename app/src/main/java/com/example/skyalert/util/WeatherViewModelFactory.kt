@@ -3,8 +3,8 @@ package com.example.skyalert.util
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.skyalert.repository.IWeatherRepo
-import com.example.skyalert.screens.home.weatherScreen.viewModel.WeatherScreenViewModel
 import com.example.skyalert.settings.viewModel.SettingsViewModel
+import com.example.skyalert.view.screens.home.weatherScreen.viewModel.WeatherScreenViewModel
 
 class WeatherViewModelFactory(private val repository: IWeatherRepo) : ViewModelProvider.Factory {
 
