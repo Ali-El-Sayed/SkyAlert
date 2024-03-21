@@ -1,11 +1,11 @@
-package com.example.skyalert.screens.splash
+package com.example.skyalert.view.screens.splash
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import com.example.skyalert.databinding.ActivitySplashBinding
 import com.example.skyalert.interfaces.Callback
-import com.example.skyalert.screens.home.HomeScreenActivity
-import com.example.skyalert.screens.parents.BaseActivity
+import com.example.skyalert.view.screens.home.HomeScreenActivity
+import com.example.skyalert.view.screens.parents.BaseActivity
 
 @SuppressLint("CustomSplashScreen")
 class SplashScreen : BaseActivity() {

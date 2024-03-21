@@ -7,6 +7,7 @@
     <color name="main_color">#0897D1</color>
     <color name="dialog_background">#E1E3E4</color>
     <color name="main_color_bg">#0897D1</color>
+    <color name="hot_indicator_color">#F3B518</color>
 
 
     <color name="md_theme_light_primary">#00687C</color>

@@ -9,7 +9,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".screens.home.weatherScreen.view.WeatherFragment">
+        tools:context=".view.screens.home.weatherScreen.view.WeatherFragment">
 
         <ProgressBar
             android:id="@+id/current_weather_progress_bar"
@@ -148,48 +148,100 @@
             app:layout_anchor="@id/appBarLayout"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
-                android:background="@drawable/hourly_forecast_recycler_view_bg"
-                android:orientation="vertical"
-                android:padding="12dp">
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="4dp"
-                        android:contentDescription="@string/hourly_forecast"
-                        android:src="@drawable/ic_clock" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        style="@style/forecastCardText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/hourly_forecast" />
-
-
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view_hourly_forecast"
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginVertical="4dp"
-                    android:orientation="horizontal"
-                    android:padding="4dp"
-                    android:scrollbars="horizontal"
-                    tools:itemCount="8"
-                    tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/hourly_forecast_card" />
+                    android:layout_marginVertical="8dp"
+                    android:background="@drawable/hourly_forecast_recycler_view_bg"
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginHorizontal="4dp"
+                            android:contentDescription="@string/hourly_forecast"
+                            android:src="@drawable/ic_clock" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            style="@style/forecastCardText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/hourly_forecast" />
+
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_view_hourly_forecast"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginVertical="4dp"
+                        android:orientation="horizontal"
+                        android:padding="4dp"
+                        android:scrollbars="horizontal"
+                        tools:itemCount="8"
+                        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/hourly_forecast_card" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    android:background="@drawable/five_days_forecast_bg"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginHorizontal="4dp"
+                            android:contentDescription="@string/five_days_forecast"
+                            android:src="@drawable/ic_calendar" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            style="@style/forecastCardText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/five_days_forecast" />
+
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_view_five_days_forecast"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginVertical="4dp"
+                        android:orientation="vertical"
+                        android:padding="4dp"
+                        android:scrollbars="vertical"
+                        tools:itemCount="5"
+                        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/five_days_forecast_card" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
+
 
         </androidx.core.widget.NestedScrollView>
 

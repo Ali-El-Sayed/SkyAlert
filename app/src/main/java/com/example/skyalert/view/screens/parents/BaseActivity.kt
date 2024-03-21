@@ -1,4 +1,4 @@
-package com.example.skyalert.screens.parents
+package com.example.skyalert.view.screens.parents
 
 import android.content.Intent
 import android.os.Bundle

@@ -1,4 +1,4 @@
-package com.example.skyalert.screens.home.weatherScreen.viewModel
+package com.example.skyalert.view.screens.home.weatherScreen.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.example.skyalert.screens.home.weatherScreen.adapters
+package com.example.skyalert.view.screens.home.weatherScreen.adapters
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.skyalert.model.Day
