@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.example.skyalert.R
 import com.example.skyalert.databinding.HourlyForecastCardBinding
 import com.example.skyalert.model.Day
+import com.example.skyalert.network.NetworkHelper
 import java.text.SimpleDateFormat
 
 class RvHourlyForecastAdapter() :
@@ -24,29 +25,34 @@ class RvHourlyForecastAdapter() :
 
     override fun onBindViewHolder(holder: HourlyForecastViewHolder, position: Int) {
         val day = getItem(position)
-        if (position == 0) {
-            binding.textViewHour.text = binding.root.resources.getString(R.string.now)
-            binding.textViewTemperature.text = "${day.main.temp.toInt()}°"
+        when (position) {
+            0 -> {
+                binding.textViewHour.text = binding.root.resources.getString(R.string.now)
+                binding.textViewTemperature.text = "${day.main.temp.toInt()}°"
 
-            Glide.with(binding.root.context)
-                .load("https://openweathermap.org/img/wn/${day.weather[0].icon}.png")
-                .into(binding.imageViewIcon)
-        } else if (position in 1 until 7) {
-            val time = java.util.Date(day.dt.toLong() * 1000)
-            val hours = SimpleDateFormat("ha").format(time)
-            binding.textViewHour.text = hours.uppercase()
+                Glide.with(binding.root.context).load(NetworkHelper.getIconUrl(day.weather[0].icon))
+                    .into(binding.imageViewIcon)
+            }
 
-            binding.textViewTemperature.text = "${day.main.temp.toInt()}°"
+            in 1 until (itemCount - 1) -> {
+                val time = java.util.Date(day.dt.toLong() * 1000)
+                val hours = SimpleDateFormat("ha").format(time)
+                binding.textViewHour.text = hours.uppercase()
 
-            Glide.with(binding.root.context)
-                .load("https://openweathermap.org/img/wn/${day.weather[0].icon}.png")
-                .into(binding.imageViewIcon)
-        } else if (position == 7) {
-            val time = java.util.Date(day.sys.sunrise.toLong() * 1000)
-            val hours = SimpleDateFormat("ha").format(time)
-            binding.textViewHour.text = hours.uppercase()
-            binding.textViewTemperature.text = binding.root.resources.getString(R.string.sunrise)
-            binding.imageViewIcon.setImageResource(R.drawable.ic_sunrise)
+                binding.textViewTemperature.text = "${day.main.temp.toInt()}°"
+
+                Glide.with(binding.root.context).load(NetworkHelper.getIconUrl(day.weather[0].icon))
+                    .into(binding.imageViewIcon)
+            }
+
+            itemCount - 1 -> {
+                val time = java.util.Date(day.sys.sunrise.toLong() * 1000)
+                val hours = SimpleDateFormat("ha").format(time)
+                binding.textViewHour.text = hours.uppercase()
+                binding.textViewTemperature.text =
+                    binding.root.resources.getString(R.string.sunrise)
+                binding.imageViewIcon.setImageResource(R.drawable.ic_sunrise)
+            }
         }
     }
 

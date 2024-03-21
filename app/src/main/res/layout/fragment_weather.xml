@@ -18,7 +18,7 @@
             android:elevation="1dp"
             android:visibility="gone"
             app:layout_anchor="@id/recycler_view_hourly_forecast"
-            app:layout_anchorGravity="top|center"
+            app:layout_anchorGravity="bottom|center"
             tools:visibility="visible" />
 
 

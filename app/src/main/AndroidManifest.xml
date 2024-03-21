@@ -35,7 +35,7 @@
             android:theme="@style/Theme.SkyAlert.SplashScreen" />
 
         <receiver
-            android:name=".broadcastreceiver.LocationBroadcastReceiver"
+            android:name=".broadcastReceiver.LocationBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.location.MODE_CHANGED" />
