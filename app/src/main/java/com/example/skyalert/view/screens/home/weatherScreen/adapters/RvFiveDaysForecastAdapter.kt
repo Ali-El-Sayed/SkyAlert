@@ -11,7 +11,6 @@ import com.example.skyalert.databinding.FiveDaysForecastCardBinding
 import com.example.skyalert.model.Day
 import com.example.skyalert.network.NetworkHelper
 import com.example.skyalert.util.toCapitalizedWords
-import com.example.skyalert.view.animation.NumberAnimation
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 
@@ -47,12 +46,7 @@ class RvFiveDaysForecastAdapter :
         binding.progressIndicatorTemperature.max =
             day.main.tempMax.toInt() + day.main.tempMin.toInt()
 
-        NumberAnimation.fromZeroToValueProgressBar(
-            day.main.feelsLike.roundToInt(),
-            binding.progressIndicatorTemperature
-        )
-
-//        binding.progressIndicatorTemperature.progress = day.main.tempMin.toInt()
+        binding.progressIndicatorTemperature.progress = day.main.tempMin.toInt()
 
         Glide.with(binding.root.context).load(
             NetworkHelper.getIconUrl(day.weather[0].icon)

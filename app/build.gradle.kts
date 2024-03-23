@@ -2,9 +2,11 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     kotlin("kapt")
+    alias(libs.plugins.googleAndroidLibrariesMapsplatformSecretsGradlePlugin)
 }
 
 android {
+
     namespace = "com.example.skyalert"
     compileSdk = 34
 
@@ -65,6 +67,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation(libs.androidx.activity)
+    implementation(libs.play.services.maps)
     kapt("androidx.room:room-compiler:2.6.1")
     // Lottie
     implementation("com.airbnb.android:lottie:6.4.0")
@@ -74,6 +77,8 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     // Encrypted Shared Preferences
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
+    // open street map
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
 
 
     // hamcrest

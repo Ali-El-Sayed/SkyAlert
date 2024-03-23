@@ -52,6 +52,6 @@
         android:layout_height="32dp"
         android:layout_gravity="center"
         android:layout_weight="1"
+        android:contentDescription="@string/sunrise"
         tools:src="@drawable/ic_sunrise" />
-
 </LinearLayout>

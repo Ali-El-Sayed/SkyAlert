@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.example.skyalert.model.Coord
 import com.example.skyalert.network.UNITS
-import kotlin.math.log
 
 class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
     private val masterKeyAlias by lazy {
@@ -29,9 +29,7 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
 
         fun getInstance(context: Context): ISharedPreference {
             synchronized(this) {
-                if (!Companion::instance.isInitialized) {
-                    instance = SharedPreferenceImpl(context)
-                }
+                if (!Companion::instance.isInitialized) instance = SharedPreferenceImpl(context)
                 return instance
             }
         }
@@ -43,8 +41,19 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
 
     override fun getUnit(): UNITS {
         return sharedPreferences.getString(KEYS.UNIT, UNITS.METRIC.value)?.let {
-           Log.d("SharedPreferenceImpl", "getUnit: $it")
+            Log.d("SharedPreferenceImpl", "getUnit: $it")
             UNITS.valueOf(it.uppercase())
         } ?: UNITS.METRIC
+    }
+
+    override fun setDefaultLocation(coord: Coord) {
+        sharedPreferences.edit().putString(KEYS.DEFAULT_LOCATION_LAT, coord.lat.toString()).apply()
+        sharedPreferences.edit().putString(KEYS.DEFAULT_LOCATION_LON, coord.lon.toString()).apply()
+    }
+
+    override fun getDefaultLocation(): Coord {
+        val lat = sharedPreferences.getString(KEYS.DEFAULT_LOCATION_LAT, "0.0")?.toDouble() ?: 0.0
+        val lon = sharedPreferences.getString(KEYS.DEFAULT_LOCATION_LON, "0.0")?.toDouble() ?: 0.0
+        return Coord(lat, lon)
     }
 }

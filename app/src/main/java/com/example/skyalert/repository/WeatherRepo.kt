@@ -2,6 +2,7 @@ package com.example.skyalert.repository
 
 import com.example.skyalert.dataSource.local.sharedPref.ISharedPreference
 import com.example.skyalert.dataSource.remote.IWeatherRemoteDataSource
+import com.example.skyalert.model.Coord
 import com.example.skyalert.network.LANG
 import com.example.skyalert.network.MODE
 import com.example.skyalert.network.UNITS
@@ -27,29 +28,32 @@ class WeatherRepo private constructor(
         }
     }
 
-    override suspend fun getCurrentWeather(
-        lat: Double, lon: Double
-    ): Flow<CurrentWeatherState> {
+    override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {
         val unit = _iSharedPreference.getUnit()
+        val cord = _iSharedPreference.getDefaultLocation()
         return weatherRemoteDatasource.getCurrentWeather(
-            lat, lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+            cord.lat, cord.lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
         )
     }
 
-    override suspend fun getHourlyForecast(
-        lat: Double, lon: Double, cnt: Int
-    ): Flow<FiveDaysForecastState> {
+    override suspend fun getHourlyForecast(cnt: Int): Flow<FiveDaysForecastState> {
         val unit = _iSharedPreference.getUnit()
+        val cord = _iSharedPreference.getDefaultLocation()
         return weatherRemoteDatasource.getHourlyForecast(
-            lat, lon, cnt, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+            cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, LANG.ENGLISH.value
         )
     }
 
-    override fun getUnit(): UNITS {
-        return _iSharedPreference.getUnit()
-    }
+    override fun getUnit() = _iSharedPreference.getUnit()
+
 
     override fun setUnit(unit: UNITS) {
         _iSharedPreference.saveUnit(unit)
     }
+
+    override fun setDefaultLocation(coord: Coord) {
+        _iSharedPreference.setDefaultLocation(coord)
+    }
+
+    override fun getDefaultLocation() = _iSharedPreference.getDefaultLocation()
 }

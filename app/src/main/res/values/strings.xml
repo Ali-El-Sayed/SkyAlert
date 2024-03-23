@@ -36,6 +36,8 @@
     <string name="hourly_forecast">HOURLY FORECAST</string>
     <string name="five_days_forecast">5-DAYS FORECAST</string>
     <string name="today">Today</string>
+    <string name="map">Map</string>
+    <string name="title_activity_maps_fragment">MapsFragment</string>
 
 
 </resources>
