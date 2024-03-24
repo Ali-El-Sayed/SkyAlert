@@ -1,4 +1,4 @@
-package com.example.skyalert.view.screens.home.weatherScreen.view
+package com.example.skyalert.view.screens.home.view
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -37,6 +37,7 @@ import com.example.skyalert.broadcastReceiver.OnLocationChange
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
+import com.example.skyalert.model.Coord
 import com.example.skyalert.model.Day
 import com.example.skyalert.network.NetworkHelper
 import com.example.skyalert.network.RetrofitClient
@@ -49,9 +50,9 @@ import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.util.toCapitalizedWords
 import com.example.skyalert.view.animation.NumberAnimation
-import com.example.skyalert.view.screens.home.weatherScreen.adapters.RvFiveDaysForecastAdapter
-import com.example.skyalert.view.screens.home.weatherScreen.adapters.RvHourlyForecastAdapter
-import com.example.skyalert.view.screens.home.weatherScreen.viewModel.WeatherScreenViewModel
+import com.example.skyalert.view.screens.home.adapters.RvFiveDaysForecastAdapter
+import com.example.skyalert.view.screens.home.adapters.RvHourlyForecastAdapter
+import com.example.skyalert.view.screens.home.viewModel.WeatherScreenViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -94,8 +95,9 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 longitude = location.longitude
                 Log.d(TAG, "Latitude: $latitude")
                 Log.d(TAG, "Longitude: $longitude")
-                viewModel.getCurrentWeather(latitude, longitude)
-                viewModel.getHourlyWeather(latitude, longitude, 40)
+                viewModel.setDefaultLocation(Coord(latitude, longitude))
+                viewModel.getCurrentWeather()
+                viewModel.getHourlyWeather(40)
 //                getLocationFromCoordinates(
 //                    requireActivity(), location.latitude, location.longitude
 //                )
@@ -140,7 +142,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
                     is CurrentWeatherState.Error -> {
                         binding.currentWeatherProgressBar.visibility = View.GONE
-                        Log.e(TAG, "Error: ${it.message}")
+                        Log.e(TAG, "Error Here: ${it.message}")
                         Toast.makeText(requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG)
                             .show()
                     }
@@ -165,9 +167,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
                     is FiveDaysForecastState.Error -> {
                         binding.currentWeatherProgressBar.visibility = View.GONE
-                        Log.e(TAG, "Error: ${it.message}")
-                        Toast.makeText(requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG)
-                            .show()
+                        Log.e(TAG, "Error Here: ${it.message}")
                     }
 
                 }
@@ -178,9 +178,12 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private fun updateFiveDaysList(
         it: FiveDaysForecastState.Success, today: Day
     ) {
-        val todayName = SimpleDateFormat("EEEE").format(today.dt.toLong() * 1000)
+        val todayName =
+            SimpleDateFormat("EEEE", Locale.getDefault()).format(today.dt.toLong() * 1000)
         val fiveDaysForecast = it.data.list.filter { day ->
-            val dayName = SimpleDateFormat("EEEE").format(day.dt.toLong() * 1000)
+            val dayName =
+                SimpleDateFormat("EEEE", Locale.getDefault()).format(day.dt.toLong() * 1000)
+            Log.d(TAG, "Day: $it")
             dayName != todayName && day.dtTxt.contains("12:00:00")
         }.toMutableList()
         fiveDaysForecast.add(0, today)
@@ -195,14 +198,17 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private fun updateHourlyList(
         it: FiveDaysForecastState.Success, today: Day
     ) {
-        val todayName = SimpleDateFormat("EEEE").format(today.dt.toLong() * 1000)
+        val todayName = SimpleDateFormat(
+            "EEEE", Locale.getDefault()
+        ).format(today.dt.toLong() * 1000)
         val adapter = RvHourlyForecastAdapter()
         val daysList = mutableListOf<Day>()
         for (i in it.data.list.indices) {
+            Log.d(TAG, "Day: ${it.data.list[i]}")
             val day = it.data.list[i]
-            val dayName = SimpleDateFormat("EEEE").format(day.dt.toLong() * 1000)
-            if (dayName == todayName)
-                daysList.add(day)
+            val dayName =
+                SimpleDateFormat("EEEE", Locale.getDefault()).format(day.dt.toLong() * 1000)
+            if (dayName == todayName) daysList.add(day)
             else {
                 val newDay = it.data.list[i]
                 newDay.sys.sunrise = it.data.city.sunrise
@@ -230,8 +236,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
         // animate the temperature from 0 to current temperature
         // 17°C
         NumberAnimation.fromZeroToValueText(
-            currentWeather.main.feelsLike.roundToInt(),
-            binding.weatherTempTextView
+            currentWeather.main.feelsLike.roundToInt(), binding.weatherTempTextView
         )
 
         binding.weatherTempMeasurementsTextView.text = tempMeasurements
@@ -435,7 +440,9 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 startActivity(gpsOptionsIntent)
             }.setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.cancel() }
 
+
         val alert: AlertDialog = builder.create()
+
         alert.show()
     }
 

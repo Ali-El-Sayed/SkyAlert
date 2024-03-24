@@ -16,7 +16,6 @@ object RetrofitClient {
                 val original = chain.request()
                 val originalHttpUrl = original.url()
                 val url = originalHttpUrl.newBuilder()
-                    .addQueryParameter("appid", "fff516e2c3c9188a401a978960382b36")
                     .build()
                 val requestBuilder = original.newBuilder().url(url)
                 val request = requestBuilder.build()

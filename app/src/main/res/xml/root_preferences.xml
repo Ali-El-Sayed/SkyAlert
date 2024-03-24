@@ -1,16 +1,26 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="Measures">
+    <PreferenceCategory app:title="@string/measures">
         <ListPreference
-            app:defaultValue="metric"
+            android:defaultValue="@string/metric"
+            app:defaultValue="@string/metric"
             app:entries="@array/units"
             app:entryValues="@array/unit_values"
             app:key="unit"
-            android:defaultValue="metric"
-            android:textColor="#097582"
-            app:summary="Select the unit of measure"
+            app:summary="@string/select_the_units_of_measure"
             app:title="Unit" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/location">
+        <ListPreference
+            android:defaultValue="gps"
+            app:defaultValue="gps"
+            app:entries="@array/location_sources"
+            app:entryValues="@array/location_sources_values"
+            app:key="location_source"
+            app:summary="@string/select_the_location_source"
+            app:title="@string/location_source" />
     </PreferenceCategory>
 
 

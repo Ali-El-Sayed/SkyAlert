@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".settings.view.SettingsFragment">
+    tools:context=".view.screens.settings.view.SettingsFragment">
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -31,10 +31,10 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/settings_fragment"
-        android:name="com.example.skyalert.settings.view.PreferenceScreen"
+        android:name="com.example.skyalert.view.screens.settings.view.PreferenceScreen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:tag="SettingsFragment"
-        tools:name="com.example.skyalert.settings.view.PreferenceScreen" />
+        tools:name="com.example.skyalert.view.screens.settings.view.PreferenceScreen" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

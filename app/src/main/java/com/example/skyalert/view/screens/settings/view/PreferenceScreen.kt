@@ -1,4 +1,4 @@
-package com.example.skyalert.settings.view
+package com.example.skyalert.view.screens.settings.view
 
 import android.os.Bundle
 import android.widget.Toast
@@ -11,8 +11,10 @@ import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.repository.WeatherRepo
-import com.example.skyalert.settings.viewModel.SettingsViewModel
 import com.example.skyalert.util.WeatherViewModelFactory
+import com.example.skyalert.util.toCapitalizedWords
+import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
+import com.example.skyalert.view.screens.settings.viewModel.SettingsViewModel
 
 class PreferenceScreen : PreferenceFragmentCompat() {
     private lateinit var viewModel: SettingsViewModel
@@ -27,6 +29,7 @@ class PreferenceScreen : PreferenceFragmentCompat() {
         viewModel = ViewModelProvider(this, factory)[SettingsViewModel::class.java]
 
         setupUnitsPref()
+        setupLocationPref()
     }
 
     private fun setupUnitsPref() {
@@ -54,7 +57,34 @@ class PreferenceScreen : PreferenceFragmentCompat() {
             preference.summary = "${getString(R.string.units)}: $unitSummary"
             true
         }
+
     }
 
+    fun setupLocationPref() {
+        findPreference<ListPreference>("location_source")?.summary =
+            findPreference<ListPreference>("location_source")?.value?.let {
+                val sourceSummary = when (it.lowercase()) {
+                    getString(R.string.gps).lowercase() -> LOCATION_SOURCE.GPS
+                    getString(R.string.map).lowercase() -> LOCATION_SOURCE.MAP
+                    else -> LOCATION_SOURCE.GPS
+                }
+                "${getString(R.string.location_source)}: ${sourceSummary.value.toCapitalizedWords()}"
+            }
 
+
+        findPreference<ListPreference>("location_source")?.setOnPreferenceChangeListener { preference, newValue ->
+            val locationSource = newValue as String
+            val sourceSummary = when (locationSource.lowercase()) {
+                getString(R.string.gps).lowercase() -> LOCATION_SOURCE.GPS
+                getString(R.string.map).lowercase() -> LOCATION_SOURCE.MAP
+                else -> LOCATION_SOURCE.GPS
+            }
+
+            viewModel.setLocationType(sourceSummary)
+            Toast.makeText(context, "Location Source: $locationSource", Toast.LENGTH_SHORT).show()
+            preference.summary =
+                "${getString(R.string.location_source)}: ${sourceSummary.value.toCapitalizedWords()}"
+            true
+        }
+    }
 }

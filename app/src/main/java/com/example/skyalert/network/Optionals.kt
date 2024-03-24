@@ -1,17 +1,29 @@
 package com.example.skyalert.network
 
+/**
+ *  Enum class for the units of the weather
+ *  @param value the value of the unit
+ * */
 enum class UNITS(val value: String) {
     METRIC("metric"),
     IMPERIAL("imperial"),
     STANDARD("standard")
 }
 
+/**
+ *  Enum class for the response mode of the weather
+ *  @param value the value of the mode
+ * */
 enum class MODE(val value: String) {
     JSON("json"),
     XML("xml"),
     HTML("html")
 }
 
+/**
+ * Enum class for the language of the weather
+ * @param value the value of the language
+ * */
 enum class LANG(val value: String) {
     AFRIKAANS("af"),
     ALBANIAN("al"),

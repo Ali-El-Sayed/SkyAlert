@@ -2,13 +2,15 @@ package com.example.skyalert.view.screens.splash
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.skyalert.databinding.ActivitySplashBinding
 import com.example.skyalert.interfaces.Callback
-import com.example.skyalert.view.screens.home.HomeScreenActivity
-import com.example.skyalert.view.screens.parents.BaseActivity
+import com.example.skyalert.view.screens.extensions.delay
+import com.example.skyalert.view.screens.extensions.goScreen
+import com.example.skyalert.view.screens.main.HomeScreenActivity
 
 @SuppressLint("CustomSplashScreen")
-class SplashScreen : BaseActivity() {
+class SplashScreen : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
 
@@ -23,8 +25,8 @@ class SplashScreen : BaseActivity() {
 
 
         /**
-         *  delay the splash screen for 2.2 seconds
-         *  then navigate to the home screen
+         * delay the splash screen for 2.2 seconds and navigate to the home screen
+         * @param duration: 2200 milliseconds
          * */
 
         delay(2200, object : Callback {

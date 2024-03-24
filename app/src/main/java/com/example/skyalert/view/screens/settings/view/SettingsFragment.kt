@@ -1,4 +1,4 @@
-package com.example.skyalert.settings.view
+package com.example.skyalert.view.screens.settings.view
 
 import android.os.Bundle
 import android.view.LayoutInflater

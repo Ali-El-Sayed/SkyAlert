@@ -36,6 +36,14 @@
     <string name="hourly_forecast">HOURLY FORECAST</string>
     <string name="five_days_forecast">5-DAYS FORECAST</string>
     <string name="today">Today</string>
+    <string name="map">Map</string>
+    <string name="title_activity_maps_fragment">MapsFragment</string>
+    <string name="measures">Measures</string>
+    <string name="select_the_units_of_measure">Select the units of measure</string>
+    <string name="select_the_location_source">Select the location source</string>
+    <string name="location_source">Location Source</string>
+    <string name="location">Location</string>
+    <string name="gps">GPS</string>
 
 
 </resources>
