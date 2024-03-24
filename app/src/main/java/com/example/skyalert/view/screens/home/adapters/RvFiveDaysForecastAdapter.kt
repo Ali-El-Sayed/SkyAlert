@@ -1,4 +1,4 @@
-package com.example.skyalert.view.screens.home.weatherScreen.adapters
+package com.example.skyalert.view.screens.home.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -46,7 +46,7 @@ class RvFiveDaysForecastAdapter :
         binding.progressIndicatorTemperature.max =
             day.main.tempMax.toInt() + day.main.tempMin.toInt()
 
-        binding.progressIndicatorTemperature.progress = day.main.tempMin.toInt()
+        binding.progressIndicatorTemperature.progress = day.main.feelsLike.toInt()
 
         Glide.with(binding.root.context).load(
             NetworkHelper.getIconUrl(day.weather[0].icon)

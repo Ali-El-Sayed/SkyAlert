@@ -8,6 +8,7 @@ import com.example.skyalert.network.MODE
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
+import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 
 class WeatherRepo private constructor(
@@ -30,7 +31,8 @@ class WeatherRepo private constructor(
 
     override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {
         val unit = _iSharedPreference.getUnit()
-        val cord = _iSharedPreference.getDefaultLocation()
+        val cord = getCordFromLocationSource()
+
         return weatherRemoteDatasource.getCurrentWeather(
             cord.lat, cord.lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
         )
@@ -38,7 +40,7 @@ class WeatherRepo private constructor(
 
     override suspend fun getHourlyForecast(cnt: Int): Flow<FiveDaysForecastState> {
         val unit = _iSharedPreference.getUnit()
-        val cord = _iSharedPreference.getDefaultLocation()
+        val cord = getCordFromLocationSource()
         return weatherRemoteDatasource.getHourlyForecast(
             cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, LANG.ENGLISH.value
         )
@@ -51,9 +53,30 @@ class WeatherRepo private constructor(
         _iSharedPreference.saveUnit(unit)
     }
 
-    override fun setDefaultLocation(coord: Coord) {
-        _iSharedPreference.setDefaultLocation(coord)
+    override fun setGPSLocation(coord: Coord) {
+        _iSharedPreference.setGPSLocation(coord)
     }
 
-    override fun getDefaultLocation() = _iSharedPreference.getDefaultLocation()
+    override fun getGPSLocation() = _iSharedPreference.getGPSLocation()
+    override fun setLocationSource(locationType: LOCATION_SOURCE) {
+        _iSharedPreference.setLocationSource(locationType)
+    }
+
+    override fun getLocationSource(): LOCATION_SOURCE {
+        return _iSharedPreference.getLocationSource()
+    }
+
+    override fun setMapLocation(coord: Coord) {
+        _iSharedPreference.setMapLocation(coord)
+    }
+
+    override fun getMapLocation(): Coord {
+        return _iSharedPreference.getMapLocation()
+    }
+
+    private fun getCordFromLocationSource() = when (getLocationSource()) {
+        LOCATION_SOURCE.GPS -> getGPSLocation()
+        LOCATION_SOURCE.MAP -> getMapLocation()
+    }
+
 }

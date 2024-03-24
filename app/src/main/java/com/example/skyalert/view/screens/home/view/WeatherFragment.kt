@@ -1,4 +1,4 @@
-package com.example.skyalert.view.screens.home.weatherScreen.view
+package com.example.skyalert.view.screens.home.view
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -50,9 +50,9 @@ import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.util.toCapitalizedWords
 import com.example.skyalert.view.animation.NumberAnimation
-import com.example.skyalert.view.screens.home.weatherScreen.adapters.RvFiveDaysForecastAdapter
-import com.example.skyalert.view.screens.home.weatherScreen.adapters.RvHourlyForecastAdapter
-import com.example.skyalert.view.screens.home.weatherScreen.viewModel.WeatherScreenViewModel
+import com.example.skyalert.view.screens.home.adapters.RvFiveDaysForecastAdapter
+import com.example.skyalert.view.screens.home.adapters.RvHourlyForecastAdapter
+import com.example.skyalert.view.screens.home.viewModel.WeatherScreenViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -168,8 +168,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
                     is FiveDaysForecastState.Error -> {
                         binding.currentWeatherProgressBar.visibility = View.GONE
                         Log.e(TAG, "Error Here: ${it.message}")
-//                        Toast.makeText(requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG)
-//                            .show()
                     }
 
                 }

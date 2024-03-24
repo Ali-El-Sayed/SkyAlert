@@ -6,7 +6,7 @@
     app:startDestination="@id/weatherFragment">
     <fragment
         android:id="@+id/weatherFragment"
-        android:name="com.example.skyalert.view.screens.home.weatherScreen.view.WeatherFragment"
+        android:name="com.example.skyalert.view.screens.home.view.WeatherFragment"
         android:label="@string/current_weather"
         tools:layout="@layout/fragment_weather">
         <action
@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.skyalert.settings.view.SettingsFragment"
+        android:name="com.example.skyalert.view.screens.settings.view.SettingsFragment"
         android:label="@string/settings"
         tools:layout="@layout/fragment_settings" />
     <fragment

@@ -1,13 +1,29 @@
 <resources>
+
+    <!-- Array of units -->
     <string-array name="units">
         <item>Imperial -> F - miles/hour</item>
         <item>Metric -> C - meter/sec</item>
         <item>Standard -> K - meter/sec</item>
     </string-array>
-
+    <!-- Array of unit values -->
     <string-array name="unit_values">
         <item>imperial</item>
         <item>metric</item>
         <item>standard</item>
     </string-array>
+
+
+    <!-- Array of location sources -->
+    <string-array name="location_sources">
+        <item>GPS</item>
+        <item>Map</item>
+    </string-array>
+    <!-- Array of location source values -->
+    <string-array name="location_sources_values">
+        <item>gps</item>
+        <item>map</item>
+    </string-array>
+
+
 </resources>

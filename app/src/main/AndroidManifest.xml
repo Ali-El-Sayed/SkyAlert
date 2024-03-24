@@ -24,10 +24,10 @@
             android:value="AIzaSyBSk28ngQHPR5ufBXg0fO7ntub2TFHlawc" />
 
         <activity
-            android:name=".view.screens.parents.BaseActivity"
+            android:name=".view.screens.extensions.BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".view.screens.home.HomeScreenActivity"
+            android:name=".view.screens.main.HomeScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

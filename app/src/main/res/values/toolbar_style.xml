@@ -64,4 +64,13 @@
         <item name="titleCentered">true</item>
     </style>
 
+    <!--  Button  -->
+    <style name="openLocationBtnStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:textColor">@color/text_onLightSurface_color</item>
+        <item name="android:fontFamily">@font/amaranth_regular</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>

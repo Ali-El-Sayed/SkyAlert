@@ -7,7 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
+import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentMapBinding
+import com.example.skyalert.model.Coord
+import com.example.skyalert.network.RetrofitClient
+import com.example.skyalert.repository.WeatherRepo
+import com.example.skyalert.util.WeatherViewModelFactory
+import com.example.skyalert.view.screens.settings.viewModel.SettingsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
@@ -22,6 +29,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
     private lateinit var mMap: GoogleMap
     private lateinit var binding: FragmentMapBinding
     private lateinit var marker: Marker
+    private val viewModel: SettingsViewModel by lazy {
+        val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
+        val repo = WeatherRepo.getInstance(
+            remoteDataSource, SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+        )
+        val factory = WeatherViewModelFactory(repo)
+        factory.create(SettingsViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -43,7 +58,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
-        val loc = LatLng(29.9709331, 32.5506678)
+        val loc = LatLng(viewModel.getMapLocation().lat, viewModel.getMapLocation().lon)
         mMap = googleMap
         marker = mMap.addMarker(
             MarkerOptions().position(loc).title("Here I am!").draggable(true)
@@ -72,7 +87,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         val lon = p0.position.longitude
         val loc = LatLng(lat, lon)
         marker.position = loc
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15f))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 8f))
         mMap.setOnMapLongClickListener(this)
     }
 
@@ -82,7 +97,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     override fun onMapLongClick(p0: LatLng) {
         marker.position = p0
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(p0, 15f))
+
+        val coord = Coord(p0.latitude, p0.longitude)
+        viewModel.setMapLocation(coord)
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(p0, 8f))
         Toast.makeText(context, "Lat: ${p0.latitude} Lon: ${p0.longitude}", Toast.LENGTH_SHORT)
             .show()
     }

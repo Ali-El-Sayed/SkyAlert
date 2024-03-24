@@ -1,4 +1,4 @@
-package com.example.skyalert.view.screens.home.weatherScreen.viewModel
+package com.example.skyalert.view.screens.home.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,7 +47,7 @@ class WeatherScreenViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel
     fun getUnit() = _weatherRepo.getUnit()
 
     fun setDefaultLocation(coord: Coord) {
-        _weatherRepo.setDefaultLocation(coord)
+        _weatherRepo.setGPSLocation(coord)
     }
 
 }

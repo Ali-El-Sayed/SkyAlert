@@ -9,7 +9,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.screens.home.weatherScreen.view.WeatherFragment">
+        tools:context=".view.screens.home.view.WeatherFragment">
 
         <ProgressBar
             android:id="@+id/current_weather_progress_bar"
@@ -45,11 +45,12 @@
                     android:layout_marginTop="?attr/actionBarSize"
                     app:layout_collapseMode="parallax">
 
-                    <com.google.android.material.button.MaterialButton
+                    <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/open_location_services_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/open_location_services"
+                        style="@style/openLocationBtnStyle"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -59,7 +60,7 @@
                         style="@style/appBarCityName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="45dp"
+                        android:layout_marginTop="50dp"
                         android:maxLength="20"
                         android:maxLines="2"
                         android:paddingHorizontal="20dp"
@@ -151,7 +152,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="14dp"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
