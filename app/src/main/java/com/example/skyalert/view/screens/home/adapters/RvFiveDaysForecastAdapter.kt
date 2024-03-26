@@ -35,7 +35,7 @@ class RvFiveDaysForecastAdapter :
             binding.root.resources.getString(R.string.today)
         else {
             val date = java.util.Date(day.dt.toLong() * 1000)
-            val dayOfWeek = SimpleDateFormat("EEEE").format(date) // day of the week
+            val dayOfWeek = SimpleDateFormat("EEEE").format(date).substring(0, 3)
             binding.textViewDayTitle.text = dayOfWeek.toCapitalizedWords()
         }
 

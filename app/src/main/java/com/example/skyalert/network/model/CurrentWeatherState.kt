@@ -1,6 +1,6 @@
 package com.example.skyalert.network.model
 
-import com.example.example.CurrentWeather
+import com.example.skyalert.model.CurrentWeather
 
 sealed class CurrentWeatherState {
     class Success(val currentWeather: CurrentWeather) : CurrentWeatherState()

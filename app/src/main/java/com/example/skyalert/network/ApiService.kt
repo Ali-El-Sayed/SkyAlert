@@ -1,6 +1,6 @@
 package com.example.skyalert.network
 
-import com.example.example.CurrentWeather
+import com.example.skyalert.model.CurrentWeather
 import com.example.skyalert.model.FiveDaysForecast
 import retrofit2.Call
 import retrofit2.http.GET

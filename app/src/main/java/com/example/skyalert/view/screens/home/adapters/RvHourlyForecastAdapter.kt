@@ -27,6 +27,10 @@ class RvHourlyForecastAdapter() :
         val day = getItem(position)
         when (position) {
             0 -> {
+                binding.root.background = binding.root.resources.getDrawable(
+                    R.drawable.hourly_selected_background,
+                    binding.root.context.theme
+                )
                 binding.textViewHour.text = binding.root.resources.getString(R.string.now)
                 binding.textViewTemperature.text = "${day.main.temp.toInt()}°"
 

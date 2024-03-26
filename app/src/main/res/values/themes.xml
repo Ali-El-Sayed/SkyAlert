@@ -4,7 +4,6 @@
 
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
 
-        <item name="actionOverflowButtonStyle">@style/optionMenuStyle</item>
         <item name="toolbarNavigationButtonStyle">@style/toolbar</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:navigationBarColor">@color/main_color_bg</item>

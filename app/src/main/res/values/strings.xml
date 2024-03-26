@@ -22,6 +22,8 @@
     <string name="celsius_m_s">Celsius - meters/second</string>
     <string name="fahrenheit_mph">Fahrenheit - miles/hour</string>
     <string name="kelvin_m_s">Kelvin - meters/second</string>
+    <string name="m_s">m/s</string>
+    <string name="hpa">hPa</string>
     <string name="metric">Metric</string>
     <string name="imperial">Imperial</string>
     <string name="standard">Standard</string>
@@ -44,6 +46,8 @@
     <string name="location_source">Location Source</string>
     <string name="location">Location</string>
     <string name="gps">GPS</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="real_feel">Real Feel</string>
 
 
 </resources>

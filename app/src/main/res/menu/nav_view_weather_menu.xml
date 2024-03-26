@@ -4,11 +4,15 @@
     <item
         android:id="@+id/settingsFragment"
         android:icon="@drawable/ic_settings"
-        android:iconTint="@color/text_onDarkSurface_color"
         android:title="@string/settings"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mapFragment"
         android:icon="@drawable/ic_map"
         android:title="@string/map" />
+
+    <item
+        android:id="@+id/bookmarksFragment"
+        android:icon="@drawable/ic_bookmarks"
+        android:title="@string/bookmarks" />
 </menu>

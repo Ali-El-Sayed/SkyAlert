@@ -18,27 +18,25 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
 
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBSk28ngQHPR5ufBXg0fO7ntub2TFHlawc" />
 
         <activity
-            android:name=".view.screens.extensions.BaseActivity"
-            android:exported="false" />
-        <activity
             android:name=".view.screens.main.HomeScreenActivity"
             android:exported="true">
+
+        </activity>
+        <activity
+            android:name=".view.screens.splash.SplashScreen"
+            android:exported="true"
+            android:theme="@style/Theme.SkyAlert.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".view.screens.splash.SplashScreen"
-            android:exported="true"
-            android:theme="@style/Theme.SkyAlert.SplashScreen" />
 
         <receiver
             android:name=".broadcastReceiver.LocationBroadcastReceiver"
