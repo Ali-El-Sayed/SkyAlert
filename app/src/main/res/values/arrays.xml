@@ -8,9 +8,9 @@
     </string-array>
     <!-- Array of unit values -->
     <string-array name="unit_values">
-        <item>imperial</item>
-        <item>metric</item>
-        <item>standard</item>
+        <item>Imperial</item>
+        <item>Metric</item>
+        <item>Standard</item>
     </string-array>
 
 

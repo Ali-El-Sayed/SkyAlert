@@ -10,11 +10,20 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_view_day_title"
         style="@style/fiveDaysForecastDayText"
-        android:layout_width="90dp"
+        android:layout_width="30dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAlignment="textStart"
-        tools:text="Saturday" />
+        tools:text="Sat" />
+
+    <ImageView
+        android:id="@+id/image_view_weather_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:contentDescription="@string/sunrise"
+        tools:src="@drawable/ic_sunrise" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_view_min_temp"
@@ -46,12 +55,5 @@
         android:layout_weight="1"
         tools:text="17°" />
 
-    <ImageView
-        android:id="@+id/image_view_weather_icon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:contentDescription="@string/sunrise"
-        tools:src="@drawable/ic_sunrise" />
+
 </LinearLayout>

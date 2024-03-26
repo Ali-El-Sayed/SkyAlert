@@ -53,7 +53,6 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
         }
     }
 
-
     /**
      * Save the unit in shared preference
      *  @param unit: UNITS

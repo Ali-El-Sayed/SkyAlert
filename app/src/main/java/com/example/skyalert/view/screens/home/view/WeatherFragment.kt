@@ -1,6 +1,5 @@
 package com.example.skyalert.view.screens.home.view
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -24,20 +23,23 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.example.CurrentWeather
 import com.example.skyalert.R
 import com.example.skyalert.broadcastReceiver.LocationBroadcastReceiver
 import com.example.skyalert.broadcastReceiver.OnLocationChange
+import com.example.skyalert.dataSource.local.db.WeatherDatabase
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
 import com.example.skyalert.model.Coord
+import com.example.skyalert.model.CurrentWeather
 import com.example.skyalert.model.Day
 import com.example.skyalert.network.NetworkHelper
 import com.example.skyalert.network.RetrofitClient
@@ -61,6 +63,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -71,6 +74,9 @@ import kotlin.math.roundToInt
 class WeatherFragment : Fragment(), OnLocationChange {
     private val binding: FragmentWeatherBinding by lazy {
         FragmentWeatherBinding.inflate(layoutInflater)
+    }
+    private val db by lazy {
+        WeatherDatabase.getInstance(requireActivity().applicationContext).weatherDao()
     }
 
     private var longitude: Double = 0.0
@@ -98,9 +104,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 viewModel.setDefaultLocation(Coord(latitude, longitude))
                 viewModel.getCurrentWeather()
                 viewModel.getHourlyWeather(40)
-//                getLocationFromCoordinates(
-//                    requireActivity(), location.latitude, location.longitude
-//                )
             }
         }
     }
@@ -108,12 +111,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
         LocationServices.getFusedLocationProviderClient(requireActivity())
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private val permissions = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-    )
     private lateinit var locationBroadcastReceiver: LocationBroadcastReceiver
 
     override fun onCreateView(
@@ -124,52 +121,68 @@ class WeatherFragment : Fragment(), OnLocationChange {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Observe the current weather
+        // Observe the current weather & hourly weather
         lifecycleScope.launch {
-            viewModel.currentWeather.collect {
-                when (it) {
-                    is CurrentWeatherState.Loading -> binding.currentWeatherProgressBar.visibility =
-                        View.VISIBLE
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentWeather.collect {
+                    when (it) {
+                        is CurrentWeatherState.Loading -> binding.currentWeatherProgressBar.visibility =
+                            View.VISIBLE
 
-                    is CurrentWeatherState.Success -> {
-                        binding.currentWeatherProgressBar.visibility = View.GONE
-                        val currentWeather = it.currentWeather
-                        updateToolbar(currentWeather)
-                        Log.d(TAG, "Current Weather: $currentWeather")
-                    }
+                        is CurrentWeatherState.Success -> {
+                            binding.currentWeatherProgressBar.visibility = View.GONE
+                            val currentWeather = it.currentWeather
+                            currentWeather.isCurrent = true
+                            val result = async {
+                                db.insertCurrentWeather(currentWeather)
+                            }.await()
+                            Log.d("MyWeather", "Result: $result")
+                            val weather = async {
+                                db.getCurrentWeather()
+                            }.await()
+                            Log.d("MyWeather", "Weather: $weather")
+                            updateToolbar(currentWeather)
+                            updateCurrentDetails(currentWeather)
+                            Log.d(TAG, "Current Weather: $currentWeather")
+                        }
 
-                    is CurrentWeatherState.Error -> {
-                        binding.currentWeatherProgressBar.visibility = View.GONE
-                        Log.e(TAG, "Error Here: ${it.message}")
-                        Toast.makeText(requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG)
-                            .show()
+                        is CurrentWeatherState.Error -> {
+                            binding.currentWeatherProgressBar.visibility = View.GONE
+                            Log.e(TAG, "Error Here: ${it.message}")
+                            Toast.makeText(
+                                requireActivity(), "Error: ${it.message}", Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
+
             }
         }
-        // Observe the hourly weather
         lifecycleScope.launch {
-            viewModel.hourlyWeather.collect {
-                when (it) {
-                    is FiveDaysForecastState.Loading -> binding.currentWeatherProgressBar.visibility =
-                        View.VISIBLE
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.hourlyWeather.collect {
+                    when (it) {
+                        is FiveDaysForecastState.Loading -> binding.currentWeatherProgressBar.visibility =
+                            View.VISIBLE
 
-                    is FiveDaysForecastState.Success -> {
-                        binding.currentWeatherProgressBar.visibility = View.GONE
-                        val today = it.data.list[0]
-                        // Set up the hourly forecast recycler view
-                        updateHourlyList(it, today)
-                        // Set up the five days forecast recycler view
-                        updateFiveDaysList(it, today)
+                        is FiveDaysForecastState.Success -> {
+                            binding.currentWeatherProgressBar.visibility = View.GONE
+                            val today = it.data.list[0]
+                            // Set up the hourly forecast recycler view
+                            updateHourlyList(it, today)
+                            // Set up the five days forecast recycler view
+                            updateFiveDaysList(it, today)
+                        }
+
+                        is FiveDaysForecastState.Error -> {
+                            binding.currentWeatherProgressBar.visibility = View.GONE
+                            Log.e(TAG, "Error Here: ${it.message}")
+                        }
+
                     }
-
-                    is FiveDaysForecastState.Error -> {
-                        binding.currentWeatherProgressBar.visibility = View.GONE
-                        Log.e(TAG, "Error Here: ${it.message}")
-                    }
-
                 }
             }
         }
@@ -183,7 +196,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
         val fiveDaysForecast = it.data.list.filter { day ->
             val dayName =
                 SimpleDateFormat("EEEE", Locale.getDefault()).format(day.dt.toLong() * 1000)
-            Log.d(TAG, "Day: $it")
             dayName != todayName && day.dtTxt.contains("12:00:00")
         }.toMutableList()
         fiveDaysForecast.add(0, today)
@@ -223,6 +235,39 @@ class WeatherFragment : Fragment(), OnLocationChange {
         binding.recyclerViewHourlyForecast.adapter = adapter
     }
 
+    private fun updateCurrentDetails(
+        currentWeather: CurrentWeather
+    ) {
+        val windMeasurement = getString(R.string.m_s)
+        val pressureMeasurement = getString(R.string.hpa)
+
+        val dayNumber = SimpleDateFormat(
+            "dd", Locale.getDefault()
+        ).format(currentWeather.dt.toLong() * 1000)
+        val monthName = SimpleDateFormat(
+            "MMMM", Locale.getDefault()
+        ).format(currentWeather.dt.toLong() * 1000).substring(0, 3)
+        val dayName = SimpleDateFormat(
+            "EEEE", Locale.getDefault()
+        ).format(currentWeather.dt.toLong() * 1000)
+
+        // Set the current weather icon
+        Glide.with(requireActivity()).load(NetworkHelper.getIconUrl(currentWeather.weather[0].icon))
+            .into(binding.currentWeatherDetails.imageViewWeatherIcon)
+        // Date
+        binding.currentWeatherDetails.date.text = "$dayNumber, $monthName $dayName"
+        // humidity
+        binding.currentWeatherDetails.humidity.text = "${currentWeather.main.humidity}%"
+        // wind speed
+        binding.currentWeatherDetails.wind.text = "${currentWeather.wind.speed} $windMeasurement"
+        // pressure
+        binding.currentWeatherDetails.pressure.text =
+            "${currentWeather.main.pressure} $pressureMeasurement"
+        // real feel
+        binding.currentWeatherDetails.realFeel.text =
+            "${currentWeather.main.feelsLike.roundToInt()}°"
+    }
+
     private fun updateToolbar(currentWeather: CurrentWeather) {
         binding.cityNameTextView.text = currentWeather.name
 
@@ -257,14 +302,13 @@ class WeatherFragment : Fragment(), OnLocationChange {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun onResume() {
         super.onResume()
-
         Log.d(TAG, "onResume")
         initUI()
         // Register the broadcast receiver
         locationBroadcastReceiver = LocationBroadcastReceiver(this)
+        getFreshLocation(locationCallback)
         val intentFilter = IntentFilter("android.location.PROVIDERS_CHANGED")
         requireActivity().registerReceiver(
             locationBroadcastReceiver, intentFilter
@@ -278,19 +322,14 @@ class WeatherFragment : Fragment(), OnLocationChange {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun initUI() {
+
         /**
          * Check if location is enabled and get the location if it is enabled
          * If location is not enabled, show a dialog to enable location services
          * */
-        if (GPSUtils.isGPSEnabled(requireActivity())) {
-            getFreshLocation(locationCallback)
-            binding.openLocationServicesButton.visibility = View.GONE
-        } else {
-            showEnableGPSDialog()
-            binding.openLocationServicesButton.visibility = View.VISIBLE
-        }
+        if (!GPSUtils.isLocationEnabled(requireActivity())) binding.openLocationServicesButton.visibility =
+            View.VISIBLE
 
         binding.openLocationServicesButton.setOnClickListener { showEnableGPSDialog() }
     }
@@ -325,19 +364,8 @@ class WeatherFragment : Fragment(), OnLocationChange {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.S)
-    private val requestLocationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
-            if (isGranted.containsValue(true)) {
-                if (!GPSUtils.isLocationEnabled(requireActivity())) enableLocationService()
-                getFreshLocation(locationCallback)
-            } else {
-                Toast.makeText(requireActivity(), "Permission denied", Toast.LENGTH_LONG).show()
-            }
-        }
-
     private fun enableLocationService() {
-        Toast.makeText(requireActivity(), "Please enable location service", Toast.LENGTH_LONG)
+        Toast.makeText(requireActivity(), "Please enable location service", Toast.LENGTH_SHORT)
             .show()
         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
         startActivity(intent)
@@ -345,10 +373,9 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
 
     @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun getFreshLocation(callback: LocationCallback) {
-        Toast.makeText(requireActivity(), "Location is enabled", Toast.LENGTH_LONG).show()
-        Log.d(TAG, "Location is enabled")
+        Toast.makeText(requireActivity(), "Getting location", Toast.LENGTH_SHORT).show()
+        Log.d(TAG, "Getting location")
         fusedLocationProviderClient.requestLocationUpdates(
             LocationRequest.Builder(DELAY_IN_LOCATION_REQUEST).apply {
                 setPriority(Priority.PRIORITY_HIGH_ACCURACY)
@@ -366,7 +393,8 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 val address = addressList[0]
                 val locationName = address.getAddressLine(0)
                 this.address = locationName
-                Toast.makeText(context, "address: ${address.countryName}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "address: ${address.countryName}", Toast.LENGTH_SHORT)
+                    .show()
                 Log.d(TAG, "address: $address")
                 Log.d(TAG, "Location: $locationName")
                 Log.d(TAG, "Latitude: $latitude")
@@ -380,13 +408,15 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
 
     @RequiresApi(Build.VERSION_CODES.S)
-    private fun getLocation() {
-        if (PermissionUtils.checkPermission(requireActivity())) {
-            if (!GPSUtils.isLocationEnabled(requireActivity()))
+    private fun requestOpenLocationService() {
+        if (PermissionUtils.checkPermission(requireActivity())) if (!GPSUtils.isLocationEnabled(
+                requireActivity()
+            )
+        )
 //                enableLocationService()
-//                requestGPSOn(getGPSOnRequest)
-            else getFreshLocation(locationCallback)
-        } else requestLocationPermission.launch(permissions)
+            requestGPSOn(getGPSOnRequest)
+//            else getFreshLocation(locationCallback)
+
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -394,7 +424,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
             if (GPSUtils.isLocationEnabled(requireActivity())) getFreshLocation(locationCallback)
             else Toast.makeText(
-                requireActivity(), "Please enable location service", Toast.LENGTH_LONG
+                requireActivity(), "Please enable location service", Toast.LENGTH_SHORT
             ).show()
         }
 
@@ -458,7 +488,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
         binding.openLocationServicesButton.visibility = View.VISIBLE
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
-
 }
 
 
