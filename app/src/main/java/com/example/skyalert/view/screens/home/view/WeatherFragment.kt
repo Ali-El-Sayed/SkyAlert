@@ -63,7 +63,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -136,14 +135,14 @@ class WeatherFragment : Fragment(), OnLocationChange {
                             binding.currentWeatherProgressBar.visibility = View.GONE
                             val currentWeather = it.currentWeather
                             currentWeather.isCurrent = true
-                            val result = async {
+                            /*val result = async {
                                 db.insertCurrentWeather(currentWeather)
                             }.await()
                             Log.d("MyWeather", "Result: $result")
                             val weather = async {
                                 db.getCurrentWeather()
                             }.await()
-                            Log.d("MyWeather", "Weather: $weather")
+                            Log.d("MyWeather", "Weather: $weather")*/
                             updateToolbar(currentWeather)
                             updateCurrentDetails(currentWeather)
                             Log.d(TAG, "Current Weather: $currentWeather")

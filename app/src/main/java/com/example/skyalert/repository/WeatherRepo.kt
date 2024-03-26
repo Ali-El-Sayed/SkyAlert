@@ -74,6 +74,13 @@ class WeatherRepo private constructor(
         return _iSharedPreference.getMapLocation()
     }
 
+    override suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState> {
+        val unit = _iSharedPreference.getUnit()
+        return weatherRemoteDatasource.getCurrentWeather(
+            coord.lat, coord.lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+        )
+    }
+
     private fun getCordFromLocationSource() = when (getLocationSource()) {
         LOCATION_SOURCE.GPS -> getGPSLocation()
         LOCATION_SOURCE.MAP -> getMapLocation()

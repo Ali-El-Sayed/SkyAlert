@@ -26,7 +26,7 @@
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="370dp"
-            android:background="@drawable/background_glass">
+            android:background="@drawable/toolbar_bg">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsingToolbarLayout"
@@ -259,7 +259,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@drawable/background_glass"
+        android:background="@drawable/toolbar_bg"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
         app:itemIconTint="@color/text_onDarkSurface_color"

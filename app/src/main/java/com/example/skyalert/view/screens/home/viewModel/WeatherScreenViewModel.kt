@@ -33,6 +33,17 @@ class WeatherScreenViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel
         }
     }
 
+    fun getCurrentWeatherByCoord(coord: Coord) {
+        _currentWeather.value = CurrentWeatherState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            _weatherRepo.getCurrentWeatherByCoord(coord).catch { e ->
+                e.printStackTrace()
+                _currentWeather.value =
+                    CurrentWeatherState.Error(e.message ?: "An error occurred")
+            }.collect { _currentWeather.value = it }
+        }
+    }
+
     fun getHourlyWeather(cnt: Int = 8) {
         _hourlyWeather.value = FiveDaysForecastState.Loading
         viewModelScope.launch(Dispatchers.IO) {

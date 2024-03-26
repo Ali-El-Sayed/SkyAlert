@@ -48,6 +48,9 @@
     <string name="gps">GPS</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="real_feel">Real Feel</string>
+    <string name="set_as_default_location">Set as default location</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
 
 
 </resources>

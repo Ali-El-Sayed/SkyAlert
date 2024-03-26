@@ -24,6 +24,7 @@ interface IWeatherRepo {
 
     fun setMapLocation(coord: Coord)
     fun getMapLocation(): Coord
+    suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState>
 
 
 }
