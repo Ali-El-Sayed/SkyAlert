@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <!-- Network permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Location permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!--  Notification permissions -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Alarm permissions -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
 
     <application
         android:allowBackup="true"
@@ -24,12 +31,14 @@
 
         <activity
             android:name=".view.screens.main.HomeScreenActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity
             android:name=".view.screens.splash.SplashScreen"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.SkyAlert.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +48,7 @@
         </activity>
 
         <receiver
-            android:name=".broadcastReceiver.LocationBroadcastReceiver"
+            android:name=".services.broadcastReceiver.LocationBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.location.MODE_CHANGED" />
@@ -48,6 +57,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".services.broadcastReceiver.alarmReceiver.AlarmReceiver" />
+
     </application>
 
 </manifest>

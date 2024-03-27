@@ -32,9 +32,6 @@ import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.skyalert.R
-import com.example.skyalert.broadcastReceiver.LocationBroadcastReceiver
-import com.example.skyalert.broadcastReceiver.OnLocationChange
-import com.example.skyalert.dataSource.local.db.WeatherDatabase
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
@@ -47,6 +44,8 @@ import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.repository.WeatherRepo
+import com.example.skyalert.services.broadcastReceiver.LocationBroadcastReceiver
+import com.example.skyalert.services.broadcastReceiver.OnLocationChange
 import com.example.skyalert.util.GPSUtils
 import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory
@@ -63,7 +62,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -75,10 +73,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private val binding: FragmentWeatherBinding by lazy {
         FragmentWeatherBinding.inflate(layoutInflater)
     }
-    private val db by lazy {
-        WeatherDatabase.getInstance(requireActivity().applicationContext).weatherDao()
-    }
-
     private var longitude: Double = 0.0
     private var latitude: Double = 0.0
     private var address: String = ""
@@ -136,14 +130,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
                             binding.currentWeatherProgressBar.visibility = View.GONE
                             val currentWeather = it.currentWeather
                             currentWeather.isCurrent = true
-                            val result = async {
-                                db.insertCurrentWeather(currentWeather)
-                            }.await()
-                            Log.d("MyWeather", "Result: $result")
-                            val weather = async {
-                                db.getCurrentWeather()
-                            }.await()
-                            Log.d("MyWeather", "Weather: $weather")
                             updateToolbar(currentWeather)
                             updateCurrentDetails(currentWeather)
                             Log.d(TAG, "Current Weather: $currentWeather")
@@ -428,6 +414,10 @@ class WeatherFragment : Fragment(), OnLocationChange {
             ).show()
         }
 
+
+    /**
+     *  Request to turn on GPS
+     * */
     private fun requestGPSOn(request: ActivityResultLauncher<IntentSenderRequest>) {
         val locationRequest = LocationRequest.Builder(DELAY_IN_LOCATION_REQUEST).apply {
             setPriority(Priority.PRIORITY_HIGH_ACCURACY)
@@ -449,6 +439,10 @@ class WeatherFragment : Fragment(), OnLocationChange {
             request.launch(intentSenderRequest)
         }
     }
+
+    /**
+     * Show a dialog to enable GPS
+     * */
 
     private fun showEnableGPSDialog() {
         val builder = MaterialAlertDialogBuilder(requireActivity())
@@ -476,7 +470,9 @@ class WeatherFragment : Fragment(), OnLocationChange {
         alert.show()
     }
 
-    // Broadcast receiver callbacks
+    /**
+     *  Broadcast receiver for location change events
+     * */
     @RequiresApi(Build.VERSION_CODES.S)
     override fun locationEnabled() {
         Log.d(TAG, "Broadcast receiver: Location is enabled")

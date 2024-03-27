@@ -25,5 +25,14 @@
         android:id="@+id/mapFragment"
         android:name="com.example.skyalert.view.screens.map.view.MapsFragment"
         android:label="MapFragment"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map">
+        <action
+            android:id="@+id/action_mapFragment_to_mapBottomSheet"
+            app:destination="@id/mapBottomSheet" />
+    </fragment>
+    <dialog
+        android:id="@+id/mapBottomSheet"
+        android:name="com.example.skyalert.view.screens.map.view.MapBottomSheet"
+        android:label="MapBottomSheet"
+        tools:layout="@layout/fragment_map_bottom_sheet" />
 </navigation>

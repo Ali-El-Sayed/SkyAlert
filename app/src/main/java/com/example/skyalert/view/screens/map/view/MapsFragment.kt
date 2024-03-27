@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
@@ -13,8 +12,10 @@ import com.example.skyalert.databinding.FragmentMapBinding
 import com.example.skyalert.model.Coord
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.repository.WeatherRepo
+import com.example.skyalert.services.alarm.AndroidAlarmScheduler
+import com.example.skyalert.services.alarm.model.AlarmItem
 import com.example.skyalert.util.WeatherViewModelFactory
-import com.example.skyalert.view.screens.settings.viewModel.SettingsViewModel
+import com.example.skyalert.view.screens.map.viewModel.MapViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
@@ -24,26 +25,43 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import java.time.LocalDateTime
 
-class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMarkerDragListener {
+private const val TAG = "MapsFragment"
+
+class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMarkerDragListener,
+    GoogleMap.OnMapClickListener {
     private lateinit var mMap: GoogleMap
-    private lateinit var binding: FragmentMapBinding
+    private val binding: FragmentMapBinding by lazy {
+        FragmentMapBinding.inflate(layoutInflater)
+    }
     private lateinit var marker: Marker
-    private val viewModel: SettingsViewModel by lazy {
+    private val viewModel: MapViewModel by lazy {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
         val repo = WeatherRepo.getInstance(
             remoteDataSource, SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
         )
         val factory = WeatherViewModelFactory(repo)
-        factory.create(SettingsViewModel::class.java)
+        factory.create(MapViewModel::class.java)
     }
+    private val alarm: AndroidAlarmScheduler by lazy {
+        AndroidAlarmScheduler(requireContext())
+    }
+    private val alarmItem by lazy {
+        AlarmItem(
+            LocalDateTime.now().plusSeconds(10L), "This is a test alarm"
+        )
+    }
+
+    private var day = 0
+    private var month = 0
+    private var year = 0
+    private var hour = 0
+    private var minute = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentMapBinding.inflate(layoutInflater, container, false)
-        return binding.root
-    }
+    ): View = binding.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,7 +70,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         val mapFragment =
             childFragmentManager.findFragmentById(com.example.skyalert.R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
     }
 
 
@@ -77,6 +94,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         }
         mMap.setOnMarkerDragListener(this)
         mMap.setOnMapLongClickListener(this)
+        mMap.setOnMapClickListener(this)
     }
 
     override fun onMarkerDragStart(p0: Marker) {
@@ -96,14 +114,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
 
     override fun onMapLongClick(p0: LatLng) {
+        handlePress(p0)
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(p0, 8f))
+    }
+
+
+    override fun onMapClick(p0: LatLng) {
+        handlePress(p0)
+    }
+
+    private fun handlePress(p0: LatLng) {
         marker.position = p0
 
-        val coord = Coord(p0.latitude, p0.longitude)
-        viewModel.setMapLocation(coord)
-
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(p0, 8f))
-        Toast.makeText(context, "Lat: ${p0.latitude} Lon: ${p0.longitude}", Toast.LENGTH_SHORT)
-            .show()
+        val bottomSheet = MapBottomSheet(Coord(p0.latitude, p0.longitude))
+        bottomSheet.show(requireActivity().supportFragmentManager, "MapBottomSheet")
     }
 
 

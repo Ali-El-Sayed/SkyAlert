@@ -38,9 +38,10 @@
 
     <style name="appBarTitle" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="titleTextColor">@color/text_onDarkSurface_color</item>
+        <item name="android:textColor">@color/text_onDarkSurface_color</item>
         <item name="fontFamily">@font/amaranth_regular</item>
         <item name="titleCentered">true</item>
-        <item name="android:background">@drawable/background_glass</item>
+        <item name="android:background">@drawable/toolbar_bg</item>
     </style>
 
     <!--    Expanded Toolbar -->
