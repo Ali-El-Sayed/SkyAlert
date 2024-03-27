@@ -32,8 +32,6 @@ import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.skyalert.R
-import com.example.skyalert.broadcastReceiver.LocationBroadcastReceiver
-import com.example.skyalert.broadcastReceiver.OnLocationChange
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
@@ -47,6 +45,8 @@ import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.repository.WeatherRepo
+import com.example.skyalert.services.broadcastReceiver.LocationBroadcastReceiver
+import com.example.skyalert.services.broadcastReceiver.OnLocationChange
 import com.example.skyalert.util.GPSUtils
 import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory

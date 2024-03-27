@@ -16,7 +16,6 @@ class MapViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel() {
 
     private val _currentWeather = MutableStateFlow<CurrentWeatherState>(CurrentWeatherState.Loading)
     val currentWeather: StateFlow<CurrentWeatherState> = _currentWeather.asStateFlow()
-
     fun getCurrentWeatherByCoord(coord: Coord) {
         _currentWeather.value = CurrentWeatherState.Loading
         viewModelScope.launch(Dispatchers.IO) {
@@ -26,7 +25,6 @@ class MapViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel() {
             }.collect { _currentWeather.value = it }
         }
     }
-
 
     fun getMapLocation(): Coord = _weatherRepo.getMapLocation()
 
