@@ -15,9 +15,7 @@ class AndroidAlarmScheduler(private val context: Context) : AlarmScheduler {
     }
 
     override fun scheduleAlarm(item: AlarmItem) {
-        val i = Intent(context, AlarmManager::class.java).apply {
-            putExtra("message", item.message)
-        }
+        val i = Intent(context, AlarmReceiver::class.java)
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             item.time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
