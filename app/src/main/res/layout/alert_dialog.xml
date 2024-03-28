@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="18dp"
+    tools:background="@drawable/dialog_background">
+
+    <TextView
+        android:id="@+id/tv_alert_time"
+        style="@style/forecastCardText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/hourly_selected_background"
+        android:lineSpacingExtra="3dp"
+        android:padding="12dp"
+        android:textAlignment="center"
+        tools:text="Wed, 28Mar\n 12:00 PM" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="12dp"
+        android:orientation="vertical"
+        app:checkedChip="@id/chip_alert"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:padding="8dp"
+            android:tag="@string/alert"
+            android:text="@string/alert"
+            app:chipIcon="@drawable/ic_dialog" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:padding="8dp"
+            android:tag="@string/notification"
+            android:text="@string/notification"
+            app:chipIcon="@drawable/ic_notification" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_notify_me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/hourly_selected_background"
+        android:text="@string/notify_me"
+        android:textAllCaps="false" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

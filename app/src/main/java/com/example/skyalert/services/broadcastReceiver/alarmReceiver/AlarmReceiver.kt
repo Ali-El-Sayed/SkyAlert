@@ -26,7 +26,7 @@ class AlarmReceiver : BroadcastReceiver() {
             repo.getCurrentWeather().collect {
                 when (it) {
                     is CurrentWeatherState.Success -> {
-
+                        Log.d(TAG, "onReceive: ${it.currentWeather}")
                     }
 
                     is CurrentWeatherState.Error -> {

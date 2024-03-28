@@ -32,7 +32,16 @@
     </fragment>
     <dialog
         android:id="@+id/mapBottomSheet"
-        android:name="com.example.skyalert.view.screens.map.view.MapBottomSheet"
+        android:name="com.example.skyalert.view.dialogs.MapBottomSheet"
         android:label="MapBottomSheet"
-        tools:layout="@layout/fragment_map_bottom_sheet" />
+        tools:layout="@layout/fragment_map_bottom_sheet">
+        <action
+            android:id="@+id/action_mapBottomSheet_to_alertDialog"
+            app:destination="@id/alertDialog" />
+    </dialog>
+    <dialog
+        android:id="@+id/alertDialog"
+        android:name="com.example.skyalert.view.dialogs.AlertDialog"
+        android:label="AlertDialog"
+        tools:layout="@layout/alert_dialog" />
 </navigation>

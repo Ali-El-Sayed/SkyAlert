@@ -51,6 +51,11 @@
     <string name="set_as_default_location">Set as default location</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+    <string name="alert">Alert</string>
+    <string name="notification">Notification</string>
+    <string name="notify_me">Notify me</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
 
 
 </resources>

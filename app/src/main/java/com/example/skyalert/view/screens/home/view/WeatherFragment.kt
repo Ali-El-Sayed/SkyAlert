@@ -14,9 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -47,19 +44,16 @@ import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.services.broadcastReceiver.LocationBroadcastReceiver
 import com.example.skyalert.services.broadcastReceiver.OnLocationChange
 import com.example.skyalert.util.GPSUtils
-import com.example.skyalert.util.PermissionUtils
 import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.util.toCapitalizedWords
 import com.example.skyalert.view.animation.NumberAnimation
 import com.example.skyalert.view.screens.home.adapters.RvFiveDaysForecastAdapter
 import com.example.skyalert.view.screens.home.adapters.RvHourlyForecastAdapter
 import com.example.skyalert.view.screens.home.viewModel.WeatherScreenViewModel
-import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -349,15 +343,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
     }
 
-
-    private fun enableLocationService() {
-        Toast.makeText(requireActivity(), "Please enable location service", Toast.LENGTH_SHORT)
-            .show()
-        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-        startActivity(intent)
-    }
-
-
     @SuppressLint("MissingPermission")
     private fun getFreshLocation(callback: LocationCallback) {
         Toast.makeText(requireActivity(), "Getting location", Toast.LENGTH_SHORT).show()
@@ -392,57 +377,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
         }
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.S)
-    private fun requestOpenLocationService() {
-        if (PermissionUtils.checkPermission(requireActivity())) if (!GPSUtils.isLocationEnabled(
-                requireActivity()
-            )
-        )
-//                enableLocationService()
-            requestGPSOn(getGPSOnRequest)
-//            else getFreshLocation(locationCallback)
-
-    }
-
-    @RequiresApi(Build.VERSION_CODES.S)
-    private val getGPSOnRequest =
-        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            if (GPSUtils.isLocationEnabled(requireActivity())) getFreshLocation(locationCallback)
-            else Toast.makeText(
-                requireActivity(), "Please enable location service", Toast.LENGTH_SHORT
-            ).show()
-        }
-
-
-    /**
-     *  Request to turn on GPS
-     * */
-    private fun requestGPSOn(request: ActivityResultLauncher<IntentSenderRequest>) {
-        val locationRequest = LocationRequest.Builder(DELAY_IN_LOCATION_REQUEST).apply {
-            setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-        }.build()
-
-        val settingRequest = LocationSettingsRequest.Builder().run {
-            addLocationRequest(locationRequest)
-            build()
-        }
-
-        val settingsClient = LocationServices.getSettingsClient(requireContext())
-        val task =
-            settingsClient.checkLocationSettings(settingRequest)         //【fire and receive result】
-
-        task.addOnFailureListener {                             //if GPS is not on currently
-            val intentSender = (it as ResolvableApiException).resolution.intentSender
-            val intentSenderRequest = IntentSenderRequest.Builder(intentSender).build()
-
-            request.launch(intentSenderRequest)
-        }
-    }
-
-    /**
-     * Show a dialog to enable GPS
-     * */
 
     private fun showEnableGPSDialog() {
         val builder = MaterialAlertDialogBuilder(requireActivity())
