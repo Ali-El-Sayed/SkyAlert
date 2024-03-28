@@ -4,12 +4,12 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import com.example.skyalert.services.alarm.model.AlarmItem
 import com.example.skyalert.services.broadcastReceiver.alarmReceiver.AlarmReceiver
 import java.time.ZoneId
 
 class AndroidAlarmScheduler(private val context: Context) : AlarmScheduler {
-    private val TAG = "AndroidAlarmScheduler"
     private val alarmManager: AlarmManager by lazy {
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
@@ -26,6 +26,7 @@ class AndroidAlarmScheduler(private val context: Context) : AlarmScheduler {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
+        Toast.makeText(context, "Alarm set", Toast.LENGTH_SHORT).show()
     }
 
     override fun cancelAlarm(item: AlarmItem) {
@@ -37,5 +38,6 @@ class AndroidAlarmScheduler(private val context: Context) : AlarmScheduler {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
+        Toast.makeText(context, "Alarm canceled", Toast.LENGTH_SHORT).show()
     }
 }
