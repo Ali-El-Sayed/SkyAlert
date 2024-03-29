@@ -10,4 +10,6 @@ object KEYS {
     const val MAP_LOCATION_LAT = "map_location_lat"
     const val MAP_LOCATION_LON = "map_location_lon"
     const val LOCATION_SOURCE = "location_source"
+    const val ALERT_LOCATION_LAT = "alert_location_lat"
+    const val ALERT_LOCATION_LON = "alert_location_lon"
 }

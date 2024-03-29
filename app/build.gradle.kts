@@ -23,8 +23,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -79,7 +78,8 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
     // open street map
     implementation("org.osmdroid:osmdroid-android:6.1.18")
-
+    // work manager
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 
     // hamcrest
     testImplementation("org.hamcrest:hamcrest-all:1.3")

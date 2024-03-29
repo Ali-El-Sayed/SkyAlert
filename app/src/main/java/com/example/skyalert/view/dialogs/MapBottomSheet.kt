@@ -14,22 +14,30 @@ import com.example.skyalert.R
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentMapBottomSheetBinding
+import com.example.skyalert.interfaces.BottomSheetCallbacks
 import com.example.skyalert.model.Coord
 import com.example.skyalert.network.NetworkHelper
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.util.WeatherViewModelFactory
+import com.example.skyalert.view.screens.map.MAP_CONSTANTS
 import com.example.skyalert.view.screens.map.viewModel.MapViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 
 
-class MapBottomSheet(private val coord: Coord) : BottomSheetDialogFragment() {
+class MapBottomSheet(private val bottomSheetCallbacks: BottomSheetCallbacks) :
+    BottomSheetDialogFragment() {
     private val binding by lazy {
         FragmentMapBottomSheetBinding.inflate(layoutInflater, null, false)
     }
-
+    private val coord by lazy {
+        Coord(
+            arguments?.getDouble(MAP_CONSTANTS.MAP_LAT) ?: 0.0,
+            arguments?.getDouble(MAP_CONSTANTS.MAP_LON) ?: 0.0
+        )
+    }
 
     private val viewModel: MapViewModel by lazy {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
@@ -51,14 +59,12 @@ class MapBottomSheet(private val coord: Coord) : BottomSheetDialogFragment() {
 
 
         binding.imageViewAlert.setOnClickListener {
-            val alertDialog = AlertDialog()
-            alertDialog.show(childFragmentManager, "alert_dialog")
+            bottomSheetCallbacks.setAlert()
+            dismiss()
         }
 
         binding.btnSetAsDefaultLocation.setOnClickListener {
-            viewModel.setMapLocation(coord)
-            Toast.makeText(requireContext(), "Map location updated", Toast.LENGTH_SHORT).show()
-            it.isEnabled = false
+            bottomSheetCallbacks.setDefaultLocation(coord)
         }
 
         /**
@@ -69,7 +75,6 @@ class MapBottomSheet(private val coord: Coord) : BottomSheetDialogFragment() {
                 viewModel.currentWeather.collect {
                     when (it) {
                         is CurrentWeatherState.Loading -> {
-                            Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
                         }
 
                         is CurrentWeatherState.Success -> {

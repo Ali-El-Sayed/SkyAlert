@@ -32,4 +32,8 @@ class MapViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel() {
     fun setMapLocation(coord: Coord) {
         _weatherRepo.setMapLocation(coord)
     }
+
+    fun saveAlertLocation(coord: Coord) {
+        _weatherRepo.saveAlertLocation(coord)
+    }
 }

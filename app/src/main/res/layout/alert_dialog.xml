@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@color/dialog_background"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="18dp"
-    tools:background="@drawable/dialog_background">
+    android:padding="32dp">
 
     <TextView
         android:id="@+id/tv_alert_time"
@@ -15,8 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/hourly_selected_background"
-        android:lineSpacingExtra="3dp"
-        android:padding="12dp"
+        android:lineSpacingExtra="4dp"
+        android:padding="24dp"
         android:textAlignment="center"
         tools:text="Wed, 28Mar\n 12:00 PM" />
 
@@ -24,9 +24,11 @@
         android:id="@+id/chip_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="12dp"
-        android:orientation="vertical"
+        android:layout_marginVertical="8dp"
+        android:clipChildren="false"
+        android:padding="12dp"
         app:checkedChip="@id/chip_alert"
+        app:chipSpacingHorizontal="30dp"
         app:selectionRequired="true"
         app:singleSelection="true">
 
@@ -35,7 +37,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checkable="true"
-            android:padding="8dp"
             android:tag="@string/alert"
             android:text="@string/alert"
             app:chipIcon="@drawable/ic_dialog" />
@@ -45,7 +46,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checkable="true"
-            android:padding="8dp"
             android:tag="@string/notification"
             android:text="@string/notification"
             app:chipIcon="@drawable/ic_notification" />
@@ -54,10 +54,12 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_notify_me"
+        style="@style/btn_main_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/hourly_selected_background"
+        android:layout_margin="4dp"
+        android:background="@drawable/ripple"
         android:text="@string/notify_me"
         android:textAllCaps="false" />
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+</LinearLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bottom_sheet_bg"
-    android:paddingBottom="24dp">
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="200dp"
@@ -84,6 +84,7 @@
         tools:text="Latitude: 29.97" />
 
     <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="180dp"
@@ -105,25 +106,27 @@
 
     <ImageView
         android:id="@+id/image_view_weather_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="12dp"
         app:layout_constraintBottom_toBottomOf="@id/text_view_weather_description"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_view_weather_description"
         app:layout_constraintTop_toTopOf="@id/text_view_weather_description"
         tools:src="@drawable/ic_sunrise" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_set_as_default_location"
+        style="@style/btn_main_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
-        android:background="@drawable/button_background"
+        android:layout_marginTop="70dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:text="@string/set_as_default_location"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/divider2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

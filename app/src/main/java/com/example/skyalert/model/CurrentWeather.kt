@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.skyalert.model.typeConverter.WeatherTypeConverter
+import com.example.skyalert.network.UNITS
 import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "current_weather")
@@ -31,5 +32,6 @@ data class CurrentWeather(
     @SerializedName("cod") var cod: Int,
     var isFavorite: Boolean = false,
     @PrimaryKey
-    var isCurrent: Boolean = false
+    var isCurrent: Boolean = false,
+    var unit: UNITS = UNITS.METRIC
 )

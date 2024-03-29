@@ -41,7 +41,17 @@
     </dialog>
     <dialog
         android:id="@+id/alertDialog"
-        android:name="com.example.skyalert.view.dialogs.AlertDialog"
+        android:name="com.example.skyalert.view.dialogs.DateAlertDialog"
         android:label="AlertDialog"
-        tools:layout="@layout/alert_dialog" />
+        tools:layout="@layout/alert_dialog">
+        <action
+            android:id="@+id/action_alertDialog_to_AlertResultDialog"
+            app:destination="@id/AlertResultDialog" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/AlertResultDialog"
+        android:name="com.example.skyalert.view.dialogs.AlertResultDialog"
+        android:label="AlertResultDialog"
+        tools:layout="@layout/alert_result_dialog" />
 </navigation>
