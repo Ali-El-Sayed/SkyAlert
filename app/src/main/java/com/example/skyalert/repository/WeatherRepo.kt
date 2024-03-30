@@ -10,6 +10,7 @@ import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class WeatherRepo private constructor(
     private val weatherRemoteDatasource: IWeatherRemoteDataSource,
@@ -29,22 +30,10 @@ class WeatherRepo private constructor(
         }
     }
 
-    override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {
-        val unit = _iSharedPreference.getUnit()
-        val cord = getCordFromLocationSource()
 
-        return weatherRemoteDatasource.getCurrentWeather(
-            cord.lat, cord.lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
-        )
-    }
-
-    override suspend fun getHourlyForecast(cnt: Int): Flow<FiveDaysForecastState> {
-        val unit = _iSharedPreference.getUnit()
-        val cord = getCordFromLocationSource()
-        return weatherRemoteDatasource.getHourlyForecast(
-            cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, LANG.ENGLISH.value
-        )
-    }
+    /**
+     * Shared preference data source
+     * */
 
     override fun getUnit() = _iSharedPreference.getUnit()
 
@@ -74,6 +63,14 @@ class WeatherRepo private constructor(
         return _iSharedPreference.getMapLocation()
     }
 
+    override fun saveAlertLocation(coord: Coord) {
+        _iSharedPreference.saveAlertCoord(coord)
+    }
+
+    override fun getAlertLocation(): Coord {
+        return _iSharedPreference.getAlertCoord()
+    }
+
     override suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState> {
         val unit = _iSharedPreference.getUnit()
         return weatherRemoteDatasource.getCurrentWeather(
@@ -85,5 +82,57 @@ class WeatherRepo private constructor(
         LOCATION_SOURCE.GPS -> getGPSLocation()
         LOCATION_SOURCE.MAP -> getMapLocation()
     }
+
+    /**
+     * Database Local data source
+     * */
+
+
+    /**
+     *  Remote data source
+     * */
+
+    override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {
+        val unit = _iSharedPreference.getUnit()
+        val cord = getCordFromLocationSource()
+
+        return weatherRemoteDatasource.getCurrentWeather(
+            cord.lat, cord.lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+        ).map {
+            when (it) {
+                is CurrentWeatherState.Success -> {
+                    CurrentWeatherState.Success(it.currentWeather.copy(unit = unit))
+                }
+
+                is CurrentWeatherState.Error -> it
+                is CurrentWeatherState.Loading -> it
+            }
+        }
+    }
+
+    override suspend fun getCurrentWeather(coord: Coord): Flow<CurrentWeatherState> {
+        val unit = _iSharedPreference.getUnit()
+        return weatherRemoteDatasource.getCurrentWeather(
+            coord.lat, coord.lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+        ).map {
+            when (it) {
+                is CurrentWeatherState.Success -> {
+                    CurrentWeatherState.Success(it.currentWeather.copy(unit = unit))
+                }
+
+                is CurrentWeatherState.Error -> it
+                is CurrentWeatherState.Loading -> it
+            }
+        }
+    }
+
+    override suspend fun getHourlyForecast(cnt: Int): Flow<FiveDaysForecastState> {
+        val unit = _iSharedPreference.getUnit()
+        val cord = getCordFromLocationSource()
+        return weatherRemoteDatasource.getHourlyForecast(
+            cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+        )
+    }
+
 
 }

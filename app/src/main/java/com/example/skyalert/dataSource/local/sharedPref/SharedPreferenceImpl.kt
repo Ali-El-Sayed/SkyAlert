@@ -128,4 +128,27 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
             return LOCATION_SOURCE.valueOf(it.uppercase())
         } ?: LOCATION_SOURCE.GPS
 
+    /**
+     *  Save the alert location in shared preference
+     *  @param coord: Coord
+     * */
+    override fun saveAlertCoord(coord: Coord) {
+        sharedPreferences.edit().putString(KEYS.ALERT_LOCATION_LAT, coord.lat.toString()).apply()
+        sharedPreferences.edit().putString(KEYS.ALERT_LOCATION_LON, coord.lon.toString()).apply()
+    }
+
+    /**
+     *  Get the alert location from shared preference
+     *  @return Coord
+     * */
+    override fun getAlertCoord(): Coord {
+        val lat =
+            sharedPreferences.getString(KEYS.ALERT_LOCATION_LAT, DEFAULT_LOCATION_LAT.toString())
+                ?.toDouble() ?: DEFAULT_LOCATION_LAT
+        val lon =
+            sharedPreferences.getString(KEYS.ALERT_LOCATION_LON, DEFAULT_LOCATION_LON.toString())
+                ?.toDouble() ?: DEFAULT_LOCATION_LON
+        return Coord(lat, lon)
+    }
+
 }

@@ -6,16 +6,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import com.example.skyalert.R
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentMapBinding
+import com.example.skyalert.interfaces.BottomSheetCallbacks
+import com.example.skyalert.interfaces.OnAlertDialogCallback
 import com.example.skyalert.model.Coord
+import com.example.skyalert.model.CurrentWeather
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.services.alarm.AndroidAlarmScheduler
 import com.example.skyalert.services.alarm.model.AlarmItem
 import com.example.skyalert.util.WeatherViewModelFactory
+import com.example.skyalert.view.dialogs.AlertResultDialog
+import com.example.skyalert.view.dialogs.DateAlertDialog
 import com.example.skyalert.view.dialogs.MapBottomSheet
+import com.example.skyalert.view.screens.map.ALERT_RESULT_CONSTANTS
+import com.example.skyalert.view.screens.map.MAP_CONSTANTS.MAP_LAT
+import com.example.skyalert.view.screens.map.MAP_CONSTANTS.MAP_LON
 import com.example.skyalert.view.screens.map.viewModel.MapViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -26,12 +37,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import java.time.LocalDateTime
+import com.google.gson.Gson
 
 private const val TAG = "MapsFragment"
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMarkerDragListener,
-    GoogleMap.OnMapClickListener {
+    GoogleMap.OnMapClickListener, BottomSheetCallbacks, OnAlertDialogCallback {
     private lateinit var mMap: GoogleMap
     private val binding: FragmentMapBinding by lazy {
         FragmentMapBinding.inflate(layoutInflater)
@@ -45,20 +56,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         val factory = WeatherViewModelFactory(repo)
         factory.create(MapViewModel::class.java)
     }
+
+    private val coord by lazy {
+        viewModel.getMapLocation()
+    }
+
     private val alarm: AndroidAlarmScheduler by lazy {
         AndroidAlarmScheduler(requireContext())
     }
-    private val alarmItem by lazy {
-        AlarmItem(
-            LocalDateTime.now().plusSeconds(10L), "This is a test alarm"
-        )
-    }
 
-    private var day = 0
-    private var month = 0
-    private var year = 0
-    private var hour = 0
-    private var minute = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -105,6 +111,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         val lat = p0.position.latitude
         val lon = p0.position.longitude
         val loc = LatLng(lat, lon)
+        coord.apply { this.lat = lat; this.lon = lon }
         marker.position = loc
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 8f))
         mMap.setOnMapLongClickListener(this)
@@ -126,9 +133,60 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     private fun handlePress(p0: LatLng) {
         marker.position = p0
-
-        val bottomSheet = MapBottomSheet(Coord(p0.latitude, p0.longitude))
+        coord.lat = p0.latitude
+        coord.lon = p0.longitude
+        val argument = Bundle().apply {
+            putDouble(MAP_LAT, p0.latitude)
+            putDouble(MAP_LON, p0.longitude)
+        }
+        viewModel.saveAlertLocation(coord)
+        val bottomSheet = MapBottomSheet(this)
+        bottomSheet.arguments = argument
         bottomSheet.show(requireActivity().supportFragmentManager, "MapBottomSheet")
+    }
+
+    override fun setDefaultLocation(coord: Coord) {
+        viewModel.setMapLocation(coord)
+    }
+
+    override fun saveBookmark() {
+        //    viewModel.saveBookmark(coord)
+    }
+
+    override fun setAlert() {
+        val dateAlertDialog = DateAlertDialog(this)
+        viewModel.saveAlertLocation(coord)
+        val arguments = Bundle().apply {
+            putDouble(MAP_LAT, coord.lat)
+            putDouble(MAP_LON, coord.lon)
+        }
+        dateAlertDialog.apply {
+            this.arguments = arguments
+            view?.background =
+                resources.getDrawable(R.drawable.dialog_background, requireActivity().theme)
+        }
+        dateAlertDialog.show(parentFragmentManager, "alert_dialog")
+    }
+
+    override fun createNotification(alarmItem: AlarmItem) {
+        viewModel.saveAlertLocation(coord)
+        alarm.scheduleAlarm(alarmItem)
+    }
+
+    override fun createDialog(request: OneTimeWorkRequest) {
+        WorkManager.getInstance(requireContext().applicationContext).enqueue(request)
+        WorkManager.getInstance(requireContext().applicationContext)
+            .getWorkInfoByIdLiveData(request.id).observe(
+                requireActivity()
+            ) { workInfo ->
+                val result = workInfo.outputData.getString(ALERT_RESULT_CONSTANTS.CURRENT_WEATHER)
+                val currentWeather =
+                    result?.let { json -> Gson().fromJson(json, CurrentWeather::class.java) }
+                if (currentWeather != null) {
+                    val dialog = AlertResultDialog(currentWeather)
+                    dialog.show(parentFragmentManager, "AlertResultDialog")
+                }
+            }
     }
 
 

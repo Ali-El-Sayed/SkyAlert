@@ -10,30 +10,35 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TimePicker
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import com.example.skyalert.R
 import com.example.skyalert.databinding.AlertDialogBinding
 import com.example.skyalert.interfaces.Callback
+import com.example.skyalert.interfaces.OnAlertDialogCallback
 import com.example.skyalert.services.alarm.AndroidAlarmScheduler
 import com.example.skyalert.services.alarm.model.AlarmItem
+import com.example.skyalert.services.workManager.DialogAlertManager
 import com.example.skyalert.util.getDayName
 import com.example.skyalert.util.getHour24Format
 import com.example.skyalert.util.getMillisecondsFromDate
 import com.example.skyalert.util.getMinute
+import com.example.skyalert.util.getMonthName
 import com.example.skyalert.util.millisecondsToLocalDateTime
+import com.example.skyalert.view.screens.map.MAP_CONSTANTS
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Month
-import java.time.format.TextStyle
 import java.util.Calendar
-import java.util.Locale
 
 
 private const val TAG = "AlertDialog"
 
-class AlertDialog : DialogFragment(), DatePickerDialog.OnDateSetListener,
+class DateAlertDialog(val onAlertDialogCallback: OnAlertDialogCallback) : DialogFragment(),
+    DatePickerDialog.OnDateSetListener,
     TimePickerDialog.OnTimeSetListener, Callback {
     private val binding by lazy {
         AlertDialogBinding.inflate(layoutInflater)
@@ -56,12 +61,7 @@ class AlertDialog : DialogFragment(), DatePickerDialog.OnDateSetListener,
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding.root.background = ResourcesCompat.getDrawable(
-            resources, R.drawable.dialog_background, requireActivity().theme
-        )
-        return binding.root
-    }
+    ): View = binding.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -123,12 +123,7 @@ class AlertDialog : DialogFragment(), DatePickerDialog.OnDateSetListener,
         } else {
             "${hours - 12}:$minutes ${context.resources.getString(R.string.pm)}"
         }
-        return "$day $dayName, $monthName $time"
-    }
-
-
-    private fun getMonthName(month: Int): String {
-        return Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault())
+        return "$day $dayName, $monthName\n$time"
     }
 
 
@@ -136,6 +131,23 @@ class AlertDialog : DialogFragment(), DatePickerDialog.OnDateSetListener,
         val checked = binding.chipGroup.checkedChipId
         val v = binding.chipGroup.children.find { it.id == checked }
         if (v?.tag?.equals(resources.getString(R.string.alert)) == true) {
+            val currentTimeMillis = System.currentTimeMillis()
+            val lon = arguments?.getDouble(MAP_CONSTANTS.MAP_LON) ?: 0.0
+            val lat = arguments?.getDouble(MAP_CONSTANTS.MAP_LAT) ?: 0.0
+
+            val data = Data.Builder().putDouble(MAP_CONSTANTS.MAP_LON, lon)
+                .putDouble(MAP_CONSTANTS.MAP_LAT, lat).build()
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val request = OneTimeWorkRequestBuilder<DialogAlertManager>().setInitialDelay(
+                getMillisecondsFromDate(year, month, day, hour, minute.toInt()) - currentTimeMillis,
+                java.util.concurrent.TimeUnit.MILLISECONDS
+            ).setInputData(data).setConstraints(constraints).build()
+
+            onAlertDialogCallback.createDialog(request)
+
 
         } else if (v?.tag?.equals(resources.getString(R.string.notification)) == true) {
             alarmItem.time = millisecondsToLocalDateTime(
@@ -143,7 +155,7 @@ class AlertDialog : DialogFragment(), DatePickerDialog.OnDateSetListener,
                     year, month, day, hour, minute.toInt()
                 )
             )
-            alarm.scheduleAlarm(alarmItem)
+            onAlertDialogCallback.createNotification(alarmItem)
         }
     }
 

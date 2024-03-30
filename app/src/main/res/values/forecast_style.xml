@@ -7,21 +7,21 @@
     -->
     <style name="forecastCardText" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_onLightSurface_color</item>
-        <item name="android:fontFamily">@font/amaranth_regular</item>
+        <item name="android:fontFamily">@font/regular</item>
         <item name="android:textSize">16sp</item>
     </style>
 
 
     <style name="hourlyForecast" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_onDarkSurface_color</item>
-        <item name="android:fontFamily">@font/amaranth_regular</item>
+        <item name="android:fontFamily">@font/regular</item>
         <item name="android:textSize">20sp</item>
     </style>
 
     <style name="currentWeatherForecast" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_onLightSurface_color</item>
-        <item name="android:fontFamily">@font/amaranth_regular</item>
-        <item name="android:textSize">28sp</item>
+        <item name="android:fontFamily">@font/regular</item>
+        <item name="android:textSize">24sp</item>
     </style>
 
 </resources>

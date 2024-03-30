@@ -56,6 +56,7 @@
     <string name="notify_me">Notify me</string>
     <string name="am">AM</string>
     <string name="pm">PM</string>
+    <string name="weather_alert">Weather Alert</string>
 
 
 </resources>

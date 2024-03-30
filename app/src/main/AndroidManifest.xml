@@ -49,7 +49,7 @@
         </activity>
 
         <receiver
-            android:name=".services.broadcastReceiver.LocationBroadcastReceiver"
+            android:name=".services.broadcastReceiver.locationReceiver.LocationBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.location.MODE_CHANGED" />

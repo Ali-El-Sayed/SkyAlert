@@ -59,4 +59,7 @@ interface ISharedPreference {
     fun getLocationSource(): LOCATION_SOURCE
 
 
+    fun saveAlertCoord(coord: Coord)
+
+    fun getAlertCoord(): Coord
 }

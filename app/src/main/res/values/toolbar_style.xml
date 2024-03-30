@@ -3,21 +3,21 @@
     <!--    APP BAR STYLES  -->
     <style name="appBarCityName" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_onDarkSurface_color</item>
-        <item name="android:fontFamily">@font/amaranth_regular</item>
+        <item name="android:fontFamily">@font/regular</item>
         <item name="android:textSize">40sp</item>
     </style>
 
     <style name="appBarTemp" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_onDarkSurface_color</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/yeseva_one_regular</item>
+        <item name="android:fontFamily">@font/regular</item>
         <item name="android:textSize">90sp</item>
     </style>
 
     <style name="appBarTempMeasurements" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_onDarkSurface_color</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">@font/yeseva_one_regular</item>
+        <item name="android:fontFamily">@font/regular</item>
         <item name="android:textSize">30sp</item>
     </style>
 
@@ -25,21 +25,21 @@
     <style name="highLowTemp" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_onDarkSurface_color</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">@font/yeseva_one_regular</item>
+        <item name="android:fontFamily">@font/regular</item>
         <item name="android:textSize">20sp</item>
     </style>
 
     <style name="appBarDescription" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_onDarkSurface_color</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/amaranth_regular</item>
+        <item name="android:fontFamily">@font/regular</item>
         <item name="android:textSize">20sp</item>
     </style>
 
     <style name="appBarTitle" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="titleTextColor">@color/text_onDarkSurface_color</item>
         <item name="android:textColor">@color/text_onDarkSurface_color</item>
-        <item name="fontFamily">@font/amaranth_regular</item>
+        <item name="fontFamily">@font/regular</item>
         <item name="titleCentered">true</item>
         <item name="android:background">@drawable/toolbar_bg</item>
     </style>
@@ -48,9 +48,9 @@
     <style name="expandedToolBar" parent="Widget.Material3.CollapsingToolbar">
         <item name="contentScrim">@color/main_color</item>
         <item name="collapsedTitleGravity">center</item>
-        <item name="collapsedTitleTextAppearance">@font/amaranth_regular</item>
+        <item name="collapsedTitleTextAppearance">@font/regular</item>
         <item name="collapsedTitleTextColor">@color/text_onDarkSurface_color</item>
-        <item name="expandedTitleTextAppearance">@font/amaranth_regular</item>
+        <item name="expandedTitleTextAppearance">@font/regular</item>
         <item name="expandedTitleTextColor">@color/text_onDarkSurface_color</item>
     </style>
 
@@ -61,15 +61,15 @@
 
     <style name="toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="titleTextColor">@color/text_onDarkSurface_color</item>
-        <item name="fontFamily">@font/amaranth_regular</item>
+        <item name="fontFamily">@font/regular</item>
         <item name="titleCentered">true</item>
     </style>
 
     <!--  Button  -->
-    <style name="openLocationBtnStyle" parent="Widget.AppCompat.Button">
-        <item name="android:background">@drawable/button_background</item>
-        <item name="android:textColor">@color/text_onLightSurface_color</item>
-        <item name="android:fontFamily">@font/amaranth_regular</item>
+    <style name="btn_main_style" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/ripple</item>
+        <item name="android:textColor">@color/text_onDarkSurface_color</item>
+        <item name="android:fontFamily">@font/regular</item>
         <item name="textAllCaps">false</item>
         <item name="android:textSize">16sp</item>
     </style>

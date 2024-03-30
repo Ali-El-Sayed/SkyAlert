@@ -8,11 +8,10 @@ import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 
 interface IWeatherRepo {
-    suspend fun getCurrentWeather(): Flow<CurrentWeatherState>
 
-    suspend fun getHourlyForecast(cnt: Int = 8): Flow<FiveDaysForecastState>
-
-
+    /**
+     * shared preference data source
+     * */
     fun getUnit(): UNITS
     fun setUnit(unit: UNITS)
 
@@ -24,6 +23,24 @@ interface IWeatherRepo {
 
     fun setMapLocation(coord: Coord)
     fun getMapLocation(): Coord
+
+    fun saveAlertLocation(coord: Coord)
+    fun getAlertLocation(): Coord
+
+
+    /**
+     * Database Local data source
+     * */
+
+    /**
+     * Remote data source
+     * */
+
+    suspend fun getCurrentWeather(): Flow<CurrentWeatherState>
+    suspend fun getCurrentWeather(coord: Coord): Flow<CurrentWeatherState>
+
+    suspend fun getHourlyForecast(cnt: Int = 8): Flow<FiveDaysForecastState>
+
     suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState>
 
 

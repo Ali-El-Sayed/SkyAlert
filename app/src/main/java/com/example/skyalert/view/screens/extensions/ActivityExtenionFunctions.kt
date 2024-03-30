@@ -5,6 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.skyalert.interfaces.Callback
+import com.example.skyalert.view.dialogs.AlertResultDialog
+import com.example.skyalert.view.screens.main.HomeScreenActivity
 
 
 /**
@@ -24,4 +26,8 @@ fun AppCompatActivity.delay(duration: Long, callBack: Callback) {
     Handler(Looper.getMainLooper()).postDelayed({
         callBack.onFinished()
     }, duration)
+}
+
+fun HomeScreenActivity.showAlertResultDialog(alertResultDialog: AlertResultDialog) {
+    alertResultDialog.show(supportFragmentManager, "AlertResultDialog")
 }

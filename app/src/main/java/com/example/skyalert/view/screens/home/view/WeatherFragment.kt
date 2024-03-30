@@ -1,10 +1,8 @@
 package com.example.skyalert.view.screens.home.view
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
@@ -41,8 +39,8 @@ import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.repository.WeatherRepo
-import com.example.skyalert.services.broadcastReceiver.LocationBroadcastReceiver
-import com.example.skyalert.services.broadcastReceiver.OnLocationChange
+import com.example.skyalert.services.broadcastReceiver.locationReceiver.LocationBroadcastReceiver
+import com.example.skyalert.services.broadcastReceiver.locationReceiver.OnLocationChange
 import com.example.skyalert.util.GPSUtils
 import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.util.toCapitalizedWords
@@ -57,7 +55,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -252,7 +249,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
         binding.cityNameTextView.text = currentWeather.name
 
         binding.weatherTempTextView.text = "${currentWeather.main.temp.toInt()}"
-        val tempMeasurements = when (viewModel.getUnit()) {
+        val tempMeasurements = when (currentWeather.unit) {
             UNITS.METRIC -> getString(R.string.celsius_measure)
             UNITS.IMPERIAL -> getString(R.string.fahrenheit_measure)
             UNITS.STANDARD -> getString(R.string.kelvin_measure)
@@ -355,28 +352,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
             Log.e(TAG, "Error getting location: ${it.message}")
         }
     }
-
-    fun getLocationFromCoordinates(context: Context, latitude: Double, longitude: Double) {
-        val geocoder = Geocoder(context, Locale.getDefault())
-        try {
-            val addressList = geocoder.getFromLocation(latitude, longitude, 1)
-            if (addressList != null && addressList.size > 0) {
-                val address = addressList[0]
-                val locationName = address.getAddressLine(0)
-                this.address = locationName
-                Toast.makeText(context, "address: ${address.countryName}", Toast.LENGTH_SHORT)
-                    .show()
-                Log.d(TAG, "address: $address")
-                Log.d(TAG, "Location: $locationName")
-                Log.d(TAG, "Latitude: $latitude")
-
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Log.e("GeoCoder", "Error reverse geocoding coordinates")
-        }
-    }
-
 
     private fun showEnableGPSDialog() {
         val builder = MaterialAlertDialogBuilder(requireActivity())

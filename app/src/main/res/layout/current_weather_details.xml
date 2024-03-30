@@ -24,8 +24,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/image_view_weather_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center_vertical"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_sunrise" />
@@ -50,8 +50,9 @@
         app:layout_constraintTop_toBottomOf="@id/linear_layout_date">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:src="@drawable/ic_real_feel" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -84,8 +85,9 @@
         app:layout_constraintTop_toBottomOf="@id/linear_layout_date">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:src="@drawable/ic_wind" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -117,8 +119,9 @@
         app:layout_constraintTop_toBottomOf="@id/linear_layout_real_feel">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:src="@drawable/ic_humidity" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -149,8 +152,9 @@
         app:layout_constraintTop_toBottomOf="@id/linear_layout_wind">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:src="@drawable/ic_pressure" />
 
         <androidx.appcompat.widget.LinearLayoutCompat

@@ -4,6 +4,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.Month
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -52,22 +53,9 @@ fun getMinute(): String = LocalDateTime.now().minute.toString()
  *  @param month the month
  *  @return Month name ex. January
  */
+
 fun getMonthName(month: Int): String {
-    return when (month) {
-        1 -> "January"
-        2 -> "February"
-        3 -> "March"
-        4 -> "April"
-        5 -> "May"
-        6 -> "June"
-        7 -> "July"
-        8 -> "August"
-        9 -> "September"
-        10 -> "October"
-        11 -> "November"
-        12 -> "December"
-        else -> "Invalid month"
-    }
+    return Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
 
 
