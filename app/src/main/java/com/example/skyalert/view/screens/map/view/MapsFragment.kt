@@ -9,13 +9,15 @@ import androidx.fragment.app.Fragment
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.skyalert.R
+import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
+import com.example.skyalert.dataSource.local.db.WeatherDatabase
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentMapBinding
 import com.example.skyalert.interfaces.BottomSheetCallbacks
 import com.example.skyalert.interfaces.OnAlertDialogCallback
-import com.example.skyalert.model.Coord
-import com.example.skyalert.model.CurrentWeather
+import com.example.skyalert.model.remote.Coord
+import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.services.alarm.AndroidAlarmScheduler
@@ -50,8 +52,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
     private lateinit var marker: Marker
     private val viewModel: MapViewModel by lazy {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
+        val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
+        val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref
+        )
         val repo = WeatherRepo.getInstance(
-            remoteDataSource, SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+            remoteDataSource, localDatasource
         )
         val factory = WeatherViewModelFactory(repo)
         factory.create(MapViewModel::class.java)

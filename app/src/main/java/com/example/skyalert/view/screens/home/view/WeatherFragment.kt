@@ -27,12 +27,14 @@ import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.skyalert.R
+import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
+import com.example.skyalert.dataSource.local.db.WeatherDatabase
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
-import com.example.skyalert.model.Coord
-import com.example.skyalert.model.CurrentWeather
-import com.example.skyalert.model.Day
+import com.example.skyalert.model.remote.Coord
+import com.example.skyalert.model.remote.CurrentWeather
+import com.example.skyalert.model.remote.Day
 import com.example.skyalert.network.NetworkHelper
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.network.UNITS
@@ -71,8 +73,13 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private val DELAY_IN_LOCATION_REQUEST = 2000000L
     private val viewModel: WeatherScreenViewModel by lazy {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
+        val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
+        val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref
+        )
         val repo = WeatherRepo.getInstance(
-            remoteDataSource, SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+            remoteDataSource, localDatasource
         )
         val factory = WeatherViewModelFactory(repo)
         ViewModelProvider(this, factory)[WeatherScreenViewModel::class.java]
@@ -120,7 +127,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
                         is CurrentWeatherState.Success -> {
                             binding.currentWeatherProgressBar.visibility = View.GONE
                             val currentWeather = it.currentWeather
-                            currentWeather.isCurrent = true
                             updateToolbar(currentWeather)
                             updateCurrentDetails(currentWeather)
                             Log.d(TAG, "Current Weather: $currentWeather")
@@ -325,7 +331,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 binding.navView
             )
             else binding.drawerLayout.openDrawer(binding.navView)
-
         }
 
 

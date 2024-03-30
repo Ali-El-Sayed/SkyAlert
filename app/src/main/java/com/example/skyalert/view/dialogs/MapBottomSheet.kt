@@ -11,11 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.example.skyalert.R
+import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
+import com.example.skyalert.dataSource.local.db.WeatherDatabase
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentMapBottomSheetBinding
 import com.example.skyalert.interfaces.BottomSheetCallbacks
-import com.example.skyalert.model.Coord
+import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.network.NetworkHelper
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.network.model.CurrentWeatherState
@@ -41,8 +43,13 @@ class MapBottomSheet(private val bottomSheetCallbacks: BottomSheetCallbacks) :
 
     private val viewModel: MapViewModel by lazy {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
+        val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
+        val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref
+        )
         val repo = WeatherRepo.getInstance(
-            remoteDataSource, SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+            remoteDataSource, localDatasource
         )
         val factory = WeatherViewModelFactory(repo)
         ViewModelProvider(this, factory)[MapViewModel::class.java]

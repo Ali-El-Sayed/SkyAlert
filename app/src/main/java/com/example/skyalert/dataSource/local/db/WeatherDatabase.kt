@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.skyalert.model.CurrentWeather
+import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.model.typeConverter.WeatherTypeConverter
 
 @Database(entities = [CurrentWeather::class], version = 1)

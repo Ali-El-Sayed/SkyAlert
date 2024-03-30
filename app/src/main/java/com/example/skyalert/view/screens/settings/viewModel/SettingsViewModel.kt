@@ -1,7 +1,7 @@
 package com.example.skyalert.view.screens.settings.viewModel
 
 import androidx.lifecycle.ViewModel
-import com.example.skyalert.model.Coord
+import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.repository.IWeatherRepo
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE

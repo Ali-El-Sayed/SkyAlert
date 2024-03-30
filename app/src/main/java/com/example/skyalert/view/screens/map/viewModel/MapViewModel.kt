@@ -2,7 +2,8 @@ package com.example.skyalert.view.screens.map.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.skyalert.model.Coord
+import com.example.skyalert.model.remote.Coord
+import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.repository.IWeatherRepo
 import kotlinx.coroutines.Dispatchers
@@ -35,5 +36,9 @@ class MapViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel() {
 
     fun saveAlertLocation(coord: Coord) {
         _weatherRepo.saveAlertLocation(coord)
+    }
+
+    fun addToFavorite(currentWeather: CurrentWeather) {
+        TODO("Not yet implemented")
     }
 }

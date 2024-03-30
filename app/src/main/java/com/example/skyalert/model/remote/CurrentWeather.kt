@@ -1,4 +1,4 @@
-package com.example.skyalert.model
+package com.example.skyalert.model.remote
 
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -10,28 +10,22 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "current_weather")
 data class CurrentWeather(
-    @Embedded(prefix = "coord_")
-    @SerializedName("coord") var coord: Coord,
-    @SerializedName("weather")
-    @TypeConverters(WeatherTypeConverter::class)
-    var weather: ArrayList<Weather>,
+    @PrimaryKey(autoGenerate = true) var idRoom: Long = 0,
+    @Embedded(prefix = "coord_") @SerializedName("coord") var coord: Coord,
+    @SerializedName("weather") @TypeConverters(WeatherTypeConverter::class) var weather: ArrayList<Weather>,
     @SerializedName("base") var base: String,
-    @Embedded(prefix = "main_")
-    @SerializedName("main") var main: Main,
+    @Embedded(prefix = "main_") @SerializedName("main") var main: Main,
     @SerializedName("visibility") var visibility: Int,
-    @Embedded(prefix = "wind_")
-    @SerializedName("wind") var wind: Wind,
-    @Embedded(prefix = "clouds_")
-    @SerializedName("clouds") var clouds: Clouds,
+    @Embedded(prefix = "wind_") @SerializedName("wind") var wind: Wind,
+    @Embedded(prefix = "clouds_") @SerializedName("clouds") var clouds: Clouds,
     @SerializedName("dt") var dt: Int = 0,
-    @Embedded(prefix = "sys_")
-    @SerializedName("sys") var sys: Sys = Sys("", "", 0, 0),
+    @Embedded(prefix = "sys_") @SerializedName("sys") var sys: Sys = Sys("", "", 0, 0),
     @SerializedName("timezone") var timezone: Int,
     @SerializedName("id") var id: Int,
     @SerializedName("name") var name: String,
     @SerializedName("cod") var cod: Int,
+    var unit: UNITS = UNITS.METRIC,
     var isFavorite: Boolean = false,
-    @PrimaryKey
-    var isCurrent: Boolean = false,
-    var unit: UNITS = UNITS.METRIC
+    var isGPS: Boolean = false,
+    var isMap: Boolean = false
 )
