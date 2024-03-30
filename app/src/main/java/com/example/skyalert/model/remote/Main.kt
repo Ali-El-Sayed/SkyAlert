@@ -1,4 +1,4 @@
-package com.example.skyalert.model
+package com.example.skyalert.model.remote
 import com.google.gson.annotations.SerializedName
 data class Main(
     @SerializedName("temp") var temp: Double,

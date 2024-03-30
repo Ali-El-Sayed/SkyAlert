@@ -8,7 +8,7 @@ import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.example.skyalert.R
 import com.example.skyalert.databinding.AlertResultDialogBinding
-import com.example.skyalert.model.CurrentWeather
+import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.NetworkHelper
 import com.example.skyalert.network.UNITS
 

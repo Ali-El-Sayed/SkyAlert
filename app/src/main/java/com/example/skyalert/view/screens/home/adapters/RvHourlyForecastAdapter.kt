@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.skyalert.R
 import com.example.skyalert.databinding.HourlyForecastCardBinding
-import com.example.skyalert.model.Day
+import com.example.skyalert.model.remote.Day
 import com.example.skyalert.network.NetworkHelper
 import java.text.SimpleDateFormat
 

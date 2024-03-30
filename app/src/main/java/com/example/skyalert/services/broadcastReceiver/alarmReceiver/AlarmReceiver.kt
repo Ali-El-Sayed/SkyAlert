@@ -7,9 +7,11 @@ import android.content.Intent
 import android.util.Log
 import com.bumptech.glide.Glide
 import com.example.skyalert.R
+import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
+import com.example.skyalert.dataSource.local.db.WeatherDatabase
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
-import com.example.skyalert.model.CurrentWeather
+import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.NetworkHelper.getIconUrl
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.network.UNITS
@@ -26,12 +28,17 @@ private const val TAG = "AlarmReceiver"
 class AlarmReceiver() : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
+        val dao = WeatherDatabase.getInstance(context.applicationContext).weatherDao()
+        val sharedPref = SharedPreferenceImpl.getInstance(context.applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref
+        )
         val repo = WeatherRepo.getInstance(
-            remoteDataSource, SharedPreferenceImpl.getInstance(context.applicationContext)
+            remoteDataSource, localDatasource
         )
         val scope = CoroutineScope(Dispatchers.IO)
         scope.launch {
-            repo.getCurrentWeather(repo.getAlertLocation()).collect {
+            repo.getCurrentWeatherByCoord(repo.getAlertLocation()).collect {
                 when (it) {
                     is CurrentWeatherState.Success -> {
                         handleSuccess(context, it.currentWeather)

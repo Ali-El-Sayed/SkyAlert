@@ -3,7 +3,7 @@ package com.example.skyalert.dataSource.local.sharedPref
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.example.skyalert.model.Coord
+import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 

@@ -1,6 +1,6 @@
 package com.example.skyalert.interfaces
 
-import com.example.skyalert.model.Coord
+import com.example.skyalert.model.remote.Coord
 
 interface BottomSheetCallbacks {
     fun setDefaultLocation(coord: Coord)

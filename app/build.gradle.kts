@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.play.services.maps)
     kapt("androidx.room:room-compiler:2.6.1")
+
     // Lottie
     implementation("com.airbnb.android:lottie:6.4.0")
     // Google Play Services
@@ -81,13 +82,27 @@ dependencies {
     // work manager
     implementation("androidx.work:work-runtime-ktx:2.7.1")
 
+
+    /**
+     *  Testing dependencies
+     * */
     // hamcrest
     testImplementation("org.hamcrest:hamcrest-all:1.3")
-    testImplementation(libs.junit)
+    // Junit
+    testImplementation("junit:junit:4.13.2")
+    // Coroutines test dependencies
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
+    // Robolectric
+    testImplementation("org.robolectric:robolectric:4.12")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
     testImplementation("androidx.test.ext:junit-ktx:1.1.5")
     testImplementation("androidx.test:core-ktx:1.5.0")
-    testImplementation("org.robolectric:robolectric:4.6.1")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // AndroidX Test - Instrumented testing
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

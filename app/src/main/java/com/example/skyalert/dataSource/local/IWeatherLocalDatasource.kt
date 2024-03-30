@@ -1,17 +1,14 @@
-package com.example.skyalert.repository
+package com.example.skyalert.dataSource.local
 
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
-import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
-import kotlinx.coroutines.flow.Flow
 
-interface IWeatherRepo {
-
+interface IWeatherLocalDatasource {
     /**
-     * shared preference data source
+     * Shared preferences methods
      * */
     fun getUnit(): UNITS
     fun setUnit(unit: UNITS)
@@ -28,26 +25,12 @@ interface IWeatherRepo {
     fun saveAlertLocation(coord: Coord)
     fun getAlertLocation(): Coord
 
-
     /**
-     * Database Local data source
+     *  Database methods
      * */
-    fun getLocalCurrentWeather(): Flow<CurrentWeatherState>
 
     suspend fun getGPSWeather(): CurrentWeatherState
     suspend fun getMapWeather(): CurrentWeatherState
     suspend fun getFavoriteWeather(): List<CurrentWeather>
     suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long
-
-    /**
-     * Remote data source
-     * */
-
-    suspend fun getCurrentWeather(): Flow<CurrentWeatherState>
-
-    suspend fun getHourlyForecast(cnt: Int = 8): Flow<FiveDaysForecastState>
-
-    suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState>
-
-
 }

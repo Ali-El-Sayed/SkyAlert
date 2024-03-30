@@ -1,4 +1,4 @@
-package com.example.skyalert.model
+package com.example.skyalert.model.remote
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

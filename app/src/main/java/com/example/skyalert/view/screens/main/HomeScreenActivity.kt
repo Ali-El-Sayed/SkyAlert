@@ -14,7 +14,7 @@ import com.example.skyalert.databinding.ActivityHomeScreenBinding
 
 class HomeScreenActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeScreenBinding
-    val LOCATION_PERMISSION_REQUEST_CODE = 222
+    private val LOCATION_PERMISSION_REQUEST_CODE = 222
 
     private val permissions = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,

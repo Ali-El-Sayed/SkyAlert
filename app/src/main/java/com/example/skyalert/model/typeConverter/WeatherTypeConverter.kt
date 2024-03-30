@@ -1,7 +1,7 @@
 package com.example.skyalert.model.typeConverter
 
 import androidx.room.TypeConverter
-import com.example.skyalert.model.Weather
+import com.example.skyalert.model.remote.Weather
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
