@@ -7,6 +7,8 @@ import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class WeatherLocalDatasourceImpl(
     private val weatherDao: WeatherDao, private val sharedPreference: ISharedPreference
@@ -75,9 +77,13 @@ class WeatherLocalDatasourceImpl(
 
     }
 
-    override suspend fun getFavoriteWeather(): List<CurrentWeather> =
-        weatherDao.getFavoriteWeather()
+    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> = flow {
+        emit(weatherDao.getFavoriteWeather())
+    }
 
     override suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long =
         weatherDao.insertCurrentWeather(currentWeather)
+
+    override suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int =
+        weatherDao.deleteFavoriteWeather(currentWeather)
 }

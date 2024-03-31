@@ -53,14 +53,7 @@ class DialogAlertManager(
                     }
                 }
 
-                is CurrentWeatherState.Error -> {
-
-                }
-
-                is CurrentWeatherState.Loading -> {
-
-                }
-
+                else -> {}
             }
         }
 

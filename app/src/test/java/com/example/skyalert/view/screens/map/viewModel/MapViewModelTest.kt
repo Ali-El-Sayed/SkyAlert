@@ -1,8 +1,8 @@
 package com.example.skyalert.view.screens.map.viewModel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
 import com.example.skyalert.model.remote.Coord
-import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.repository.FakeWeatherRepo
 import com.example.skyalert.util.getEmptyWeatherObj
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,7 +50,7 @@ class MapViewModelTest {
         // THEN - Verify the current weather is returned
         val result = mapViewModel.currentWeather.first()
         when (result) {
-            is CurrentWeatherState.Success ->
+            is BookmarkedWeatherState.Success ->
                 assertThat(result.currentWeather.coord, `is`(coord))
 
             else -> assert(false)

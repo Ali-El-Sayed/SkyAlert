@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_weatherFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_weatherFragment_to_bookmarkFragment"
+            app:destination="@id/bookmarkFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -54,4 +57,9 @@
         android:name="com.example.skyalert.view.dialogs.AlertResultDialog"
         android:label="AlertResultDialog"
         tools:layout="@layout/alert_result_dialog" />
+    <fragment
+        android:id="@+id/bookmarkFragment"
+        android:name="com.example.skyalert.view.screens.bookmark.view.BookmarkFragment"
+        android:label="BookmarkFragment"
+        tools:layout="@layout/fragment_bookmark" />
 </navigation>

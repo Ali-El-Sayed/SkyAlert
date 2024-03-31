@@ -1,9 +1,9 @@
 package com.example.skyalert.dataSource.local
 
+import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
-import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.util.getEmptyWeatherObj
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlin.random.Random
@@ -43,21 +43,21 @@ class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
 
     override fun getAlertLocation(): Coord = alertLocation
 
-    override suspend fun getGPSWeather(): CurrentWeatherState {
-        for (weather in currentWeatherList) if (weather.isGPS) CurrentWeatherState.Success(weather)
+    override suspend fun getGPSWeather(): BookmarkedWeatherState {
+        for (weather in currentWeatherList) if (weather.isGPS) BookmarkedWeatherState.Success(weather)
         val emptyCurrentWeather = getEmptyWeatherObj()
         emptyCurrentWeather.isGPS = true
-        return CurrentWeatherState.Success(emptyCurrentWeather)
+        return BookmarkedWeatherState.Success(emptyCurrentWeather)
     }
 
-    override suspend fun getMapWeather(): CurrentWeatherState {
-        for (weather in currentWeatherList) if (weather.isMap) CurrentWeatherState.Success(weather)
+    override suspend fun getMapWeather(): BookmarkedWeatherState {
+        for (weather in currentWeatherList) if (weather.isMap) BookmarkedWeatherState.Success(weather)
         val emptyCurrentWeather = getEmptyWeatherObj()
         emptyCurrentWeather.isMap = true
-        return CurrentWeatherState.Success(emptyCurrentWeather)
+        return BookmarkedWeatherState.Success(emptyCurrentWeather)
     }
 
-    override suspend fun getFavoriteWeather(): List<CurrentWeather> {
+    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> {
         return currentWeatherList.filter { it.isFavorite }
     }
 

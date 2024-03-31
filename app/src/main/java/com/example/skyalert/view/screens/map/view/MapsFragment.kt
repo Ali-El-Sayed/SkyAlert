@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.skyalert.R
@@ -40,11 +41,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val TAG = "MapsFragment"
 
-class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMarkerDragListener,
-    GoogleMap.OnMapClickListener, BottomSheetCallbacks, OnAlertDialogCallback {
+class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMarkerDragListener, GoogleMap.OnMapClickListener,
+    BottomSheetCallbacks, OnAlertDialogCallback {
     private lateinit var mMap: GoogleMap
     private val binding: FragmentMapBinding by lazy {
         FragmentMapBinding.inflate(layoutInflater)
@@ -81,8 +84,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         super.onViewCreated(view, savedInstanceState)
 
 
-        val mapFragment =
-            childFragmentManager.findFragmentById(com.example.skyalert.R.id.map) as SupportMapFragment
+        val mapFragment = childFragmentManager.findFragmentById(com.example.skyalert.R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -157,7 +159,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
     }
 
     override fun saveBookmark() {
-        //    viewModel.saveBookmark(coord)
+//        viewModel.saveMapLocation(coord)
     }
 
     override fun setAlert() {
@@ -169,10 +171,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         }
         dateAlertDialog.apply {
             this.arguments = arguments
-            view?.background =
-                resources.getDrawable(R.drawable.dialog_background, requireActivity().theme)
+            view?.background = resources.getDrawable(R.drawable.dialog_background, requireActivity().theme)
         }
         dateAlertDialog.show(parentFragmentManager, "alert_dialog")
+    }
+
+    override fun onAddToFavorite(currentWeather: CurrentWeather) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.addToFavorite(currentWeather)
+        }
     }
 
     override fun createNotification(alarmItem: AlarmItem) {
@@ -182,18 +189,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     override fun createDialog(request: OneTimeWorkRequest) {
         WorkManager.getInstance(requireContext().applicationContext).enqueue(request)
-        WorkManager.getInstance(requireContext().applicationContext)
-            .getWorkInfoByIdLiveData(request.id).observe(
-                requireActivity()
-            ) { workInfo ->
-                val result = workInfo.outputData.getString(ALERT_RESULT_CONSTANTS.CURRENT_WEATHER)
-                val currentWeather =
-                    result?.let { json -> Gson().fromJson(json, CurrentWeather::class.java) }
-                if (currentWeather != null) {
-                    val dialog = AlertResultDialog(currentWeather)
-                    dialog.show(parentFragmentManager, "AlertResultDialog")
-                }
+        WorkManager.getInstance(requireContext().applicationContext).getWorkInfoByIdLiveData(request.id).observe(
+            requireActivity()
+        ) { workInfo ->
+            val result = workInfo.outputData.getString(ALERT_RESULT_CONSTANTS.CURRENT_WEATHER)
+            val currentWeather = result?.let { json -> Gson().fromJson(json, CurrentWeather::class.java) }
+            if (currentWeather != null) {
+                val dialog = AlertResultDialog(currentWeather)
+                dialog.show(parentFragmentManager, "AlertResultDialog")
             }
+        }
     }
 
 

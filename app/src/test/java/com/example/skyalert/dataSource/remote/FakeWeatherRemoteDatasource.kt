@@ -1,6 +1,6 @@
 package com.example.skyalert.dataSource.remote
 
-import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import kotlinx.coroutines.flow.Flow
 
@@ -11,7 +11,7 @@ class FakeWeatherRemoteDatasource : IWeatherRemoteDataSource {
         mode: String,
         units: String,
         lang: String
-    ): Flow<CurrentWeatherState> {
+    ): Flow<BookmarkedWeatherState> {
         TODO("Not yet implemented")
     }
 

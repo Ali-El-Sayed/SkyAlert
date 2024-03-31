@@ -1,6 +1,7 @@
 package com.example.skyalert.dataSource.local.db
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -37,6 +38,13 @@ interface WeatherDao {
      * */
     @Query("SELECT * FROM current_weather WHERE isFavorite = TRUE")
     suspend fun getFavoriteWeather(): List<CurrentWeather>
+
+    /**
+     *  Delete a Favorite weather from the database
+     *  @param id the id of the favorite weather to be deleted
+     * */
+    @Delete
+    suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int
 
 
 }

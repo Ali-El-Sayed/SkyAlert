@@ -1,10 +1,10 @@
 package com.example.skyalert.repository
 
+import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
 import com.example.skyalert.dataSource.local.sharedPref.KEYS
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
-import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
@@ -64,15 +64,15 @@ class FakeWeatherRepo : IWeatherRepo {
         return Coord(lat.toDouble(), lon.toDouble())
     }
 
-    override fun getLocalCurrentWeather(): Flow<CurrentWeatherState> {
+    override fun getLocalCurrentWeather(): Flow<BookmarkedWeatherState> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getGPSWeather(): CurrentWeatherState {
+    override suspend fun getGPSWeather(): BookmarkedWeatherState {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getMapWeather(): CurrentWeatherState {
+    override suspend fun getMapWeather(): BookmarkedWeatherState {
         TODO("Not yet implemented")
     }
 
@@ -85,7 +85,7 @@ class FakeWeatherRepo : IWeatherRepo {
         return 1
     }
 
-    override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {
+    override suspend fun getCurrentWeather(): Flow<BookmarkedWeatherState> {
         TODO("Not yet implemented")
     }
 
@@ -93,11 +93,11 @@ class FakeWeatherRepo : IWeatherRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState> {
+    override suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<BookmarkedWeatherState> {
         val currentWeather = currentWeatherList.value.find { it.coord == coord }
         if (currentWeather != null) {
-            return flowOf(CurrentWeatherState.Success(currentWeather))
+            return flowOf(BookmarkedWeatherState.Success(currentWeather))
         }
-        return flowOf(CurrentWeatherState.Error("Current weather not found"))
+        return flowOf(BookmarkedWeatherState.Error("Current weather not found"))
     }
 }

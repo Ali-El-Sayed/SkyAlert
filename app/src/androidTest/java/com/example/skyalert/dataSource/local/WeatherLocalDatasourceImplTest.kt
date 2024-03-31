@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
-import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
 import com.example.skyalert.util.getEmptyWeatherObj
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -14,7 +14,6 @@ import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.greaterThan
 import org.hamcrest.Matchers.`is`
-import org.junit.AfterClass
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,6 +27,7 @@ class WeatherLocalDatasourceImplTest {
     private lateinit var database: WeatherDatabase
 
     // Rule to Execute Synchronous using Architecture Components
+    @JvmField
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
@@ -61,7 +61,7 @@ class WeatherLocalDatasourceImplTest {
         val id = async { localDatasource.insertCurrentWeather(weather) }.await()
         // When - Insert a weather
         val currentWeather =
-            async { localDatasource.getGPSWeather() }.await() as CurrentWeatherState.Success
+            async { localDatasource.getGPSWeather() }.await() as BookmarkedWeatherState.Success
         // Then - Verify that the weather is inserted
         assertThat(currentWeather.currentWeather.idRoom, `is`(id))
         assertThat(currentWeather.currentWeather.isGPS, `is`(true))
@@ -76,7 +76,7 @@ class WeatherLocalDatasourceImplTest {
         val id = async { localDatasource.insertCurrentWeather(weather) }.await()
         // When - Insert a weather
         val currentWeather =
-            async { localDatasource.getMapWeather() }.await() as CurrentWeatherState.Success
+            async { localDatasource.getMapWeather() }.await() as BookmarkedWeatherState.Success
         // Then - Verify that the weather is inserted
         assertThat(currentWeather.currentWeather.idRoom, `is`(id))
         assertThat(currentWeather.currentWeather.isMap, `is`(true))
@@ -99,6 +99,4 @@ class WeatherLocalDatasourceImplTest {
     }
 
 
-    @AfterClass
-    fun tearDown() = database.close()
 }
