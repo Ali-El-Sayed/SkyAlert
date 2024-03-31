@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
-import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
+import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.util.getEmptyWeatherObj
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -61,7 +61,7 @@ class WeatherLocalDatasourceImplTest {
         val id = async { localDatasource.insertCurrentWeather(weather) }.await()
         // When - Insert a weather
         val currentWeather =
-            async { localDatasource.getGPSWeather() }.await() as BookmarkedWeatherState.Success
+            async { localDatasource.getGPSWeather() }.await() as CurrentWeatherState.Success
         // Then - Verify that the weather is inserted
         assertThat(currentWeather.currentWeather.idRoom, `is`(id))
         assertThat(currentWeather.currentWeather.isGPS, `is`(true))
@@ -76,7 +76,7 @@ class WeatherLocalDatasourceImplTest {
         val id = async { localDatasource.insertCurrentWeather(weather) }.await()
         // When - Insert a weather
         val currentWeather =
-            async { localDatasource.getMapWeather() }.await() as BookmarkedWeatherState.Success
+            async { localDatasource.getMapWeather() }.await() as CurrentWeatherState.Success
         // Then - Verify that the weather is inserted
         assertThat(currentWeather.currentWeather.idRoom, `is`(id))
         assertThat(currentWeather.currentWeather.isMap, `is`(true))
@@ -91,11 +91,13 @@ class WeatherLocalDatasourceImplTest {
             async { localDatasource.insertCurrentWeather(weather) }.await()
         }
         // When - Insert a weather
-        val favoriteWeather = async { localDatasource.getFavoriteWeather() }.await()
-        // Then - Verify that the weather is inserted
-        for (weather in favoriteWeather) {
-            assertThat(weather.isFavorite, `is`(true))
+        localDatasource.getFavoriteWeather().collect { favoriteWeather ->
+            // Then - Verify that the weather is inserted
+            for (weather in favoriteWeather) {
+                assertThat(weather.isFavorite, `is`(true))
+            }
         }
+
     }
 
 

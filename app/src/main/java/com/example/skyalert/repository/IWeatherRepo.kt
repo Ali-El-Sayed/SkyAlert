@@ -1,6 +1,5 @@
 package com.example.skyalert.repository
 
-import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
@@ -33,7 +32,7 @@ interface IWeatherRepo {
     /**
      * Database Local data source
      * */
-    fun getLocalCurrentWeather(): Flow<BookmarkedWeatherState>
+    fun getLocalCurrentWeather(): Flow<CurrentWeatherState>
 
     suspend fun getGPSWeather(): CurrentWeatherState
     suspend fun getMapWeather(): CurrentWeatherState

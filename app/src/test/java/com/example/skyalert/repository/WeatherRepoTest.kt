@@ -3,13 +3,12 @@ package com.example.skyalert.repository
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.skyalert.dataSource.local.FakeWeatherLocalDatasource
 import com.example.skyalert.dataSource.local.IWeatherLocalDatasource
-import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
 import com.example.skyalert.dataSource.remote.FakeWeatherRemoteDatasource
 import com.example.skyalert.dataSource.remote.IWeatherRemoteDataSource
 import com.example.skyalert.network.UNITS
+import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.util.getEmptyWeatherObj
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -108,7 +107,7 @@ class WeatherRepoTest {
         val currentWeather = getEmptyWeatherObj()
         weatherRepo.insertCurrentWeather(currentWeather)
         // When
-        val gpsWeather = weatherRepo.getGPSWeather() as BookmarkedWeatherState.Success
+        val gpsWeather = weatherRepo.getGPSWeather() as CurrentWeatherState.Success
 
         assertThat(gpsWeather.currentWeather.isGPS, `is`(true))
     }
@@ -120,7 +119,7 @@ class WeatherRepoTest {
         val currentWeather = getEmptyWeatherObj()
         weatherRepo.insertCurrentWeather(currentWeather)
         // When
-        val mapWeather = weatherRepo.getMapWeather() as BookmarkedWeatherState.Success
+        val mapWeather = weatherRepo.getMapWeather() as CurrentWeatherState.Success
 
         assertThat(mapWeather.currentWeather.isMap, `is`(true))
     }
@@ -131,12 +130,14 @@ class WeatherRepoTest {
         val currentWeather = getEmptyWeatherObj()
         currentWeather.isFavorite = true
         val id = weatherRepo.insertCurrentWeather(currentWeather)
-        currentWeather.idRoom = id
         // When
-        val favoriteWeather = weatherRepo.getFavoriteWeather().first {
-            it.isFavorite
+        weatherRepo.getFavoriteWeather().collect {
+            // Then - Verify that the weather is inserted
+            for (weather in it) {
+                assertThat(weather.isFavorite, `is`(true))
+                assertThat(weather.idRoom, `is`(id))
+            }
         }
-        assertThat(favoriteWeather.isFavorite, `is`(true))
     }
 
 

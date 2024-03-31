@@ -1,7 +1,6 @@
 package com.example.skyalert.repository
 
 import com.example.skyalert.dataSource.local.IWeatherLocalDatasource
-import com.example.skyalert.dataSource.local.db.model.BookmarkedWeatherState
 import com.example.skyalert.dataSource.remote.IWeatherRemoteDataSource
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
@@ -82,7 +81,7 @@ class WeatherRepo private constructor(
     override suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int =
         _weatherLocalDatasource.deleteFavoriteWeather(currentWeather)
 
-    override fun getLocalCurrentWeather(): Flow<BookmarkedWeatherState> = flow {
+    override fun getLocalCurrentWeather(): Flow<CurrentWeatherState> = flow {
         _weatherLocalDatasource.getGPSWeather()
     }
 
