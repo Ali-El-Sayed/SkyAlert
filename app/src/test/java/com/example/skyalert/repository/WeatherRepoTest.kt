@@ -130,12 +130,14 @@ class WeatherRepoTest {
         val currentWeather = getEmptyWeatherObj()
         currentWeather.isFavorite = true
         val id = weatherRepo.insertCurrentWeather(currentWeather)
-        currentWeather.idRoom = id
         // When
-        val favoriteWeather = weatherRepo.getFavoriteWeather().first {
-            it.isFavorite
+        weatherRepo.getFavoriteWeather().collect {
+            // Then - Verify that the weather is inserted
+            for (weather in it) {
+                assertThat(weather.isFavorite, `is`(true))
+                assertThat(weather.idRoom, `is`(id))
+            }
         }
-        assertThat(favoriteWeather.isFavorite, `is`(true))
     }
 
 

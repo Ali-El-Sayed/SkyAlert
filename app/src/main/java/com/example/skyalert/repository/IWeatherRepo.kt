@@ -36,7 +36,9 @@ interface IWeatherRepo {
 
     suspend fun getGPSWeather(): CurrentWeatherState
     suspend fun getMapWeather(): CurrentWeatherState
-    suspend fun getFavoriteWeather(): List<CurrentWeather>
+    suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>>
+    suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int
+
     suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long
 
     /**

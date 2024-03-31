@@ -6,6 +6,8 @@ import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.util.getEmptyWeatherObj
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlin.random.Random
 
 class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
@@ -57,32 +59,41 @@ class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
         return CurrentWeatherState.Success(emptyCurrentWeather)
     }
 
-    override suspend fun getFavoriteWeather(): List<CurrentWeather> {
-        return currentWeatherList.filter { it.isFavorite }
+    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> {
+        return flow { currentWeatherList.filter { it.isFavorite } }
     }
 
     override suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long {
         val id = Random.nextLong()
         currentWeather.idRoom = id
         if (currentWeather.isFavorite) currentWeatherList.add(currentWeather)
+        else
 
-        when (locationSource) {
-            LOCATION_SOURCE.GPS -> {
-                currentWeather.isGPS = true
-                currentWeatherList.removeIf { it.isMap }
-                currentWeather.idRoom = id
-                currentWeatherList.add(currentWeather)
+            when (locationSource) {
+                LOCATION_SOURCE.GPS -> {
+                    currentWeather.isGPS = true
+                    currentWeatherList.removeIf { it.isMap }
+                    currentWeather.idRoom = id
+                    currentWeatherList.add(currentWeather)
+                }
+
+                LOCATION_SOURCE.MAP -> {
+                    currentWeather.isMap = true
+                    currentWeatherList.removeIf { it.isMap }
+                    currentWeather.idRoom = id
+                    currentWeatherList.add(currentWeather)
+                }
+
             }
-
-            LOCATION_SOURCE.MAP -> {
-                currentWeather.isMap = true
-                currentWeatherList.removeIf { it.isMap }
-                currentWeather.idRoom = id
-                currentWeatherList.add(currentWeather)
-            }
-
-        }
         return id
+    }
+
+    override suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int {
+        if (currentWeather.isFavorite) {
+            currentWeatherList.remove(currentWeather)
+            return 1
+        }
+        return 0
     }
 
 

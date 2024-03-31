@@ -7,6 +7,7 @@ import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.repository.IWeatherRepo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,7 +39,10 @@ class MapViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel() {
         _weatherRepo.saveAlertLocation(coord)
     }
 
-    fun addToFavorite(currentWeather: CurrentWeather) {
-        TODO("Not yet implemented")
+    suspend fun addToFavorite(currentWeather: CurrentWeather): Long {
+        currentWeather.isFavorite = true
+        return viewModelScope.async(Dispatchers.IO) {
+            _weatherRepo.insertCurrentWeather(currentWeather)
+        }.await()
     }
 }

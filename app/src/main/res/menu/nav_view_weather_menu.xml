@@ -12,7 +12,7 @@
         android:title="@string/map" />
 
     <item
-        android:id="@+id/bookmarksFragment"
+        android:id="@+id/bookmarkFragment"
         android:icon="@drawable/ic_bookmarks"
         android:title="@string/bookmarks" />
 </menu>

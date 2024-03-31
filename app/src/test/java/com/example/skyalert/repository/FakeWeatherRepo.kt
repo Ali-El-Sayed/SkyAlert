@@ -10,14 +10,15 @@ import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlin.random.Random
 
 class FakeWeatherRepo : IWeatherRepo {
     private val unitsMap: MutableMap<String, UNITS> = mutableMapOf()
     private val locationSourceMap: MutableMap<String, LOCATION_SOURCE> = mutableMapOf()
     private val coordMap: MutableMap<String, Long> = mutableMapOf()
     private val mapLocationCoordMap: MutableMap<String, Long> = mutableMapOf()
-    private val currentWeatherList: MutableStateFlow<List<CurrentWeather>> =
-        MutableStateFlow(emptyList())
+    private val currentWeatherList: MutableStateFlow<MutableList<CurrentWeather>> =
+        MutableStateFlow(mutableListOf())
 
     override fun getUnit(): UNITS = unitsMap.getOrDefault(KEYS.UNIT, UNITS.METRIC)
     override fun setUnit(unit: UNITS) {
@@ -76,13 +77,21 @@ class FakeWeatherRepo : IWeatherRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getFavoriteWeather(): List<CurrentWeather> {
+    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> {
         TODO("Not yet implemented")
     }
 
+    override suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int {
+        if (currentWeatherList.value.remove(currentWeather))
+            return 1
+        return 0
+    }
+
     override suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long {
-        currentWeatherList.value += currentWeather
-        return 1
+        val id = Random.nextLong()
+        currentWeather.idRoom = id
+        currentWeatherList.value.add(currentWeather)
+        return id
     }
 
     override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="180dp"
+    android:layout_height="180dp"
+    android:layout_margin="8dp"
+    android:background="@drawable/dialog_background"
+    android:padding="12dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_temperature"
+            style="@style/fiveDaysForecastDayText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="299 K" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_city"
+            style="@style/fiveDaysForecastDayText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_temperature"
+            tools:text="Paris" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_weather_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="120dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_temperature"
+            app:srcCompat="@drawable/ic_sunrise" />
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_wind_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_city"
+            app:srcCompat="@drawable/ic_wind" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_wind_speed"
+            style="@style/fiveDaysForecastDayText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/iv_wind_icon"
+            app:layout_constraintTop_toTopOf="@id/iv_wind_icon"
+            tools:text="5 m/s" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_pressure_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_wind_icon"
+            app:srcCompat="@drawable/ic_pressure" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_pressure"
+            style="@style/fiveDaysForecastDayText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/iv_pressure_icon"
+            app:layout_constraintTop_toTopOf="@id/iv_pressure_icon"
+            tools:text="1013 hPa" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_trash"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_trash"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

@@ -14,7 +14,6 @@ import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.greaterThan
 import org.hamcrest.Matchers.`is`
-import org.junit.AfterClass
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,6 +27,7 @@ class WeatherLocalDatasourceImplTest {
     private lateinit var database: WeatherDatabase
 
     // Rule to Execute Synchronous using Architecture Components
+    @JvmField
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
@@ -91,14 +91,14 @@ class WeatherLocalDatasourceImplTest {
             async { localDatasource.insertCurrentWeather(weather) }.await()
         }
         // When - Insert a weather
-        val favoriteWeather = async { localDatasource.getFavoriteWeather() }.await()
-        // Then - Verify that the weather is inserted
-        for (weather in favoriteWeather) {
-            assertThat(weather.isFavorite, `is`(true))
+        localDatasource.getFavoriteWeather().collect { favoriteWeather ->
+            // Then - Verify that the weather is inserted
+            for (weather in favoriteWeather) {
+                assertThat(weather.isFavorite, `is`(true))
+            }
         }
+
     }
 
 
-    @AfterClass
-    fun tearDown() = database.close()
 }
