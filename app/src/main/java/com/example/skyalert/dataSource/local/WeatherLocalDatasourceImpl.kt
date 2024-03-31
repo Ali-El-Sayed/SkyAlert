@@ -1,11 +1,13 @@
 package com.example.skyalert.dataSource.local
 
 import com.example.skyalert.dataSource.local.db.WeatherDao
+import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.dataSource.local.sharedPref.ISharedPreference
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.services.alarm.model.Alert
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -65,7 +67,7 @@ class WeatherLocalDatasourceImpl(
     /**
      *  Database methods
      * */
-
+    // weather methods
     override suspend fun getGPSWeather(): CurrentWeatherState {
         val weather = weatherDao.getGPSWeather()
         return CurrentWeatherState.Success(weather)
@@ -77,13 +79,27 @@ class WeatherLocalDatasourceImpl(
 
     }
 
-    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> = flow {
-        emit(weatherDao.getFavoriteWeather())
-    }
-
+    // bookmark methods
     override suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long =
         weatherDao.insertCurrentWeather(currentWeather)
 
-    override suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int =
-        weatherDao.deleteFavoriteWeather(currentWeather)
+    override suspend fun getBookmarks(): Flow<List<CurrentWeather>> = flow {
+        emit(weatherDao.getBookmarks())
+    }
+
+    override suspend fun deleteBookmarks(currentWeather: CurrentWeather): Int =
+        weatherDao.deleteBookmarks(currentWeather)
+
+    // alert methods
+    override suspend fun getAllAlarms(): Flow<AlertsState> = flow {
+        val alarms = weatherDao.getAllAlarms()
+        if (alarms.isNotEmpty()) {
+            emit(AlertsState.Success(alarms.toMutableList()))
+        } else {
+            emit(AlertsState.Error("No Alarms Found"))
+        }
+    }
+
+    override suspend fun insertAlert(alert: Alert): Long = weatherDao.insertAlert(alert)
+    override suspend fun deleteAlert(alert: Alert): Int = weatherDao.deleteAlert(alert)
 }

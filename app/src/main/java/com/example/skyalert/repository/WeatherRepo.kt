@@ -1,6 +1,7 @@
 package com.example.skyalert.repository
 
 import com.example.skyalert.dataSource.local.IWeatherLocalDatasource
+import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.dataSource.remote.IWeatherRemoteDataSource
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
@@ -9,6 +10,7 @@ import com.example.skyalert.network.MODE
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
+import com.example.skyalert.services.alarm.model.Alert
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -66,7 +68,6 @@ class WeatherRepo private constructor(
 
     override fun getAlertLocation(): Coord = _weatherLocalDatasource.getAlertLocation()
 
-
     private fun getCordFromLocationSource() = when (getLocationSource()) {
         LOCATION_SOURCE.GPS -> getGPSLocation()
         LOCATION_SOURCE.MAP -> getMapLocation()
@@ -78,8 +79,12 @@ class WeatherRepo private constructor(
     override suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long =
         _weatherLocalDatasource.insertCurrentWeather(currentWeather)
 
-    override suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int =
-        _weatherLocalDatasource.deleteFavoriteWeather(currentWeather)
+    override suspend fun getAllAlerts(): Flow<AlertsState> = _weatherLocalDatasource.getAllAlarms()
+    override suspend fun insertAlert(alert: Alert): Long = _weatherLocalDatasource.insertAlert(alert)
+    override suspend fun deleteAlert(alert: Alert): Int = _weatherLocalDatasource.deleteAlert(alert)
+
+    override suspend fun deleteAlert(currentWeather: CurrentWeather): Int =
+        _weatherLocalDatasource.deleteBookmarks(currentWeather)
 
     override fun getLocalCurrentWeather(): Flow<CurrentWeatherState> = flow {
         _weatherLocalDatasource.getGPSWeather()
@@ -92,7 +97,7 @@ class WeatherRepo private constructor(
         _weatherLocalDatasource.getMapWeather()
 
     override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> =
-        _weatherLocalDatasource.getFavoriteWeather()
+        _weatherLocalDatasource.getBookmarks()
 
 
     /**

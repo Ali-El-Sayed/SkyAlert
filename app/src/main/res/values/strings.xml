@@ -60,6 +60,8 @@
     <string name="retry">Retry</string>
     <string name="deleted">Deleted</string>
     <string name="error">Error</string>
+    <string name="delete_bookmark">Delete Bookmark</string>
+    <string name="are_you_sure_you_want_to_delete_this_bookmark">Are you sure you want to delete this bookmark?</string>
 
 
 </resources>

@@ -1,10 +1,12 @@
 package com.example.skyalert.repository
 
+import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
+import com.example.skyalert.services.alarm.model.Alert
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 
@@ -32,14 +34,18 @@ interface IWeatherRepo {
     /**
      * Database Local data source
      * */
+    // weather methods
     fun getLocalCurrentWeather(): Flow<CurrentWeatherState>
-
     suspend fun getGPSWeather(): CurrentWeatherState
     suspend fun getMapWeather(): CurrentWeatherState
     suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>>
-    suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int
-
+    suspend fun deleteAlert(currentWeather: CurrentWeather): Int
     suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long
+
+    // Alert methods
+    suspend fun getAllAlerts(): Flow<AlertsState>
+    suspend fun insertAlert(alert: Alert): Long
+    suspend fun deleteAlert(alert: Alert): Int
 
     /**
      * Remote data source

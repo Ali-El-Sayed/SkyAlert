@@ -6,10 +6,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.skyalert.model.remote.CurrentWeather
+import com.example.skyalert.services.alarm.model.Alert
 
 @Dao
 interface WeatherDao {
 
+
+    // weather methods
     /**
      *  Insert a current weather into the database
      *  @param currentWeather the current weather to be inserted
@@ -37,14 +40,36 @@ interface WeatherDao {
      *  @return the current weather
      * */
     @Query("SELECT * FROM current_weather WHERE isFavorite = TRUE")
-    suspend fun getFavoriteWeather(): List<CurrentWeather>
+    suspend fun getBookmarks(): List<CurrentWeather>
 
     /**
      *  Delete a Favorite weather from the database
      *  @param id the id of the favorite weather to be deleted
      * */
     @Delete
-    suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int
+    suspend fun deleteBookmarks(currentWeather: CurrentWeather): Int
+
+
+    // alert methods
+    /**
+     *  Get All Scheduled Alarms
+     * */
+    @Query("SELECT * FROM alert_table")
+    suspend fun getAllAlarms(): List<Alert>
+
+    /**
+     *  Insert an alert into the database
+     *  @param alert the alert to be inserted
+     * */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAlert(alert: Alert): Long
+
+    /**
+     *  Delete an alert from the database
+     *  @param alert the alert to be deleted
+     * */
+    @Delete
+    suspend fun deleteAlert(alert: Alert): Int
 
 
 }

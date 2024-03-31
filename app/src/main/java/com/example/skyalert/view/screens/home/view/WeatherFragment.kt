@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -68,7 +67,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
     }
     private var longitude: Double = 0.0
     private var latitude: Double = 0.0
-    private var address: String = ""
     private val TAG = "WeatherFragment"
     private val DELAY_IN_LOCATION_REQUEST = 2000000L
     private val viewModel: WeatherScreenViewModel by lazy {
@@ -121,8 +119,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentWeather.collect {
                     when (it) {
-                        is CurrentWeatherState.Loading -> binding.currentWeatherProgressBar.visibility =
-                            View.VISIBLE
+                        is CurrentWeatherState.Loading -> binding.currentWeatherProgressBar.visibility = View.VISIBLE
 
                         is CurrentWeatherState.Success -> {
                             binding.currentWeatherProgressBar.visibility = View.GONE
@@ -148,8 +145,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.hourlyWeather.collect {
                     when (it) {
-                        is FiveDaysForecastState.Loading -> binding.currentWeatherProgressBar.visibility =
-                            View.VISIBLE
+                        is FiveDaysForecastState.Loading -> binding.currentWeatherProgressBar.visibility = View.VISIBLE
 
                         is FiveDaysForecastState.Success -> {
                             binding.currentWeatherProgressBar.visibility = View.GONE
@@ -174,11 +170,9 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private fun updateFiveDaysList(
         it: FiveDaysForecastState.Success, today: Day
     ) {
-        val todayName =
-            SimpleDateFormat("EEEE", Locale.getDefault()).format(today.dt.toLong() * 1000)
+        val todayName = SimpleDateFormat("EEEE", Locale.getDefault()).format(today.dt.toLong() * 1000)
         val fiveDaysForecast = it.data.list.filter { day ->
-            val dayName =
-                SimpleDateFormat("EEEE", Locale.getDefault()).format(day.dt.toLong() * 1000)
+            val dayName = SimpleDateFormat("EEEE", Locale.getDefault()).format(day.dt.toLong() * 1000)
             dayName != todayName && day.dtTxt.contains("12:00:00")
         }.toMutableList()
         fiveDaysForecast.add(0, today)
@@ -201,8 +195,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
         for (i in it.data.list.indices) {
             Log.d(TAG, "Day: ${it.data.list[i]}")
             val day = it.data.list[i]
-            val dayName =
-                SimpleDateFormat("EEEE", Locale.getDefault()).format(day.dt.toLong() * 1000)
+            val dayName = SimpleDateFormat("EEEE", Locale.getDefault()).format(day.dt.toLong() * 1000)
             if (dayName == todayName) daysList.add(day)
             else {
                 val newDay = it.data.list[i]
@@ -244,11 +237,9 @@ class WeatherFragment : Fragment(), OnLocationChange {
         // wind speed
         binding.currentWeatherDetails.wind.text = "${currentWeather.wind.speed} $windMeasurement"
         // pressure
-        binding.currentWeatherDetails.pressure.text =
-            "${currentWeather.main.pressure} $pressureMeasurement"
+        binding.currentWeatherDetails.pressure.text = "${currentWeather.main.pressure} $pressureMeasurement"
         // real feel
-        binding.currentWeatherDetails.realFeel.text =
-            "${currentWeather.main.feelsLike.roundToInt()}°"
+        binding.currentWeatherDetails.realFeel.text = "${currentWeather.main.feelsLike.roundToInt()}°"
     }
 
     private fun updateToolbar(currentWeather: CurrentWeather) {
@@ -270,8 +261,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
         binding.weatherTempMeasurementsTextView.text = tempMeasurements
 
         // Clear
-        binding.weatherDescriptionTextView.text =
-            currentWeather.weather[0].description.toCapitalizedWords()
+        binding.weatherDescriptionTextView.text = currentWeather.weather[0].description.toCapitalizedWords()
 
         // H:18° L: 12°
         val maxTemp = currentWeather.main.tempMax.roundToInt()
@@ -307,12 +297,8 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
     private fun initUI() {
 
-        /**
-         * Check if location is enabled and get the location if it is enabled
-         * If location is not enabled, show a dialog to enable location services
-         * */
-        if (!GPSUtils.isLocationEnabled(requireActivity())) binding.openLocationServicesButton.visibility =
-            View.VISIBLE
+        // check if location is enabled or not and show the button to enable location
+        if (!GPSUtils.isLocationEnabled(requireActivity())) binding.openLocationServicesButton.visibility = View.VISIBLE
 
         binding.openLocationServicesButton.setOnClickListener { showEnableGPSDialog() }
     }
@@ -361,8 +347,8 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private fun showEnableGPSDialog() {
         val builder = MaterialAlertDialogBuilder(requireActivity())
 
-        builder.setTitle(getString(R.string.enable_gps))
-            .setMessage(getString(R.string.gps_is_disabled_do_you_want_to_enable_it)).setBackground(
+        builder.setTitle(getString(R.string.enable_gps)).setMessage(getString(R.string.gps_is_disabled_do_you_want_to_enable_it))
+            .setBackground(
                 ResourcesCompat.getDrawable(
                     resources, R.drawable.dialog_background, requireActivity().theme
                 )
@@ -376,12 +362,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
                     Settings.ACTION_LOCATION_SOURCE_SETTINGS
                 )
                 startActivity(gpsOptionsIntent)
-            }.setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.cancel() }
-
-
-        val alert: AlertDialog = builder.create()
-
-        alert.show()
+            }.setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.cancel() }.create().show()
     }
 
     /**

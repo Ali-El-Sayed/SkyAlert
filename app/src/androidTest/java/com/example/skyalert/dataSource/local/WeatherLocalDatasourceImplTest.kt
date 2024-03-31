@@ -91,7 +91,7 @@ class WeatherLocalDatasourceImplTest {
             async { localDatasource.insertCurrentWeather(weather) }.await()
         }
         // When - Insert a weather
-        localDatasource.getFavoriteWeather().collect { favoriteWeather ->
+        localDatasource.getBookmarks().collect { favoriteWeather ->
             // Then - Verify that the weather is inserted
             for (weather in favoriteWeather) {
                 assertThat(weather.isFavorite, `is`(true))

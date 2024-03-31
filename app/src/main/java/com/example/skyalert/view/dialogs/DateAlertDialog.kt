@@ -12,44 +12,54 @@ import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import com.example.skyalert.R
+import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
+import com.example.skyalert.dataSource.local.db.WeatherDatabase
+import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
+import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.AlertDialogBinding
 import com.example.skyalert.interfaces.Callback
 import com.example.skyalert.interfaces.OnAlertDialogCallback
-import com.example.skyalert.services.alarm.AndroidAlarmScheduler
-import com.example.skyalert.services.alarm.model.AlarmItem
+import com.example.skyalert.network.RetrofitClient
+import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.services.workManager.DialogAlertManager
+import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.util.getDayName
 import com.example.skyalert.util.getHour24Format
 import com.example.skyalert.util.getMillisecondsFromDate
 import com.example.skyalert.util.getMinute
 import com.example.skyalert.util.getMonthName
-import com.example.skyalert.util.millisecondsToLocalDateTime
 import com.example.skyalert.view.screens.map.MAP_CONSTANTS
+import com.example.skyalert.view.screens.map.viewModel.MapViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.Calendar
+import java.util.UUID
 
 
 private const val TAG = "AlertDialog"
 
-class DateAlertDialog(val onAlertDialogCallback: OnAlertDialogCallback) : DialogFragment(),
-    DatePickerDialog.OnDateSetListener,
-    TimePickerDialog.OnTimeSetListener, Callback {
+class DateAlertDialog(private val onAlertDialogCallback: OnAlertDialogCallback) : DialogFragment(),
+    DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, Callback {
     private val binding by lazy {
         AlertDialogBinding.inflate(layoutInflater)
     }
-    private val alarm: AndroidAlarmScheduler by lazy {
-        AndroidAlarmScheduler(requireContext().applicationContext)
-    }
-    private val alarmItem by lazy {
-        AlarmItem(
-            LocalDateTime.now().plusSeconds(10L), "This is a test alarm"
+    private val viewModel: MapViewModel by lazy {
+        val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
+        val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
+        val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref
         )
+        val repo = WeatherRepo.getInstance(
+            remoteDataSource, localDatasource
+        )
+        val factory = WeatherViewModelFactory(repo)
+        ViewModelProvider(requireActivity(), factory)[MapViewModel::class.java]
     }
 
     private var day = 0
@@ -71,8 +81,7 @@ class DateAlertDialog(val onAlertDialogCallback: OnAlertDialogCallback) : Dialog
         month = currentDate.monthValue
         year = currentDate.year
 
-        binding.tvAlertTime.text =
-            getFormattedDate(requireContext(), year, month, day, hour, minute)
+        binding.tvAlertTime.text = getFormattedDate(requireContext(), year, month, day, hour, minute)
         binding.tvAlertTime.setOnClickListener { pickDate() }
         binding.btnNotifyMe.setOnClickListener {
             onFinished()
@@ -84,11 +93,7 @@ class DateAlertDialog(val onAlertDialogCallback: OnAlertDialogCallback) : Dialog
     private fun pickDate() {
         val c = Calendar.getInstance()
         val dpd = DatePickerDialog(
-            requireContext(),
-            this,
-            c.get(Calendar.YEAR),
-            c.get(Calendar.MONTH),
-            c.get(Calendar.DAY_OF_MONTH)
+            requireContext(), this, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)
         )
         dpd.show()
     }
@@ -130,33 +135,30 @@ class DateAlertDialog(val onAlertDialogCallback: OnAlertDialogCallback) : Dialog
     override fun onFinished() {
         val checked = binding.chipGroup.checkedChipId
         val v = binding.chipGroup.children.find { it.id == checked }
-        if (v?.tag?.equals(resources.getString(R.string.alert)) == true) {
-            val currentTimeMillis = System.currentTimeMillis()
-            val lon = arguments?.getDouble(MAP_CONSTANTS.MAP_LON) ?: 0.0
-            val lat = arguments?.getDouble(MAP_CONSTANTS.MAP_LAT) ?: 0.0
-
-            val data = Data.Builder().putDouble(MAP_CONSTANTS.MAP_LON, lon)
-                .putDouble(MAP_CONSTANTS.MAP_LAT, lat).build()
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-
-            val request = OneTimeWorkRequestBuilder<DialogAlertManager>().setInitialDelay(
-                getMillisecondsFromDate(year, month, day, hour, minute.toInt()) - currentTimeMillis,
-                java.util.concurrent.TimeUnit.MILLISECONDS
-            ).setInputData(data).setConstraints(constraints).build()
-
-            onAlertDialogCallback.createDialog(request)
-
-
-        } else if (v?.tag?.equals(resources.getString(R.string.notification)) == true) {
-            alarmItem.time = millisecondsToLocalDateTime(
-                getMillisecondsFromDate(
-                    year, month, day, hour, minute.toInt()
-                )
-            )
-            onAlertDialogCallback.createNotification(alarmItem)
+        viewModel.alert.apply {
+            uuid = UUID.randomUUID()
+            time = getMillisecondsFromDate(year, month, day, hour, minute.toInt())
         }
+        if (v?.tag?.equals(resources.getString(R.string.alert)) == true) {
+            // get current time
+            val currentTimeMillis = System.currentTimeMillis()
+            // create the data for the work manager to pass the location of the alert
+            val data = Data.Builder().putDouble(
+                MAP_CONSTANTS.MAP_LON, viewModel.alert.lon
+            ).putDouble(MAP_CONSTANTS.MAP_LAT, viewModel.alert.lat).build()
+            // create the constraints for the work manager to run only when the network is connected
+            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            // get the due date in milliseconds and set it to the alert
+            viewModel.alert.time = getMillisecondsFromDate(year, month, day, hour, minute.toInt())
+            // create the work request for the work manager
+            val request = OneTimeWorkRequestBuilder<DialogAlertManager>().setInitialDelay(
+                viewModel.alert.time - currentTimeMillis, java.util.concurrent.TimeUnit.MILLISECONDS
+            ).setInputData(data).setConstraints(constraints).build()
+            // enqueue the work request
+            onAlertDialogCallback.createDialog(request)
+        } else if (v?.tag?.equals(resources.getString(R.string.notification)) == true)
+            onAlertDialogCallback.createNotification()
+
     }
 
 }

@@ -17,7 +17,6 @@ class AlertResultDialog(val currentWeather: CurrentWeather) : DialogFragment() {
         AlertResultDialogBinding.inflate(layoutInflater)
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View = binding.root

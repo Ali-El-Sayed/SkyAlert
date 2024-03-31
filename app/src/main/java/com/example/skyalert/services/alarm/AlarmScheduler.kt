@@ -1,8 +1,8 @@
 package com.example.skyalert.services.alarm
 
-import com.example.skyalert.services.alarm.model.AlarmItem
+import com.example.skyalert.services.alarm.model.Alert
 
 interface AlarmScheduler {
-    fun scheduleAlarm(item: AlarmItem)
-    fun cancelAlarm(item: AlarmItem)
+    fun scheduleAlarm(item: Alert)
+    fun cancelAlarm(item: Alert)
 }

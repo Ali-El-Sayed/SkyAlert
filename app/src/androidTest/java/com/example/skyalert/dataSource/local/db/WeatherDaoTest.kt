@@ -87,7 +87,7 @@ class WeatherDaoTest {
             database.weatherDao().insertCurrentWeather(weather)
         }
         // WHEN - Get the weather
-        val loaded = async { database.weatherDao().getFavoriteWeather() }.await()
+        val loaded = async { database.weatherDao().getBookmarks() }.await()
         // THEN - Verify that the loaded data is correct
         for (weather in loaded) {
             assertThat(weather.isFavorite, `is`(true))
