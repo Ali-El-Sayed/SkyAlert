@@ -81,7 +81,7 @@ class FakeWeatherRepo : IWeatherRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int {
+    override suspend fun deleteAlert(currentWeather: CurrentWeather): Int {
         if (currentWeatherList.value.remove(currentWeather))
             return 1
         return 0

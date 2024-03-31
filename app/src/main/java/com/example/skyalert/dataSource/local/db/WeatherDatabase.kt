@@ -7,8 +7,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.model.typeConverter.WeatherTypeConverter
+import com.example.skyalert.services.alarm.model.Alert
 
-@Database(entities = [CurrentWeather::class], version = 1)
+@Database(entities = [CurrentWeather::class, Alert::class], version = 1)
 @TypeConverters(WeatherTypeConverter::class)
 abstract class WeatherDatabase : RoomDatabase() {
     companion object {

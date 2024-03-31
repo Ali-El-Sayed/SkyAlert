@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_weatherFragment_to_bookmarkFragment"
             app:destination="@id/bookmarkFragment" />
+        <action
+            android:id="@+id/action_weatherFragment_to_alertFragment2"
+            app:destination="@id/alertFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -62,4 +65,9 @@
         android:name="com.example.skyalert.view.screens.bookmark.view.BookmarkFragment"
         android:label="BookmarkFragment"
         tools:layout="@layout/fragment_bookmark" />
+    <fragment
+        android:id="@+id/alertFragment"
+        android:name="com.example.skyalert.view.screens.alerts.view.AlertFragment"
+        android:label="AlertFragment"
+        tools:layout="@layout/fragment_alert" />
 </navigation>

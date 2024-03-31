@@ -49,7 +49,6 @@ class DialogAlertManager(
                             Log.d(TAG, "doWork: ${it.currentWeather}")
                             putString(CURRENT_WEATHER, Gson().toJson(it.currentWeather))
                         }
-
                     }
                 }
 

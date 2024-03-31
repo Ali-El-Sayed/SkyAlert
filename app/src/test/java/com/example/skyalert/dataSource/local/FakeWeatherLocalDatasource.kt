@@ -59,7 +59,7 @@ class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
         return CurrentWeatherState.Success(emptyCurrentWeather)
     }
 
-    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> {
+    override suspend fun getBookmarks(): Flow<List<CurrentWeather>> {
         return flow { currentWeatherList.filter { it.isFavorite } }
     }
 
@@ -88,7 +88,7 @@ class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
         return id
     }
 
-    override suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int {
+    override suspend fun deleteBookmarks(currentWeather: CurrentWeather): Int {
         if (currentWeather.isFavorite) {
             currentWeatherList.remove(currentWeather)
             return 1

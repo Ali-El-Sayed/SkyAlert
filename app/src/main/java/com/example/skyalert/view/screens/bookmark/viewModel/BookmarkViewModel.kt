@@ -26,16 +26,14 @@ class BookmarkViewModel(private val repo: IWeatherRepo) : ViewModel() {
         }
     }
 
-    suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int {
-        var result = viewModelScope.async(Dispatchers.IO) { repo.deleteFavoriteWeather(currentWeather) }.await()
+    suspend fun deleteBookmark(currentWeather: CurrentWeather) {
+        var result = viewModelScope.async(Dispatchers.IO) { repo.deleteAlert(currentWeather) }.await()
         if (result > 0) {
-            _bookmarkState.value = BookmarkedWeatherState.Success(
+            _bookmarkState.emit(BookmarkedWeatherState.Success(
                 (_bookmarkState.value as BookmarkedWeatherState.Success).currentWeather.apply {
                     remove(currentWeather)
                 }
-            )
+            ))
         }
-
-        return result
     }
 }

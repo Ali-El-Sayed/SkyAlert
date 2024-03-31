@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -22,7 +24,7 @@ import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.services.alarm.AndroidAlarmScheduler
-import com.example.skyalert.services.alarm.model.AlarmItem
+import com.example.skyalert.services.alarm.model.ALERT_TYPE
 import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.view.dialogs.AlertResultDialog
 import com.example.skyalert.view.dialogs.DateAlertDialog
@@ -43,6 +45,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val TAG = "MapsFragment"
 
@@ -64,7 +67,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
             remoteDataSource, localDatasource
         )
         val factory = WeatherViewModelFactory(repo)
-        factory.create(MapViewModel::class.java)
+        ViewModelProvider(requireActivity(), factory)[MapViewModel::class.java]
     }
 
     private val coord by lazy {
@@ -144,11 +147,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         marker.position = p0
         coord.lat = p0.latitude
         coord.lon = p0.longitude
+        viewModel.getCurrentWeatherByCoord(coord)
         val argument = Bundle().apply {
             putDouble(MAP_LAT, p0.latitude)
             putDouble(MAP_LON, p0.longitude)
+            viewModel.saveAlertLocation(coord)
         }
-        viewModel.saveAlertLocation(coord)
         val bottomSheet = MapBottomSheet(this)
         bottomSheet.arguments = argument
         bottomSheet.show(requireActivity().supportFragmentManager, "MapBottomSheet")
@@ -156,10 +160,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     override fun setDefaultLocation(coord: Coord) {
         viewModel.setMapLocation(coord)
-    }
-
-    override fun saveBookmark() {
-//        viewModel.saveMapLocation(coord)
     }
 
     override fun setAlert() {
@@ -178,17 +178,37 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     override fun onAddToFavorite(currentWeather: CurrentWeather) {
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.addToFavorite(currentWeather)
+            val result = viewModel.addToFavorite(currentWeather)
+            withContext(Dispatchers.Main) {
+                if (result > 0) Toast.makeText(
+                    requireActivity(), "Added to bookmark", Toast.LENGTH_SHORT
+                ).show()
+                else Toast.makeText(
+                    requireActivity(), "Failed to add to bookmark", Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
-    override fun createNotification(alarmItem: AlarmItem) {
+    override fun createNotification() {
+        // save the alert location for AlarmScheduler
         viewModel.saveAlertLocation(coord)
-        alarm.scheduleAlarm(alarmItem)
+        viewModel.alert.alertType = ALERT_TYPE.NOTIFICATION
+        // insert the alert into the database
+        viewModel.insertNewAlert(viewModel.alert)
+        alarm.scheduleAlarm(viewModel.alert)
     }
 
     override fun createDialog(request: OneTimeWorkRequest) {
+        // get the unique id of the work request
+        viewModel.alert.uuid = request.id
+        // save the alert location for AlarmScheduler
+        viewModel.alert.alertType = ALERT_TYPE.DIALOG
+        viewModel.insertNewAlert(viewModel.alert)
+
+        // enqueue the work request to get the current weather
         WorkManager.getInstance(requireContext().applicationContext).enqueue(request)
+        // observe the work request to get the current weather
         WorkManager.getInstance(requireContext().applicationContext).getWorkInfoByIdLiveData(request.id).observe(
             requireActivity()
         ) { workInfo ->
@@ -200,6 +220,4 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
             }
         }
     }
-
-
 }

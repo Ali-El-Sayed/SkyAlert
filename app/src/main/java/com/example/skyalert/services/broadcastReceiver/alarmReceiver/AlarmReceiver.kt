@@ -52,8 +52,6 @@ class AlarmReceiver() : BroadcastReceiver() {
                 }
             }
         }
-
-
     }
 
     private fun handleSuccess(context: Context, currentWeather: CurrentWeather) {
@@ -63,16 +61,15 @@ class AlarmReceiver() : BroadcastReceiver() {
             UNITS.IMPERIAL -> context.getString(R.string.fahrenheit_measure)
             UNITS.STANDARD -> context.getString(R.string.kelvin_measure)
         }
-        val description =
-            "${currentWeather.weather[0].description}\n${currentWeather.main.temp}$tempMeasurements"
+        val description = "${currentWeather.weather[0].description}\n${currentWeather.main.temp}$tempMeasurements"
         val details =
-            "\n${context.getString(R.string.humidity)} ${currentWeather.main.humidity}%\n${
-                context.getString(R.string.max)
+            "${currentWeather.weather[0].description}\n" + "${currentWeather.main.temp}$tempMeasurements\n${context.getString(R.string.humidity)} ${currentWeather.main.humidity}%\n${
+                context.getString(
+                    R.string.max
+                )
             } ${currentWeather.main.tempMax}$tempMeasurements ${context.getString(R.string.min)} ${currentWeather.main.tempMin}$tempMeasurements"
 
-        val bitmap =
-            Glide.with(context).asBitmap().load(getIconUrl(currentWeather.weather[0].icon)).submit()
-                .get()
+        val bitmap = Glide.with(context).asBitmap().load(getIconUrl(currentWeather.weather[0].icon)).submit().get()
 
         NotificationHelper.createNotificationChannel(
             context,
@@ -83,13 +80,7 @@ class AlarmReceiver() : BroadcastReceiver() {
         )
 
         NotificationHelper.createNotification(
-            context,
-            title,
-            description,
-            details,
-            NotificationHelper.ALERT_CHANNEL_ID,
-            bitmap,
-            Priority.PRIORITY_HIGH_ACCURACY
+            context, title, description, details, NotificationHelper.ALERT_CHANNEL_ID, bitmap, Priority.PRIORITY_HIGH_ACCURACY
         )
     }
 }

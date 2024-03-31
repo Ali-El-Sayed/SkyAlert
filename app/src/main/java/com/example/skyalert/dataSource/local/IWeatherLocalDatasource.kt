@@ -1,9 +1,11 @@
 package com.example.skyalert.dataSource.local
 
+import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.services.alarm.model.Alert
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 
@@ -30,10 +32,15 @@ interface IWeatherLocalDatasource {
      *  Database methods
      * */
 
+    // weather methods
     suspend fun getGPSWeather(): CurrentWeatherState
     suspend fun getMapWeather(): CurrentWeatherState
-    suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>>
+    suspend fun getBookmarks(): Flow<List<CurrentWeather>>
     suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long
+    suspend fun deleteBookmarks(currentWeather: CurrentWeather): Int
 
-    suspend fun deleteFavoriteWeather(currentWeather: CurrentWeather): Int
+    // alert methods
+    suspend fun getAllAlarms(): Flow<AlertsState>
+    suspend fun insertAlert(alert: Alert): Long
+    suspend fun deleteAlert(alert: Alert): Int
 }

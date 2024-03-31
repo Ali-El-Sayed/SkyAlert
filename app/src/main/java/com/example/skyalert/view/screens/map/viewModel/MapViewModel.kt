@@ -6,6 +6,7 @@ import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.repository.IWeatherRepo
+import com.example.skyalert.services.alarm.model.Alert
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ class MapViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel() {
 
     private val _currentWeather = MutableStateFlow<CurrentWeatherState>(CurrentWeatherState.Loading)
     val currentWeather: StateFlow<CurrentWeatherState> = _currentWeather.asStateFlow()
+    val alert by lazy { Alert() }
     fun getCurrentWeatherByCoord(coord: Coord) {
         _currentWeather.value = CurrentWeatherState.Loading
         viewModelScope.launch(Dispatchers.IO) {
@@ -37,6 +39,10 @@ class MapViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel() {
 
     fun saveAlertLocation(coord: Coord) {
         _weatherRepo.saveAlertLocation(coord)
+    }
+
+    fun insertNewAlert(alert: Alert) {
+        viewModelScope.launch(Dispatchers.IO) { _weatherRepo.insertAlert(alert) }
     }
 
     suspend fun addToFavorite(currentWeather: CurrentWeather): Long {
