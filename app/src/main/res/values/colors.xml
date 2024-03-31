@@ -11,6 +11,7 @@
     <color name="now_indicator_color">#BEC7D1D1</color>
     <color name="btn_background">#646565</color>
     <color name="btn_background_pressed">#7B7C7C</color>
+    <color name="nav_view_bg">#0897D1</color>
 
 
     <color name="md_theme_light_primary">#00687C</color>
