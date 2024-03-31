@@ -74,7 +74,7 @@ class AlertFragment : Fragment(), OnAlertClickListener {
 
                     is AlertsState.Success -> {
                         binding.progressBar.visibility = View.GONE
-                        for (alert in it.alerts) if (System.currentTimeMillis() - alert.time > 0) viewModel.deleteAlert(alert)
+//                        for (alert in it.alerts) if (System.currentTimeMillis() - alert.time > 0) viewModel.deleteAlert(alert)
                         binding.rvAlerts.adapter = RvAlertsAdapter(this@AlertFragment).apply { submitList(it.alerts) }
                     }
 
@@ -95,6 +95,7 @@ class AlertFragment : Fragment(), OnAlertClickListener {
                         ALERT_TYPE.NOTIFICATION -> AndroidAlarmScheduler(requireContext()).cancelAlarm(alert)
                     }
                     viewModel.deleteAlert(alert)
+                    viewModel.getAlerts()
                 }
             }.setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.dismiss() }
             .setBackground(resources.getDrawable(R.drawable.dialog_background, requireActivity().theme)).create().show()
