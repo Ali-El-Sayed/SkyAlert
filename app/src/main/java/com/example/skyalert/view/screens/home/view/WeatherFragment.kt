@@ -28,6 +28,7 @@ import com.bumptech.glide.Glide
 import com.example.skyalert.R
 import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
+import com.example.skyalert.dataSource.local.localStorage.LocalStorage
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentWeatherBinding
@@ -42,7 +43,7 @@ import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.services.broadcastReceiver.locationReceiver.LocationBroadcastReceiver
 import com.example.skyalert.services.broadcastReceiver.locationReceiver.OnLocationChange
-import com.example.skyalert.util.GPSUtils
+import com.example.skyalert.util.GPS_NETWORK_Utils
 import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.util.toCapitalizedWords
 import com.example.skyalert.view.animation.NumberAnimation
@@ -73,8 +74,9 @@ class WeatherFragment : Fragment(), OnLocationChange {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
         val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
         val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
-        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
-            dao, sharedPref
+        val localStorage = LocalStorage.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref, localStorage
         )
         val repo = WeatherRepo.getInstance(
             remoteDataSource, localDatasource
@@ -92,8 +94,8 @@ class WeatherFragment : Fragment(), OnLocationChange {
                 Log.d(TAG, "Latitude: $latitude")
                 Log.d(TAG, "Longitude: $longitude")
                 viewModel.setDefaultLocation(Coord(latitude, longitude))
-                viewModel.getCurrentWeather()
-                viewModel.getHourlyWeather(40)
+                viewModel.getCurrentWeather(GPS_NETWORK_Utils.isNetworkConnected(requireActivity()))
+                viewModel.getHourlyWeather(40, GPS_NETWORK_Utils.isNetworkConnected(requireActivity()))
             }
         }
     }
@@ -124,6 +126,10 @@ class WeatherFragment : Fragment(), OnLocationChange {
                         is CurrentWeatherState.Success -> {
                             binding.currentWeatherProgressBar.visibility = View.GONE
                             val currentWeather = it.currentWeather
+                            if (!currentWeather.isCurrent) {
+                                currentWeather.isCurrent = true
+                                viewModel.saveCurrentWeather(currentWeather)
+                            }
                             updateToolbar(currentWeather)
                             updateCurrentDetails(currentWeather)
                             Log.d(TAG, "Current Weather: $currentWeather")
@@ -150,6 +156,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
                         is FiveDaysForecastState.Success -> {
                             binding.currentWeatherProgressBar.visibility = View.GONE
                             val today = it.data.list[0]
+                            viewModel.saveFiveDaysForecast(it.data)
                             // Set up the hourly forecast recycler view
                             updateHourlyList(it, today)
                             // Set up the five days forecast recycler view
@@ -298,7 +305,7 @@ class WeatherFragment : Fragment(), OnLocationChange {
     private fun initUI() {
 
         // check if location is enabled or not and show the button to enable location
-        if (!GPSUtils.isLocationEnabled(requireActivity())) binding.openLocationServicesButton.visibility = View.VISIBLE
+        if (!GPS_NETWORK_Utils.isLocationEnabled(requireActivity())) binding.openLocationServicesButton.visibility = View.VISIBLE
 
         binding.openLocationServicesButton.setOnClickListener { showEnableGPSDialog() }
     }

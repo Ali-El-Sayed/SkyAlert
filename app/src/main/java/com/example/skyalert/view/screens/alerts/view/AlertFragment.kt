@@ -15,6 +15,7 @@ import com.example.skyalert.R
 import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
 import com.example.skyalert.dataSource.local.db.model.AlertsState
+import com.example.skyalert.dataSource.local.localStorage.LocalStorage
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentAlertBinding
@@ -39,8 +40,9 @@ class AlertFragment : Fragment(), OnAlertClickListener {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
         val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
         val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
-        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
-            dao, sharedPref
+        val localStorage = LocalStorage.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref, localStorage
         )
         val repo = WeatherRepo.getInstance(
             remoteDataSource, localDatasource

@@ -26,6 +26,7 @@ data class CurrentWeather(
     @SerializedName("cod") var cod: Int,
     var unit: UNITS = UNITS.METRIC,
     var isFavorite: Boolean = false,
+    var isCurrent: Boolean = false,
     var isGPS: Boolean = false,
     var isMap: Boolean = false
 )

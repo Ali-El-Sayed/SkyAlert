@@ -1,13 +1,20 @@
 package com.example.skyalert.dataSource.local
 
+import com.example.skyalert.dataSource.local.db.model.AlertsState
+import com.example.skyalert.model.remote.City
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
+import com.example.skyalert.model.remote.FiveDaysForecast
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
+import com.example.skyalert.network.model.FiveDaysForecastState
+import com.example.skyalert.services.alarm.model.Alert
 import com.example.skyalert.util.getEmptyWeatherObj
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.util.UUID
 import kotlin.random.Random
 
 class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
@@ -17,6 +24,8 @@ class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
     private var mapLocationCoord: Coord = Coord(0.0, 0.0)
     private var currentWeatherList: MutableList<CurrentWeather> = mutableListOf()
     private var alertLocation: Coord = Coord(0.0, 0.0)
+    private var language: LOCAL = LOCAL.EN
+    private var alerts: MutableList<Alert> = mutableListOf()
     override fun getUnit(): UNITS = unit
 
     override fun setUnit(unit: UNITS) {
@@ -44,6 +53,11 @@ class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
     }
 
     override fun getAlertLocation(): Coord = alertLocation
+    override fun setLanguage(language: LOCAL) {
+        this.language = language
+    }
+
+    override fun getLanguage(): LOCAL = language
 
     override suspend fun getGPSWeather(): CurrentWeatherState {
         for (weather in currentWeatherList) if (weather.isGPS) CurrentWeatherState.Success(weather)
@@ -94,6 +108,54 @@ class FakeWeatherLocalDatasource : IWeatherLocalDatasource {
             return 1
         }
         return 0
+    }
+
+    override suspend fun updateCurrentWeather(currentWeather: CurrentWeather): Int {
+        val index = currentWeatherList.indexOfFirst { it.idRoom == currentWeather.idRoom }
+        if (index != -1) {
+            currentWeatherList[index] = currentWeather
+            return 1
+        }
+        return 0
+    }
+
+    override suspend fun getLocalCurrentWeather(): CurrentWeather {
+        for (weather in currentWeatherList) if (weather.isCurrent) return weather
+        return getEmptyWeatherObj()
+    }
+
+    override suspend fun getAllAlarms(): Flow<AlertsState> {
+        return flow { AlertsState.Success(alerts) }
+    }
+
+    override suspend fun insertAlert(alert: Alert): Long {
+        alert.uuid = UUID.randomUUID()
+        val res = alerts.add(alert)
+        return if (res) 1 else 0
+    }
+
+    override suspend fun deleteAlert(alert: Alert): Int {
+        val res = alerts.remove(alert)
+        return if (res) 1 else 0
+    }
+
+    override suspend fun saveFiveDaysForecast(fiveDaysForecast: FiveDaysForecast) {}
+
+    override suspend fun getFiveDaysForecast(): Flow<FiveDaysForecastState> {
+        return flow {
+            FiveDaysForecast(
+                cod = "200", message = 0, cnt = 40, list = arrayListOf(), city = City(
+                    id = 0,
+                    name = "City",
+                    coord = Coord(0.0, 0.0),
+                    country = "Country",
+                    population = 0,
+                    timezone = 0,
+                    sunrise = 0,
+                    sunset = 0
+                )
+            )
+        }
     }
 
 

@@ -3,6 +3,7 @@ package com.example.skyalert.repository
 import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
+import com.example.skyalert.model.remote.FiveDaysForecast
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
@@ -54,11 +55,18 @@ interface IWeatherRepo {
      * Remote data source
      * */
 
-    suspend fun getCurrentWeather(): Flow<CurrentWeatherState>
+    suspend fun getCurrentWeather(flag: Boolean = true): Flow<CurrentWeatherState>
 
-    suspend fun getHourlyForecast(cnt: Int = 8): Flow<FiveDaysForecastState>
+    suspend fun getHourlyForecast(cnt: Int = 8, flag: Boolean = true): Flow<FiveDaysForecastState>
 
-    suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState>
+    suspend fun getCurrentWeatherByCoord(coord: Coord, flag: Boolean = true): Flow<CurrentWeatherState>
+
+    /**
+     * Local Storage
+     * */
+
+    suspend fun getLocalFiveDaysForecast(): Flow<FiveDaysForecastState>
+    suspend fun saveLocalFiveDaysForecast(fiveDaysForecast: FiveDaysForecast)
 
 
 }

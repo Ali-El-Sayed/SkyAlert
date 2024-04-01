@@ -1,15 +1,22 @@
 package com.example.skyalert.repository
 
+import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.dataSource.local.sharedPref.KEYS
+import com.example.skyalert.model.remote.City
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
+import com.example.skyalert.model.remote.FiveDaysForecast
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
+import com.example.skyalert.services.alarm.model.Alert
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import java.util.UUID
 import kotlin.random.Random
 
 class FakeWeatherRepo : IWeatherRepo {
@@ -19,6 +26,8 @@ class FakeWeatherRepo : IWeatherRepo {
     private val mapLocationCoordMap: MutableMap<String, Long> = mutableMapOf()
     private val currentWeatherList: MutableStateFlow<MutableList<CurrentWeather>> =
         MutableStateFlow(mutableListOf())
+    private var language: LOCAL = LOCAL.EN
+    private var alerts: MutableList<Alert> = mutableListOf()
 
     override fun getUnit(): UNITS = unitsMap.getOrDefault(KEYS.UNIT, UNITS.METRIC)
     override fun setUnit(unit: UNITS) {
@@ -65,24 +74,55 @@ class FakeWeatherRepo : IWeatherRepo {
         return Coord(lat.toDouble(), lon.toDouble())
     }
 
-    override fun getLocalCurrentWeather(): Flow<CurrentWeatherState> {
-        TODO("Not yet implemented")
+    override fun setLanguage(language: LOCAL) {
+        this.language = language
+    }
+
+    override fun getLanguage(): LOCAL = language
+
+    override fun getLocalCurrentWeather(): Flow<CurrentWeatherState> = flow {
+        val source = getLocationSource()
+        var currentWeather =
+            if (source == LOCATION_SOURCE.GPS)
+                currentWeatherList.value.find { it.isGPS }
+            else
+                currentWeatherList.value.find { it.isMap }
+
+        if (currentWeather != null) {
+            emit(CurrentWeatherState.Success(currentWeather))
+        } else {
+            emit(CurrentWeatherState.Error("Current weather not found"))
+        }
     }
 
     override suspend fun getGPSWeather(): CurrentWeatherState {
-        TODO("Not yet implemented")
+        val currentWeather = currentWeatherList.value.find { it.isGPS }
+        if (currentWeather != null) {
+            return CurrentWeatherState.Success(currentWeather)
+        }
+        return CurrentWeatherState.Error("Current weather not found")
     }
 
     override suspend fun getMapWeather(): CurrentWeatherState {
-        TODO("Not yet implemented")
+        val currentWeather = currentWeatherList.value.find { it.isMap }
+        if (currentWeather != null) {
+            return CurrentWeatherState.Success(currentWeather)
+        }
+        return CurrentWeatherState.Error("Current weather not found")
     }
 
     override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> {
-        TODO("Not yet implemented")
+        return flow { emit(currentWeatherList.value.filter { it.isFavorite }) }
     }
 
     override suspend fun deleteAlert(currentWeather: CurrentWeather): Int {
         if (currentWeatherList.value.remove(currentWeather))
+            return 1
+        return 0
+    }
+
+    override suspend fun deleteAlert(alert: Alert): Int {
+        if (alerts.remove(alert))
             return 1
         return 0
     }
@@ -94,12 +134,51 @@ class FakeWeatherRepo : IWeatherRepo {
         return id
     }
 
+    override suspend fun getAllAlerts(): Flow<AlertsState> {
+        return flow { emit(AlertsState.Success(alerts)) }
+    }
+
+    override suspend fun insertAlert(alert: Alert): Long {
+        alert.uuid = UUID.randomUUID()
+        val res = alerts.add(alert)
+        return if (res) 1 else 0
+    }
+
     override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {
-        TODO("Not yet implemented")
+        val source = getLocationSource()
+        var currentWeather =
+            if (source == LOCATION_SOURCE.GPS)
+                currentWeatherList.value.find { it.isGPS }
+            else
+                currentWeatherList.value.find { it.isMap }
+
+        if (currentWeather != null) {
+            return flowOf(CurrentWeatherState.Success(currentWeather))
+        }
+        return flowOf(CurrentWeatherState.Error("Current weather not found"))
     }
 
     override suspend fun getHourlyForecast(cnt: Int): Flow<FiveDaysForecastState> {
-        TODO("Not yet implemented")
+        val currentWeather = currentWeatherList.value.find { it.isGPS }
+        if (currentWeather != null) {
+            return flowOf(
+                FiveDaysForecastState.Success(
+                    FiveDaysForecast(
+                        cod = "200", message = 0, cnt = 40, list = arrayListOf(), city = City(
+                            id = 0,
+                            name = "City",
+                            coord = Coord(0.0, 0.0),
+                            country = "Country",
+                            population = 0,
+                            timezone = 0,
+                            sunrise = 0,
+                            sunset = 0
+                        )
+                    )
+                )
+            )
+        }
+        return flowOf(FiveDaysForecastState.Error("Current weather not found"))
     }
 
     override suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState> {
@@ -109,4 +188,30 @@ class FakeWeatherRepo : IWeatherRepo {
         }
         return flowOf(CurrentWeatherState.Error("Current weather not found"))
     }
+
+    override suspend fun saveLocalFiveDaysForecast(fiveDaysForecast: FiveDaysForecast): String {
+        return "FiveDaysForecast"
+    }
+
+    override suspend fun getFiveDaysForecast(fileName: String): Flow<FiveDaysForecastState> {
+        return flow {
+            emit(
+                FiveDaysForecastState.Success(
+                    FiveDaysForecast(
+                        cod = "200", message = 0, cnt = 40, list = arrayListOf(), city = City(
+                            id = 0,
+                            name = "City",
+                            coord = Coord(0.0, 0.0),
+                            country = "Country",
+                            population = 0,
+                            timezone = 0,
+                            sunrise = 0,
+                            sunset = 0
+                        )
+                    )
+                )
+            )
+        }
+    }
+
 }

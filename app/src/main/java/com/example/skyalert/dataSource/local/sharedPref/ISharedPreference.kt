@@ -59,12 +59,31 @@ interface ISharedPreference {
      * */
     fun getLocationSource(): LOCATION_SOURCE
 
+    /**
+     *  Save the alert location to the shared preference
+     *  @param coord the location to be saved
+     * */
 
     fun saveAlertCoord(coord: Coord)
 
+    /**
+     *  Get the alert location from the shared preference
+     *  @return the location
+     * */
     fun getAlertCoord(): Coord
 
-
+    /**
+     *  Save the language to the shared preference
+     *  @param language the language to be saved
+     * */
     fun setLanguage(language: LOCAL)
+
+    /**
+     *  Get the language from the shared preference
+     *  @return the language
+     * */
     fun getLanguage(): LOCAL
+
+    fun getFiveDaysForecastFileName(): String
+    fun saveFiveDaysForecastFileName(fileName: String)
 }

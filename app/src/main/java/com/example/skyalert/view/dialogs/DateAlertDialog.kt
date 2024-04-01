@@ -20,6 +20,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import com.example.skyalert.R
 import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
+import com.example.skyalert.dataSource.local.localStorage.LocalStorage
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.AlertDialogBinding
@@ -52,8 +53,9 @@ class DateAlertDialog(private val onAlertDialogCallback: OnAlertDialogCallback) 
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
         val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
         val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
-        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
-            dao, sharedPref
+        val localStorage = LocalStorage.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref, localStorage
         )
         val repo = WeatherRepo.getInstance(
             remoteDataSource, localDatasource
@@ -156,8 +158,7 @@ class DateAlertDialog(private val onAlertDialogCallback: OnAlertDialogCallback) 
             ).setInputData(data).setConstraints(constraints).build()
             // enqueue the work request
             onAlertDialogCallback.createDialog(request)
-        } else if (v?.tag?.equals(resources.getString(R.string.notification)) == true)
-            onAlertDialogCallback.createNotification()
+        } else if (v?.tag?.equals(resources.getString(R.string.notification)) == true) onAlertDialogCallback.createNotification()
 
     }
 
