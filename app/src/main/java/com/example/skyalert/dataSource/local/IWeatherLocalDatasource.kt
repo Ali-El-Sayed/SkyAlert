@@ -6,6 +6,7 @@ import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.services.alarm.model.Alert
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 
@@ -28,11 +29,15 @@ interface IWeatherLocalDatasource {
     fun saveAlertLocation(coord: Coord)
     fun getAlertLocation(): Coord
 
+    fun setLanguage(language: LOCAL)
+    fun getLanguage(): LOCAL
+
+
     /**
      *  Database methods
      * */
 
-    // weather methods
+// weather methods
     suspend fun getGPSWeather(): CurrentWeatherState
     suspend fun getMapWeather(): CurrentWeatherState
     suspend fun getBookmarks(): Flow<List<CurrentWeather>>

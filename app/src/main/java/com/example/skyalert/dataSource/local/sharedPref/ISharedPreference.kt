@@ -2,6 +2,7 @@ package com.example.skyalert.dataSource.local.sharedPref
 
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.network.UNITS
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 
 /**
@@ -62,4 +63,8 @@ interface ISharedPreference {
     fun saveAlertCoord(coord: Coord)
 
     fun getAlertCoord(): Coord
+
+
+    fun setLanguage(language: LOCAL)
+    fun getLanguage(): LOCAL
 }

@@ -10,6 +10,7 @@ android {
     namespace = "com.example.skyalert"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "com.example.skyalert"
         minSdk = 26

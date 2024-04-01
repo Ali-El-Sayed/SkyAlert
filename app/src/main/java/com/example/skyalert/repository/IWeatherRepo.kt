@@ -7,6 +7,7 @@ import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.services.alarm.model.Alert
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 
@@ -29,6 +30,8 @@ interface IWeatherRepo {
 
     fun saveAlertLocation(coord: Coord)
     fun getAlertLocation(): Coord
+    fun setLanguage(language: LOCAL)
+    fun getLanguage(): LOCAL
 
 
     /**
