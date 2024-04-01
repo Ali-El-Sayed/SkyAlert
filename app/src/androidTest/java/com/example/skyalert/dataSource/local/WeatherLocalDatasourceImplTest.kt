@@ -38,8 +38,8 @@ class WeatherLocalDatasourceImplTest {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(), WeatherDatabase::class.java
         ).allowMainThreadQueries().build()
-        localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
-            database.weatherDao(), FakeSharedPreference()
+        localDatasource = WeatherLocalDatasourceImpl.getInstance(
+            database.weatherDao(), FakeSharedPreference(), FakeLocalStorage()
         )
     }
 

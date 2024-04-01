@@ -6,6 +6,7 @@ import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.dataSource.remote.IWeatherRemoteDataSource
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
+import com.example.skyalert.model.remote.FiveDaysForecast
 import com.example.skyalert.network.MODE
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
@@ -18,8 +19,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class WeatherRepo private constructor(
-    private val _weatherRemoteDatasource: IWeatherRemoteDataSource,
-    private val _weatherLocalDatasource: IWeatherLocalDatasource
+    private val _weatherRemoteDatasource: IWeatherRemoteDataSource, private val _weatherLocalDatasource: IWeatherLocalDatasource
 ) : IWeatherRepo {
 
 
@@ -27,8 +27,7 @@ class WeatherRepo private constructor(
         @Volatile
         private var INSTANCE: WeatherRepo? = null
         fun getInstance(
-            weatherRemoteDatasource: IWeatherRemoteDataSource,
-            iWeatherLocalDatasource: IWeatherLocalDatasource
+            weatherRemoteDatasource: IWeatherRemoteDataSource, iWeatherLocalDatasource: IWeatherLocalDatasource
         ) = INSTANCE ?: synchronized(this) {
             INSTANCE ?: WeatherRepo(
                 weatherRemoteDatasource, iWeatherLocalDatasource
@@ -95,27 +94,34 @@ class WeatherRepo private constructor(
         _weatherLocalDatasource.deleteBookmarks(currentWeather)
 
     override fun getLocalCurrentWeather(): Flow<CurrentWeatherState> = flow {
-        _weatherLocalDatasource.getGPSWeather()
+        _weatherLocalDatasource.getLocalCurrentWeather()
     }
 
-    override suspend fun getGPSWeather(): CurrentWeatherState =
-        _weatherLocalDatasource.getGPSWeather()
+    override suspend fun getGPSWeather(): CurrentWeatherState = _weatherLocalDatasource.getGPSWeather()
 
-    override suspend fun getMapWeather(): CurrentWeatherState =
-        _weatherLocalDatasource.getMapWeather()
+    override suspend fun getMapWeather(): CurrentWeatherState = _weatherLocalDatasource.getMapWeather()
 
-    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> =
-        _weatherLocalDatasource.getBookmarks()
+    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> = _weatherLocalDatasource.getBookmarks()
 
+    /**
+     * Local Storage
+     * */
+    override suspend fun saveLocalFiveDaysForecast(fiveDaysForecast: FiveDaysForecast) {
+        _weatherLocalDatasource.saveFiveDaysForecast(fiveDaysForecast)
+    }
+
+    override suspend fun getLocalFiveDaysForecast(): Flow<FiveDaysForecastState> {
+        return _weatherLocalDatasource.getFiveDaysForecast()
+    }
 
     /**
      *  Remote data source
      * */
 
-    override suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState> {
+    override suspend fun getCurrentWeatherByCoord(coord: Coord, flag: Boolean): Flow<CurrentWeatherState> {
         val unit = _weatherLocalDatasource.getUnit()
         val lang = _weatherLocalDatasource.getLanguage()
-        return _weatherRemoteDatasource.getCurrentWeather(
+        if (flag) return _weatherRemoteDatasource.getCurrentWeather(
             coord.lat, coord.lon, MODE.JSON.value, unit.value, lang.value
         ).map {
             when (it) {
@@ -135,45 +141,50 @@ class WeatherRepo private constructor(
                 is CurrentWeatherState.Loading -> it
             }
         }
+        return flow { CurrentWeatherState.Error("No internet connection") }
     }
 
-    override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {
+    override suspend fun getCurrentWeather(flag: Boolean): Flow<CurrentWeatherState> {
         val unit = _weatherLocalDatasource.getUnit()
         val cord = getCordFromLocationSource()
         val lang = _weatherLocalDatasource.getLanguage()
         Log.d("lang", "getHourlyForecast: $lang")
 
-        return _weatherRemoteDatasource.getCurrentWeather(
-            cord.lat, cord.lon, MODE.JSON.value, unit.value, lang.value
-        ).map {
-            when (it) {
-                is CurrentWeatherState.Success -> {
-                    val currentWeather = it.currentWeather.copy(unit = unit)
+        return if (flag) {
+            _weatherRemoteDatasource.getCurrentWeather(
+                cord.lat, cord.lon, MODE.JSON.value, unit.value, lang.value
+            ).map {
+                when (it) {
+                    is CurrentWeatherState.Success -> {
+                        val currentWeather = it.currentWeather.copy(unit = unit)
 
-                    getLocationSource().let { source ->
-                        when (source) {
-                            LOCATION_SOURCE.GPS -> currentWeather.isGPS = true
-                            LOCATION_SOURCE.MAP -> currentWeather.isMap = true
+                        getLocationSource().let { source ->
+                            when (source) {
+                                LOCATION_SOURCE.GPS -> currentWeather.isGPS = true
+                                LOCATION_SOURCE.MAP -> currentWeather.isMap = true
+                            }
                         }
+                        CurrentWeatherState.Success(currentWeather)
                     }
-                    CurrentWeatherState.Success(currentWeather)
-                }
 
-                is CurrentWeatherState.Error -> it
-                is CurrentWeatherState.Loading -> it
+                    is CurrentWeatherState.Error -> it
+                    is CurrentWeatherState.Loading -> it
+                }
             }
-        }
+        } else getLocalCurrentWeather()
+
     }
 
-
-    override suspend fun getHourlyForecast(cnt: Int): Flow<FiveDaysForecastState> {
-        val unit = _weatherLocalDatasource.getUnit()
-        val cord = getCordFromLocationSource()
-        val lang = _weatherLocalDatasource.getLanguage()
-        Log.d("lang", "getHourlyForecast: $lang")
-        return _weatherRemoteDatasource.getHourlyForecast(
-            cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, lang.value
-        )
+    override suspend fun getHourlyForecast(cnt: Int, flag: Boolean): Flow<FiveDaysForecastState> {
+        return if (flag) {
+            val unit = _weatherLocalDatasource.getUnit()
+            val cord = getCordFromLocationSource()
+            val lang = _weatherLocalDatasource.getLanguage()
+            Log.d("lang", "getHourlyForecast: $lang")
+            _weatherRemoteDatasource.getHourlyForecast(
+                cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, lang.value
+            )
+        } else getLocalFiveDaysForecast()
     }
 
 }

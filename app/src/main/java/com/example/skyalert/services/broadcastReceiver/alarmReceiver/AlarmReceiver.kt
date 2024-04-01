@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.example.skyalert.R
 import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
+import com.example.skyalert.dataSource.local.localStorage.LocalStorage
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.model.remote.CurrentWeather
@@ -18,6 +19,7 @@ import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.services.notification.NotificationHelper
+import com.example.skyalert.util.GPS_NETWORK_Utils
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,28 +32,30 @@ class AlarmReceiver() : BroadcastReceiver() {
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
         val dao = WeatherDatabase.getInstance(context.applicationContext).weatherDao()
         val sharedPref = SharedPreferenceImpl.getInstance(context.applicationContext)
-        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
-            dao, sharedPref
+        val localStorage = LocalStorage.getInstance(context.applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref, localStorage
         )
         val repo = WeatherRepo.getInstance(
             remoteDataSource, localDatasource
         )
-        val scope = CoroutineScope(Dispatchers.IO)
-        scope.launch {
-            repo.getCurrentWeatherByCoord(repo.getAlertLocation()).collect {
-                when (it) {
-                    is CurrentWeatherState.Success -> {
-                        handleSuccess(context, it.currentWeather)
-                    }
+        if (GPS_NETWORK_Utils.isNetworkConnected(context))
+            CoroutineScope(Dispatchers.IO).launch {
 
-                    is CurrentWeatherState.Error -> {
-                        Log.e(TAG, "onReceive: ${it.message}")
-                    }
+                repo.getCurrentWeatherByCoord(repo.getAlertLocation()).collect {
+                    when (it) {
+                        is CurrentWeatherState.Success -> {
+                            handleSuccess(context, it.currentWeather)
+                        }
 
-                    CurrentWeatherState.Loading -> {}
+                        is CurrentWeatherState.Error -> {
+                            Log.e(TAG, "onReceive: ${it.message}")
+                        }
+
+                        CurrentWeatherState.Loading -> {}
+                    }
                 }
             }
-        }
     }
 
     private fun handleSuccess(context: Context, currentWeather: CurrentWeather) {

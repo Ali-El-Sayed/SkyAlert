@@ -13,4 +13,5 @@ object KEYS {
     const val LOCATION_SOURCE = "location_source"
     const val ALERT_LOCATION_LAT = "alert_location_lat"
     const val ALERT_LOCATION_LON = "alert_location_lon"
+    const val FIVE_DAYS_FORECAST = "five_days_forecast"
 }

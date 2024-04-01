@@ -94,6 +94,30 @@ class WeatherDaoTest {
         }
     }
 
+    @Test
+    fun insertLocalCurrentWeather_currenWeather_true() = runTest {
+        // GIVEN - Insert a weather
+        val weather = getEmptyWeatherObj()
+        weather.isCurrent = true
+        // WHEN - Insert a weather
+        val id = async { database.weatherDao().insertCurrentWeather(weather) }.await()
+        // THEN - Verify that the weather is inserted
+        assertThat(id, `is`(greaterThan(0L)))
+    }
+
+    @Test
+    fun getLocalCurrentWeather_currentWeatherInstance_true() = runTest {
+        // GIVEN - Insert a weather
+        val weather = getEmptyWeatherObj()
+        weather.isCurrent = true
+        database.weatherDao().insertCurrentWeather(weather)
+        // WHEN - Get the weather
+        val loaded = async { database.weatherDao().getLocalCurrentWeather() }.await()
+        // THEN - Verify that the loaded data is correct
+        assertThat(loaded.isCurrent, `is`(true))
+    }
+
+
     /**
      *  Close the database
      * */

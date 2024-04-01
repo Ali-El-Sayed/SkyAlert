@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.services.alarm.model.Alert
 
@@ -20,6 +21,17 @@ interface WeatherDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCurrentWeather(currentWeather: CurrentWeather): Long
+
+    @Update()
+    suspend fun updateCurrentWeather(currentWeather: CurrentWeather): Int
+
+    /**
+     * Get Current Weather
+     * @return the current weather
+     * */
+
+    @Query("SELECT * FROM current_weather where isCurrent = 1")
+    suspend fun getLocalCurrentWeather(): CurrentWeather
 
     /**
      *  Get the cached current GPS weather

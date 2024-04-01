@@ -7,6 +7,7 @@ import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
+import com.example.skyalert.dataSource.local.localStorage.LocalStorage
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.model.remote.Coord
@@ -29,8 +30,9 @@ class DialogAlertManager(
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
         val dao = WeatherDatabase.getInstance(appContext.applicationContext).weatherDao()
         val sharedPref = SharedPreferenceImpl.getInstance(appContext.applicationContext)
-        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
-            dao, sharedPref
+        val localStorage = LocalStorage.getInstance(appContext.applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref, localStorage
         )
         WeatherRepo.getInstance(
             remoteDataSource, localDatasource

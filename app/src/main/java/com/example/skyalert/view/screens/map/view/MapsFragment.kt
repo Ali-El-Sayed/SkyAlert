@@ -14,6 +14,7 @@ import androidx.work.WorkManager
 import com.example.skyalert.R
 import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
+import com.example.skyalert.dataSource.local.localStorage.LocalStorage
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentMapBinding
@@ -25,6 +26,7 @@ import com.example.skyalert.network.RetrofitClient
 import com.example.skyalert.repository.WeatherRepo
 import com.example.skyalert.services.alarm.AndroidAlarmScheduler
 import com.example.skyalert.services.alarm.model.ALERT_TYPE
+import com.example.skyalert.util.GPS_NETWORK_Utils
 import com.example.skyalert.util.WeatherViewModelFactory
 import com.example.skyalert.view.dialogs.AlertResultDialog
 import com.example.skyalert.view.dialogs.DateAlertDialog
@@ -60,8 +62,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
         val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
         val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
-        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
-            dao, sharedPref
+        val localStorage = LocalStorage.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref, localStorage
         )
         val repo = WeatherRepo.getInstance(
             remoteDataSource, localDatasource
@@ -155,7 +158,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         }
         val bottomSheet = MapBottomSheet(this)
         bottomSheet.arguments = argument
-        bottomSheet.show(requireActivity().supportFragmentManager, "MapBottomSheet")
+        if (GPS_NETWORK_Utils.isNetworkConnected(requireContext()))
+            bottomSheet.show(requireActivity().supportFragmentManager, "MapBottomSheet")
+        else Toast.makeText(requireActivity(), "No internet connection", Toast.LENGTH_SHORT).show()
     }
 
     override fun setDefaultLocation(coord: Coord) {

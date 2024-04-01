@@ -88,12 +88,10 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
      * */
 
     override fun getGPSLocation(): Coord {
-        val lat =
-            sharedPreferences.getString(KEYS.GPS_LOCATION_LAT, DEFAULT_LOCATION_LAT.toString())
-                ?.toDouble() ?: DEFAULT_LOCATION_LAT
-        val lon =
-            sharedPreferences.getString(KEYS.GPS_LOCATION_LON, DEFAULT_LOCATION_LON.toString())
-                ?.toDouble() ?: DEFAULT_LOCATION_LON
+        val lat = sharedPreferences.getString(KEYS.GPS_LOCATION_LAT, DEFAULT_LOCATION_LAT.toString())?.toDouble()
+            ?: DEFAULT_LOCATION_LAT
+        val lon = sharedPreferences.getString(KEYS.GPS_LOCATION_LON, DEFAULT_LOCATION_LON.toString())?.toDouble()
+            ?: DEFAULT_LOCATION_LON
         return Coord(lat, lon)
     }
 
@@ -103,12 +101,10 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
     }
 
     override fun getMapLocation(): Coord {
-        val lat =
-            sharedPreferences.getString(KEYS.MAP_LOCATION_LAT, DEFAULT_LOCATION_LAT.toString())
-                ?.toDouble() ?: DEFAULT_LOCATION_LAT
-        val lon =
-            sharedPreferences.getString(KEYS.MAP_LOCATION_LON, DEFAULT_LOCATION_LON.toString())
-                ?.toDouble() ?: DEFAULT_LOCATION_LON
+        val lat = sharedPreferences.getString(KEYS.MAP_LOCATION_LAT, DEFAULT_LOCATION_LAT.toString())?.toDouble()
+            ?: DEFAULT_LOCATION_LAT
+        val lon = sharedPreferences.getString(KEYS.MAP_LOCATION_LON, DEFAULT_LOCATION_LON.toString())?.toDouble()
+            ?: DEFAULT_LOCATION_LON
         return Coord(lat, lon)
     }
 
@@ -124,10 +120,9 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
      *  Get the location type from shared preference
      *  @return LOCATION_TYPE
      * */
-    override fun getLocationSource() =
-        sharedPreferences.getString(KEYS.LOCATION_SOURCE, LOCATION_SOURCE.GPS.value)?.let {
-            return LOCATION_SOURCE.valueOf(it.uppercase())
-        } ?: LOCATION_SOURCE.GPS
+    override fun getLocationSource() = sharedPreferences.getString(KEYS.LOCATION_SOURCE, LOCATION_SOURCE.GPS.value)?.let {
+        return LOCATION_SOURCE.valueOf(it.uppercase())
+    } ?: LOCATION_SOURCE.GPS
 
     /**
      *  Save the alert location in shared preference
@@ -143,23 +138,36 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
      *  @return Coord
      * */
     override fun getAlertCoord(): Coord {
-        val lat =
-            sharedPreferences.getString(KEYS.ALERT_LOCATION_LAT, DEFAULT_LOCATION_LAT.toString())
-                ?.toDouble() ?: DEFAULT_LOCATION_LAT
-        val lon =
-            sharedPreferences.getString(KEYS.ALERT_LOCATION_LON, DEFAULT_LOCATION_LON.toString())
-                ?.toDouble() ?: DEFAULT_LOCATION_LON
+        val lat = sharedPreferences.getString(KEYS.ALERT_LOCATION_LAT, DEFAULT_LOCATION_LAT.toString())?.toDouble()
+            ?: DEFAULT_LOCATION_LAT
+        val lon = sharedPreferences.getString(KEYS.ALERT_LOCATION_LON, DEFAULT_LOCATION_LON.toString())?.toDouble()
+            ?: DEFAULT_LOCATION_LON
         return Coord(lat, lon)
     }
 
+    /**
+     *  Save the language in shared preference
+     *  @param language: LOCAL
+     * */
     override fun setLanguage(language: LOCAL) {
         sharedPreferences.edit().putString(KEYS.LANGUAGE, language.value.lowercase()).apply()
     }
 
+    /**
+     *  Get the language from shared preference
+     *  @return LOCAL
+     * */
     override fun getLanguage(): LOCAL {
         return sharedPreferences.getString(KEYS.LANGUAGE, LOCAL.EN.value)?.let {
             LOCAL.valueOf(it.uppercase())
         } ?: LOCAL.EN
+    }
+
+    override fun getFiveDaysForecastFileName(): String = sharedPreferences.getString(KEYS.FIVE_DAYS_FORECAST, "") ?: ""
+
+
+    override fun saveFiveDaysForecastFileName(fileName: String) {
+        sharedPreferences.edit().putString(KEYS.FIVE_DAYS_FORECAST, fileName).apply()
     }
 
 }

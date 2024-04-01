@@ -3,6 +3,7 @@ package com.example.skyalert.dataSource.local
 import com.example.skyalert.dataSource.local.sharedPref.ISharedPreference
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.network.UNITS
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 
 class FakeSharedPreference : ISharedPreference {
@@ -43,6 +44,22 @@ class FakeSharedPreference : ISharedPreference {
     }
 
     override fun getAlertCoord(): Coord {
+        TODO("Not yet implemented")
+    }
+
+    override fun setLanguage(language: LOCAL) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getLanguage(): LOCAL {
+        TODO("Not yet implemented")
+    }
+
+    override fun getFiveDaysForecastFileName(): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun saveFiveDaysForecastFileName(fileName: String) {
         TODO("Not yet implemented")
     }
 

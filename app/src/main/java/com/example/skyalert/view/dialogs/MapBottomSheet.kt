@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.example.skyalert.R
 import com.example.skyalert.dataSource.local.WeatherLocalDatasourceImpl
 import com.example.skyalert.dataSource.local.db.WeatherDatabase
+import com.example.skyalert.dataSource.local.localStorage.LocalStorage
 import com.example.skyalert.dataSource.local.sharedPref.SharedPreferenceImpl
 import com.example.skyalert.dataSource.remote.WeatherRemoteDatasource
 import com.example.skyalert.databinding.FragmentMapBottomSheetBinding
@@ -43,8 +44,9 @@ class MapBottomSheet(private val bottomSheetCallbacks: BottomSheetCallbacks) : B
         val remoteDataSource = WeatherRemoteDatasource.getInstance(RetrofitClient.apiService)
         val dao = WeatherDatabase.getInstance(requireContext().applicationContext).weatherDao()
         val sharedPref = SharedPreferenceImpl.getInstance(requireActivity().applicationContext)
-        val localDatasource = WeatherLocalDatasourceImpl.WeatherLocalDatasourceImpl.getInstance(
-            dao, sharedPref
+        val localStorage = LocalStorage.getInstance(requireActivity().applicationContext)
+        val localDatasource = WeatherLocalDatasourceImpl.getInstance(
+            dao, sharedPref, localStorage
         )
         val repo = WeatherRepo.getInstance(
             remoteDataSource, localDatasource
@@ -96,7 +98,8 @@ class MapBottomSheet(private val bottomSheetCallbacks: BottomSheetCallbacks) : B
                         }
 
                         is CurrentWeatherState.Loading -> {}
-                        is CurrentWeatherState.Error -> Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                        is CurrentWeatherState.Error -> Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT)
+                            .show()
                     }
 
                 }
