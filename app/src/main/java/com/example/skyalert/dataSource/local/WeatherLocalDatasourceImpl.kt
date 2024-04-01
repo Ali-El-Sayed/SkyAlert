@@ -8,6 +8,7 @@ import com.example.skyalert.model.remote.CurrentWeather
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.services.alarm.model.Alert
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -63,7 +64,11 @@ class WeatherLocalDatasourceImpl(
     }
 
     override fun getAlertLocation(): Coord = sharedPreference.getAlertCoord()
+    override fun setLanguage(language: LOCAL) {
+        sharedPreference.setLanguage(language)
+    }
 
+    override fun getLanguage(): LOCAL = sharedPreference.getLanguage()
     /**
      *  Database methods
      * */

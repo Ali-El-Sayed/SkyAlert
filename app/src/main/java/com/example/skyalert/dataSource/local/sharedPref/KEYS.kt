@@ -5,6 +5,7 @@ package com.example.skyalert.dataSource.local.sharedPref
  * */
 object KEYS {
     const val UNIT = "unit"
+    const val LANGUAGE = "language"
     const val GPS_LOCATION_LAT = "gps_location_lat"
     const val GPS_LOCATION_LON = "gps_location_lon"
     const val MAP_LOCATION_LAT = "map_location_lat"

@@ -9,7 +9,7 @@
             app:entryValues="@array/unit_values"
             app:key="unit"
             app:summary="@string/select_the_units_of_measure"
-            app:title="Unit" />
+            app:title="@string/units" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/location">
@@ -21,6 +21,17 @@
             app:key="location_source"
             app:summary="@string/select_the_location_source"
             app:title="@string/location_source" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/local">
+        <ListPreference
+            android:defaultValue="en"
+            android:summary="@string/select_the_language_of_the_app"
+            app:defaultValue="en"
+            app:entries="@array/languages"
+            app:entryValues="@array/languages_values"
+            app:key="language"
+            app:title="@string/language" />
     </PreferenceCategory>
 
 

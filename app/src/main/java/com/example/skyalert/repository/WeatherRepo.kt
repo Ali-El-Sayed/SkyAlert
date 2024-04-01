@@ -1,16 +1,17 @@
 package com.example.skyalert.repository
 
+import android.util.Log
 import com.example.skyalert.dataSource.local.IWeatherLocalDatasource
 import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.dataSource.remote.IWeatherRemoteDataSource
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.model.remote.CurrentWeather
-import com.example.skyalert.network.LANG
 import com.example.skyalert.network.MODE
 import com.example.skyalert.network.UNITS
 import com.example.skyalert.network.model.CurrentWeatherState
 import com.example.skyalert.network.model.FiveDaysForecastState
 import com.example.skyalert.services.alarm.model.Alert
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -68,10 +69,17 @@ class WeatherRepo private constructor(
 
     override fun getAlertLocation(): Coord = _weatherLocalDatasource.getAlertLocation()
 
+
     private fun getCordFromLocationSource() = when (getLocationSource()) {
         LOCATION_SOURCE.GPS -> getGPSLocation()
         LOCATION_SOURCE.MAP -> getMapLocation()
     }
+
+    override fun setLanguage(language: LOCAL) {
+        _weatherLocalDatasource.setLanguage(language)
+    }
+
+    override fun getLanguage(): LOCAL = _weatherLocalDatasource.getLanguage()
 
     /**
      * Database Local data source
@@ -106,8 +114,9 @@ class WeatherRepo private constructor(
 
     override suspend fun getCurrentWeatherByCoord(coord: Coord): Flow<CurrentWeatherState> {
         val unit = _weatherLocalDatasource.getUnit()
+        val lang = _weatherLocalDatasource.getLanguage()
         return _weatherRemoteDatasource.getCurrentWeather(
-            coord.lat, coord.lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+            coord.lat, coord.lon, MODE.JSON.value, unit.value, lang.value
         ).map {
             when (it) {
                 is CurrentWeatherState.Success -> {
@@ -131,9 +140,11 @@ class WeatherRepo private constructor(
     override suspend fun getCurrentWeather(): Flow<CurrentWeatherState> {
         val unit = _weatherLocalDatasource.getUnit()
         val cord = getCordFromLocationSource()
+        val lang = _weatherLocalDatasource.getLanguage()
+        Log.d("lang", "getHourlyForecast: $lang")
 
         return _weatherRemoteDatasource.getCurrentWeather(
-            cord.lat, cord.lon, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+            cord.lat, cord.lon, MODE.JSON.value, unit.value, lang.value
         ).map {
             when (it) {
                 is CurrentWeatherState.Success -> {
@@ -158,8 +169,10 @@ class WeatherRepo private constructor(
     override suspend fun getHourlyForecast(cnt: Int): Flow<FiveDaysForecastState> {
         val unit = _weatherLocalDatasource.getUnit()
         val cord = getCordFromLocationSource()
+        val lang = _weatherLocalDatasource.getLanguage()
+        Log.d("lang", "getHourlyForecast: $lang")
         return _weatherRemoteDatasource.getHourlyForecast(
-            cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, LANG.ENGLISH.value
+            cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, lang.value
         )
     }
 

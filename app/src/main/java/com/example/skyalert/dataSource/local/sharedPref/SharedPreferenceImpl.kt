@@ -5,6 +5,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.example.skyalert.model.remote.Coord
 import com.example.skyalert.network.UNITS
+import com.example.skyalert.view.screens.settings.model.LOCAL
 import com.example.skyalert.view.screens.settings.model.LOCATION_SOURCE
 
 
@@ -149,6 +150,16 @@ class SharedPreferenceImpl(private val context: Context) : ISharedPreference {
             sharedPreferences.getString(KEYS.ALERT_LOCATION_LON, DEFAULT_LOCATION_LON.toString())
                 ?.toDouble() ?: DEFAULT_LOCATION_LON
         return Coord(lat, lon)
+    }
+
+    override fun setLanguage(language: LOCAL) {
+        sharedPreferences.edit().putString(KEYS.LANGUAGE, language.value.lowercase()).apply()
+    }
+
+    override fun getLanguage(): LOCAL {
+        return sharedPreferences.getString(KEYS.LANGUAGE, LOCAL.EN.value)?.let {
+            LOCAL.valueOf(it.uppercase())
+        } ?: LOCAL.EN
     }
 
 }

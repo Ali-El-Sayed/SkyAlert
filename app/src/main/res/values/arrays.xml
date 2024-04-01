@@ -2,9 +2,9 @@
 
     <!-- Array of units -->
     <string-array name="units">
-        <item>Imperial -> F - miles/hour</item>
-        <item>Metric -> C - meter/sec</item>
-        <item>Standard -> K - meter/sec</item>
+        <item>@string/imperial_f_mi</item>
+        <item>@string/metric_c_m_s</item>
+        <item>@string/standard_k_m</item>
     </string-array>
     <!-- Array of unit values -->
     <string-array name="unit_values">
@@ -16,14 +16,23 @@
 
     <!-- Array of location sources -->
     <string-array name="location_sources">
-        <item>GPS</item>
-        <item>Map</item>
+        <item>@string/gps</item>
+        <item>@string/map</item>
     </string-array>
     <!-- Array of location source values -->
     <string-array name="location_sources_values">
         <item>gps</item>
         <item>map</item>
     </string-array>
-
+    <!-- Languages -->
+    <string-array name="languages">
+        <item>EN</item>
+        <item>العربية</item>
+    </string-array>
+    <!-- Language values -->
+    <string-array name="languages_values">
+        <item>en</item>
+        <item>ar</item>
+    </string-array>
 
 </resources>
