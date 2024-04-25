@@ -46,12 +46,13 @@ class WeatherScreenViewModel(private val _weatherRepo: IWeatherRepo) : ViewModel
     fun getHourlyWeather(cnt: Int = 8, flag: Boolean = true) {
         _hourlyWeather.value = FiveDaysForecastState.Loading
         viewModelScope.launch(Dispatchers.IO) {
-            _weatherRepo.getHourlyForecast(cnt, flag).catch { e ->
-                e.printStackTrace()
-                _hourlyWeather.value = FiveDaysForecastState.Error(e.message ?: "An error occurred")
-            }.collect {
-                _hourlyWeather.value = it as FiveDaysForecastState.Success
-            }
+                _weatherRepo.getHourlyForecast(cnt, flag).catch { e ->
+                    e.printStackTrace()
+                    _hourlyWeather.value =
+                        FiveDaysForecastState.Error(e.message ?: "An error occurred")
+                }.collect {
+                    _hourlyWeather.value = it as FiveDaysForecastState.Success
+                }
         }
     }
 

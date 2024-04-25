@@ -340,8 +340,6 @@ class WeatherFragment : Fragment(), OnLocationChange {
 
     @SuppressLint("MissingPermission")
     private fun getFreshLocation(callback: LocationCallback) {
-        Toast.makeText(requireActivity(), "Getting location", Toast.LENGTH_SHORT).show()
-        Log.d(TAG, "Getting location")
         fusedLocationProviderClient.requestLocationUpdates(
             LocationRequest.Builder(DELAY_IN_LOCATION_REQUEST).apply {
                 setPriority(Priority.PRIORITY_HIGH_ACCURACY)

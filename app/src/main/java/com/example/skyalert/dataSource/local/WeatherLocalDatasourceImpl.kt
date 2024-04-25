@@ -1,5 +1,6 @@
 package com.example.skyalert.dataSource.local
 
+import android.util.Log
 import com.example.skyalert.dataSource.local.db.WeatherDao
 import com.example.skyalert.dataSource.local.db.model.AlertsState
 import com.example.skyalert.dataSource.local.localStorage.ILocalStorage
@@ -134,6 +135,7 @@ class WeatherLocalDatasourceImpl(
     override suspend fun getFiveDaysForecast(): Flow<FiveDaysForecastState> = flow {
         val fileName = sharedPreference.getFiveDaysForecastFileName()
         val result = localStorage.getFiveDaysForecast(fileName)
+        Log .d("TAG", "getLocalFiveDaysForecast: $result")
         if (result != null) {
             emit(FiveDaysForecastState.Success(result))
         } else {

@@ -19,7 +19,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class WeatherRepo private constructor(
-    private val _weatherRemoteDatasource: IWeatherRemoteDataSource, private val _weatherLocalDatasource: IWeatherLocalDatasource
+    private val _weatherRemoteDatasource: IWeatherRemoteDataSource,
+    private val _weatherLocalDatasource: IWeatherLocalDatasource,
 ) : IWeatherRepo {
 
 
@@ -27,7 +28,8 @@ class WeatherRepo private constructor(
         @Volatile
         private var INSTANCE: WeatherRepo? = null
         fun getInstance(
-            weatherRemoteDatasource: IWeatherRemoteDataSource, iWeatherLocalDatasource: IWeatherLocalDatasource
+            weatherRemoteDatasource: IWeatherRemoteDataSource,
+            iWeatherLocalDatasource: IWeatherLocalDatasource,
         ) = INSTANCE ?: synchronized(this) {
             INSTANCE ?: WeatherRepo(
                 weatherRemoteDatasource, iWeatherLocalDatasource
@@ -87,21 +89,27 @@ class WeatherRepo private constructor(
         _weatherLocalDatasource.insertCurrentWeather(currentWeather)
 
     override suspend fun getAllAlerts(): Flow<AlertsState> = _weatherLocalDatasource.getAllAlarms()
-    override suspend fun insertAlert(alert: Alert): Long = _weatherLocalDatasource.insertAlert(alert)
+    override suspend fun insertAlert(alert: Alert): Long =
+        _weatherLocalDatasource.insertAlert(alert)
+
     override suspend fun deleteAlert(alert: Alert): Int = _weatherLocalDatasource.deleteAlert(alert)
 
     override suspend fun deleteAlert(currentWeather: CurrentWeather): Int =
         _weatherLocalDatasource.deleteBookmarks(currentWeather)
 
     override fun getLocalCurrentWeather(): Flow<CurrentWeatherState> = flow {
-        _weatherLocalDatasource.getLocalCurrentWeather()
+        val result = _weatherLocalDatasource.getLocalCurrentWeather()
+        emit(CurrentWeatherState.Success(result))
     }
 
-    override suspend fun getGPSWeather(): CurrentWeatherState = _weatherLocalDatasource.getGPSWeather()
+    override suspend fun getGPSWeather(): CurrentWeatherState =
+        _weatherLocalDatasource.getGPSWeather()
 
-    override suspend fun getMapWeather(): CurrentWeatherState = _weatherLocalDatasource.getMapWeather()
+    override suspend fun getMapWeather(): CurrentWeatherState =
+        _weatherLocalDatasource.getMapWeather()
 
-    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> = _weatherLocalDatasource.getBookmarks()
+    override suspend fun getFavoriteWeather(): Flow<List<CurrentWeather>> =
+        _weatherLocalDatasource.getBookmarks()
 
     /**
      * Local Storage
@@ -110,15 +118,17 @@ class WeatherRepo private constructor(
         _weatherLocalDatasource.saveFiveDaysForecast(fiveDaysForecast)
     }
 
-    override suspend fun getLocalFiveDaysForecast(): Flow<FiveDaysForecastState> {
-        return _weatherLocalDatasource.getFiveDaysForecast()
-    }
+    override suspend fun getLocalFiveDaysForecast(): Flow<FiveDaysForecastState> =
+        _weatherLocalDatasource.getFiveDaysForecast()
 
     /**
      *  Remote data source
      * */
 
-    override suspend fun getCurrentWeatherByCoord(coord: Coord, flag: Boolean): Flow<CurrentWeatherState> {
+    override suspend fun getCurrentWeatherByCoord(
+        coord: Coord,
+        flag: Boolean,
+    ): Flow<CurrentWeatherState> {
         val unit = _weatherLocalDatasource.getUnit()
         val lang = _weatherLocalDatasource.getLanguage()
         if (flag) return _weatherRemoteDatasource.getCurrentWeather(
@@ -148,7 +158,6 @@ class WeatherRepo private constructor(
         val unit = _weatherLocalDatasource.getUnit()
         val cord = getCordFromLocationSource()
         val lang = _weatherLocalDatasource.getLanguage()
-        Log.d("lang", "getHourlyForecast: $lang")
 
         return if (flag) {
             _weatherRemoteDatasource.getCurrentWeather(
@@ -184,7 +193,9 @@ class WeatherRepo private constructor(
             _weatherRemoteDatasource.getHourlyForecast(
                 cord.lat, cord.lon, cnt, MODE.JSON.value, unit.value, lang.value
             )
-        } else getLocalFiveDaysForecast()
+        } else {
+            getLocalFiveDaysForecast()
+        }
     }
 
 }
