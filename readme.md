@@ -14,8 +14,8 @@ Welcome to Sky Alert, your ultimate companion for staying ahead of the weather c
 - Caching: Benefit from caching mechanisms to store frequently accessed weather data locally, optimizing app performance and ensuring smooth user experience even in areas with limited connectivity or during peak usage times.
 
 ## Demo
-[![Watch the video](https://img.youtube.com/vi/T-D1KVIuvjA/maxresdefault.jpg)]([https://youtu.be/T-D1KVIuvjA](https://github.com/Ali-El-Sayed/SkyAlert/blob/Refactore-Coroutines/demo/skyAlertDemo.mp4
-))
+https://github.com/Ali-El-Sayed/SkyAlert/assets/63204358/2d544f43-b41e-41a1-a59d-9d7b926b970a
+
 
 
 ## License
