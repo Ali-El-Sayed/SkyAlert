@@ -15,7 +15,6 @@ class WeatherViewModelFactory(private val repository: IWeatherRepo) : ViewModelP
         return when {
             modelClass.isAssignableFrom(WeatherScreenViewModel::class.java) -> WeatherScreenViewModel(repository) as T
 
-
             modelClass.isAssignableFrom(SettingsViewModel::class.java) -> SettingsViewModel(repository) as T
 
             modelClass.isAssignableFrom(MapViewModel::class.java) -> MapViewModel(repository) as T
