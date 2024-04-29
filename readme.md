@@ -1,9 +1,8 @@
-
-# Sky Alert
+# Sky Alert  🌤️
 
 Welcome to Sky Alert, your ultimate companion for staying ahead of the weather curve. With advanced forecasting capabilities and intuitive features, Sky Alert ensures you're always prepared for whatever Mother Nature throws your way.
 
-## Features
+## Features 🚀
 - Real-Time Updates: Stay informed with accurate, up-to-date weather forecasts tailored to your location, powered by advanced meteorological data and algorithms.
 - Favorites Management: Effortlessly add or remove favorite locations to monitor weather conditions across multiple regions at a glance.
 
