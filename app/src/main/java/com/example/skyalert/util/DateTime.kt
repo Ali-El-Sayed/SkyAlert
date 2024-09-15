@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-
 /**
  *  Get the current date from the given milliseconds
  *  @param milliseconds the date in milliseconds ex. 1620000000000
@@ -18,7 +17,8 @@ import java.util.Locale
  * */
 fun millisecondsToLocalDateTime(milliseconds: Long): LocalDateTime {
     return LocalDateTime.ofInstant(
-        Instant.ofEpochMilli(milliseconds), ZoneId.systemDefault()
+        Instant.ofEpochMilli(milliseconds),
+        ZoneId.systemDefault(),
     )
 }
 
@@ -32,11 +32,16 @@ fun millisecondsToLocalDateTime(milliseconds: Long): LocalDateTime {
  * @return the date in milliseconds ex. 1620000000000
  * */
 
-fun getMillisecondsFromDate(year: Int, month: Int, day: Int, hour: Int, minute: Int): Long {
+fun getMillisecondsFromDate(
+    year: Int,
+    month: Int,
+    day: Int,
+    hour: Int,
+    minute: Int,
+): Long {
     val localDateTime = LocalDateTime.of(year, month, day, hour, minute)
     return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
-
 
 /**
  *  Get the current year ex. 2021
@@ -58,7 +63,6 @@ fun getMonthName(month: Int): String {
     return Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
 
-
 /**
  *  Get the day of the week name from the given date
  *  @param dayOfMonth the day of the month
@@ -66,7 +70,11 @@ fun getMonthName(month: Int): String {
  *  @param year the year
  *  @return the name of the day of the week ex. Monday
  */
-fun getDayName(dayOfMonth: Int, month: Int, year: Int): String {
+fun getDayName(
+    dayOfMonth: Int,
+    month: Int,
+    year: Int,
+): String {
     val date = LocalDate.of(year, month, dayOfMonth)
     val dayOfWeek = date.dayOfWeek
     return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())

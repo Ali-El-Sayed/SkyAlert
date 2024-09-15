@@ -20,8 +20,11 @@ class AndroidAlarmScheduler(private val context: Context) : AlarmScheduler {
             AlarmManager.RTC_WAKEUP,
             item.time,
             PendingIntent.getBroadcast(
-                context, item.hashCode(), i, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+                context,
+                item.hashCode(),
+                i,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            ),
         )
         Toast.makeText(context, "Alarm set", Toast.LENGTH_SHORT).show()
     }
@@ -32,8 +35,8 @@ class AndroidAlarmScheduler(private val context: Context) : AlarmScheduler {
                 context,
                 item.hashCode(),
                 Intent(context, AlarmReceiver::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            ),
         )
     }
 }

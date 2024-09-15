@@ -14,12 +14,12 @@ object RetrofitClient {
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val original = chain.request()
-                val originalHttpUrl = original.url()
+                val originalHttpUrl = original.url
                 val url = originalHttpUrl.newBuilder()
                     .build()
                 val requestBuilder = original.newBuilder().url(url)
                 val request = requestBuilder.build()
-                Log.d("RetrofitClient", "request: ${request.url()}")
+                Log.d("RetrofitClient", "request: ${request.url}")
                 chain.proceed(request)
             }
             .build()
